@@ -1,0 +1,37 @@
+﻿using Fut7Manager.Admin.Models;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net.Http.Json;
+
+namespace Fut7Manager.Admin.Services {
+    public class LeagueService {
+        private readonly HttpClient _httpClient;
+
+        public LeagueService() {
+            //_httpClient = new HttpClient();
+            _httpClient = new HttpClient(new HttpClientHandler {
+                ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) => true
+            });
+            _httpClient.BaseAddress = new System.Uri("https://localhost:7202"); // tu API
+        }
+
+        public async Task<List<LeagueDto>> GetLeaguesAsync() {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/leagues");
+
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode) {
+                System.Diagnostics.Debug.WriteLine($"[GetLeaguesAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
+                return new List<LeagueDto>();
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            System.Diagnostics.Debug.WriteLine($"[GetLeaguesAsync] STATUS: {response.StatusCode} JSON: {json}");
+
+            return JsonConvert.DeserializeObject<List<LeagueDto>>(json) ?? new List<LeagueDto>();
+        }
+    }
+}

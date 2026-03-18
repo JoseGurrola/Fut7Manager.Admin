@@ -1,0 +1,36 @@
+﻿using Fut7Manager.Admin.Models;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net.Http.Json;
+
+namespace Fut7Manager.Admin.Services {
+    public class PlayerService {
+        private readonly HttpClient _httpClient;
+
+        public PlayerService() {
+            //_httpClient = new HttpClient();
+            _httpClient = new HttpClient(new HttpClientHandler {
+                ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) => true
+            });
+            _httpClient.BaseAddress = new System.Uri("https://localhost:7202");
+        }
+
+        public async Task<List<PlayerDto>> GetPlayersAsync() {
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/players");
+
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode) {
+                System.Diagnostics.Debug.WriteLine($"[GetPlayersAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
+                return new List<PlayerDto>();
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            System.Diagnostics.Debug.WriteLine($"[GetMatchesAsync] STATUS: {response.StatusCode} JSON: {json}");
+            return JsonConvert.DeserializeObject<List<PlayerDto>>(json) ?? new List<PlayerDto>();
+        }
+    }
+}
