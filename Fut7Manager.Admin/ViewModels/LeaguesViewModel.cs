@@ -7,15 +7,20 @@ using System.Text;
 
 namespace Fut7Manager.Admin.ViewModels {
     public class LeaguesViewModel : BaseViewModel {
+
         private readonly LeagueService _leagueService;
 
-        public ObservableCollection<LeagueDto> Leagues { get; set; }
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set { _isLoading = value; OnPropertyChanged(); }
+        }
+
+        public ObservableCollection<LeagueDto> Leagues { get; set; } = new();
 
         public LeaguesViewModel() {
             _leagueService = new LeagueService();
-            Leagues = new ObservableCollection<LeagueDto>();
-
-           _ = LoadLeagues();
         }
 
         private async Task LoadLeagues() {
@@ -26,6 +31,14 @@ namespace Fut7Manager.Admin.ViewModels {
             foreach (var league in _leagues) {
                 Leagues.Add(league);
             }
+        }
+
+        public async Task InitializeAsync() {
+            IsLoading = true;
+
+            await LoadLeagues();
+
+            IsLoading = false;
         }
     }
 }

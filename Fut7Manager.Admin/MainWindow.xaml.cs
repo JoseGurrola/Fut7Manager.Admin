@@ -1,4 +1,6 @@
-﻿using Fut7Manager.Admin.Views;
+﻿using Fut7Manager.Admin.Helpers;
+using Fut7Manager.Admin.ViewModels;
+using Fut7Manager.Admin.Views;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,8 +23,14 @@ namespace Fut7Manager.Admin {
     /// </summary>
 
     public partial class MainWindow : Window {
+        
         public MainWindow() {
+
             InitializeComponent();
+            var vm = new MainViewModel(App.State);
+            DataContext = vm;
+
+            Loaded += async (_, __) => await vm.InitializeAsync();
         }
     }
 

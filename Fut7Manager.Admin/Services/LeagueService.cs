@@ -12,7 +12,7 @@ namespace Fut7Manager.Admin.Services {
             _httpClient = new HttpClient(new HttpClientHandler {
                 ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) => true
             });
-            _httpClient.BaseAddress = new System.Uri("https://localhost:7202"); // tu API
+            _httpClient.BaseAddress = new System.Uri("https://localhost:7202"); 
         }
 
         public async Task<List<LeagueDto>> GetLeaguesAsync() {

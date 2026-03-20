@@ -12,11 +12,11 @@ namespace Fut7Manager.Admin.Services {
             _httpClient = new HttpClient(new HttpClientHandler {
                 ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) => true
             });
-            _httpClient.BaseAddress = new System.Uri("https://localhost:7202"); // tu API
+            _httpClient.BaseAddress = new System.Uri("https://localhost:7202");
         }
 
-        public async Task<List<Fut7MatchDto>> GetMatchesAsync() {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/api/fut7matches");
+        public async Task<List<Fut7MatchDto>> GetMatchesAsync(int leagueId) {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/fut7matches?LeagueId={leagueId}");
 
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
 

@@ -1,15 +1,23 @@
 ﻿using Fut7Manager.Admin.Helpers;
-using Fut7Manager.Admin.Views;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Services;
 using System.Windows.Input;
 
 namespace Fut7Manager.Admin.ViewModels {
     public class MainViewModel : BaseViewModel {
-        private object? _currentView;
+        private readonly AppState _appState;
 
-        public object? CurrentView
+        private readonly PlayerService _playerService = new PlayerService();
+        private readonly TeamService _teamService = new TeamService();
+        private readonly MatchService _matchService = new MatchService();
+        private readonly LeagueService _leagueService = new LeagueService();
+
+        public ICommand ChangeLeagueCommand { get; }
+
+        public LeagueDto? SelectedLeague => _appState.SelectedLeague;
+
+        private BaseViewModel? _currentView = default!;
+        public BaseViewModel? CurrentView
         {
             get => _currentView;
             set {
@@ -18,43 +26,79 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
+        public bool CanNavigate => _appState.SelectedLeague != null;
+
+        public ICommand SelectLeagueCommand { get; }
         public ICommand ShowPlayersCommand { get; }
         public ICommand ShowTeamsCommand { get; }
-        public ICommand ShowLeaguesCommand { get; }
         public ICommand ShowMatchesCommand { get; }
-        public ICommand ShowLoginCommand { get; }
+        public ICommand ShowLeaguesCommand { get; }
 
-        public MainViewModel() {
-            var loginVM = new LoginViewModel();
+        public MainViewModel(AppState appState) {
+            _appState = appState;
 
-            loginVM.OnLoginSuccess = () =>
+            _appState.LeagueChanged += OnLeagueChanged;
+
+            ChangeLeagueCommand = new RelayCommand(async () =>
             {
-                CurrentView = new PlayersViewModel();
-            };
+                if (CurrentView is LeagueSelectionViewModel)
+                    return;
 
-            CurrentView = loginVM;
+                _appState.ClearLeague();
 
-            ShowPlayersCommand = new RelayCommand(
-                () => CurrentView = new PlayersViewModel(),
-                () => CurrentView is not PlayersViewModel
-            );
+                var vm = new LeagueSelectionViewModel(this, _leagueService);
+                CurrentView = vm;
+                await vm.InitializeAsync();
+            });
 
-            ShowTeamsCommand = new RelayCommand(
-                () => CurrentView = new TeamsViewModel(),
-                () => CurrentView is not TeamsViewModel
-            );
+            SelectLeagueCommand = new RelayCommand<LeagueDto?>(SelectLeague);
 
-            ShowLeaguesCommand = new RelayCommand(
-                () => CurrentView = new LeaguesViewModel(),
-                () => CurrentView is not LeaguesViewModel
-            );
+            ShowPlayersCommand = new RelayCommand(async () => {
+                if (_appState.SelectedLeague == null) return;
 
-            ShowMatchesCommand = new RelayCommand(
-                () => CurrentView = new MatchesViewModel(),
-                () => CurrentView is not MatchesViewModel
-            );
+                var vm = new PlayersViewModel(_appState, _playerService);
+                CurrentView = vm;
+                await vm.InitializeAsync();
+            });
 
-            //CurrentView = new PlayersViewModel();
+            ShowTeamsCommand = new RelayCommand(async () => {
+                if (_appState.SelectedLeague == null) return;
+
+                var vm = new TeamsViewModel(_appState, _teamService);
+                CurrentView = vm;
+                await vm.InitializeAsync();
+            });
+
+            ShowMatchesCommand = new RelayCommand(async () => {
+                if (_appState.SelectedLeague == null) return;
+
+                var vm = new MatchesViewModel(_appState, _matchService);
+                CurrentView = vm;
+                await vm.InitializeAsync();
+            });
+
+            ShowLeaguesCommand = new RelayCommand(async () => {
+                var vm = new LeagueSelectionViewModel(this, _leagueService);
+                CurrentView = vm;
+                await vm.InitializeAsync();
+            });
+        }
+
+        private void SelectLeague(LeagueDto? league) {
+            if (league == null)
+                return;
+            _appState.SetLeague(league);
+        }
+
+        private void OnLeagueChanged() {
+            OnPropertyChanged(nameof(SelectedLeague));
+            OnPropertyChanged(nameof(CanNavigate));
+        }
+
+        public async Task InitializeAsync() {
+            var vm = new LeagueSelectionViewModel(this, _leagueService);
+            CurrentView = vm;
+            await vm.InitializeAsync();
         }
     }
 }

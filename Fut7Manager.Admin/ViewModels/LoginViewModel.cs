@@ -1,8 +1,7 @@
 ﻿using Fut7Manager.Admin.Helpers;
 using Fut7Manager.Admin.Services;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Fut7Manager.Admin.ViewModels {
@@ -12,9 +11,30 @@ namespace Fut7Manager.Admin.ViewModels {
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
 
+        private string _errorMessage = "";
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set {
+                _errorMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set {
+                _isLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand LoginCommand { get; }
 
-        public Action? OnLoginSuccess { get; set; }
+        // Evento que notifica al exterior que el login fue exitoso
+        public event Action? LoginSucceeded;
 
         public LoginViewModel() {
             _authService = new AuthService();
@@ -22,14 +42,18 @@ namespace Fut7Manager.Admin.ViewModels {
         }
 
         private async Task Login() {
-            var token = await _authService.LoginAsync(Username, Password);
+            ErrorMessage = "";
+            IsLoading = true;
 
-            if (token != null) {
-                TokenStorage.Token = token;
+            var result = await _authService.LoginAsync(Username, Password);
 
-                OnLoginSuccess?.Invoke();
+            IsLoading = false;
+
+            if (result.Success && result.Token != null) {
+                TokenStorage.Token = result.Token;
+                LoginSucceeded?.Invoke();
             } else {
-                System.Diagnostics.Debug.WriteLine("Login fallido");
+                ErrorMessage = result.Error ?? "Usuario o contraseña incorrectos.";
             }
         }
     }

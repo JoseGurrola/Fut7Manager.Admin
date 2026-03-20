@@ -15,9 +15,9 @@ namespace Fut7Manager.Admin.Services {
             _httpClient.BaseAddress = new System.Uri("https://localhost:7202");
         }
 
-        public async Task<List<PlayerDto>> GetPlayersAsync() {
+        public async Task<List<PlayerDto>> GetPlayersAsync(int leagueId) {
 
-            var request = new HttpRequestMessage(HttpMethod.Get, "/api/players");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/players?LeagueId={leagueId}");
 
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
 

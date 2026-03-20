@@ -22,12 +22,18 @@ namespace Fut7Manager.Admin.Views {
 
             Loaded += (s, e) =>
             {
-                if (DataContext is LoginViewModel vm) {
-                    PasswordBox.PasswordChanged += (sender, args) =>
+                PasswordBox.PasswordChanged += (sender, args) =>
+                {
+                    var dc = DataContext;
+                    if (dc == null)
+                        return;
+
+                    var prop = dc.GetType().GetProperty("Password");
+                    if (prop != null && prop.CanWrite)
                     {
-                        vm.Password = PasswordBox.Password;
-                    };
-                }
+                        prop.SetValue(dc, PasswordBox.Password);
+                    }
+                };
             };
         }
     }

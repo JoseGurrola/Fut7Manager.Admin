@@ -1,10 +1,28 @@
 ﻿<UserControl x:Class="Fut7Manager.Admin.Views.MatchesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewmodels="clr-namespace:Fut7Manager.Admin.ViewModels"
+             xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewmodels:LeaguesViewModel}">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
 
     <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <DataGrid ItemsSource="{Binding Matches}"
+        <TextBlock Grid.Row="0"
+                   Text="Cargando equipos..."
+                   Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Matches}"
                AutoGenerateColumns="False"
                IsReadOnly="True">
 
