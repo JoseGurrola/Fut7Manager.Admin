@@ -15,25 +15,18 @@ namespace Fut7Manager.Admin.ViewModels {
         public string ErrorMessage
         {
             get => _errorMessage;
-            set {
-                _errorMessage = value;
-                OnPropertyChanged();
-            }
+            set { _errorMessage = value; OnPropertyChanged(); }
         }
 
         private bool _isLoading;
         public bool IsLoading
         {
             get => _isLoading;
-            set {
-                _isLoading = value;
-                OnPropertyChanged();
-            }
+            set { _isLoading = value; OnPropertyChanged(); }
         }
 
         public ICommand LoginCommand { get; }
 
-        // Evento que notifica al exterior que el login fue exitoso
         public event Action? LoginSucceeded;
 
         public LoginViewModel() {
@@ -50,7 +43,7 @@ namespace Fut7Manager.Admin.ViewModels {
             IsLoading = false;
 
             if (result.Success && result.Token != null) {
-                TokenStorage.Token = result.Token;
+                TokenStorage.Token = result.Token; // ✅ Funciona ahora
                 LoginSucceeded?.Invoke();
             } else {
                 ErrorMessage = result.Error ?? "Usuario o contraseña incorrectos.";

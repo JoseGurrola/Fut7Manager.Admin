@@ -1,15 +1,11 @@
 ﻿using Fut7Manager.Admin.Helpers;
+using Fut7Manager.Admin.Services;
 using Fut7Manager.Admin.ViewModels;
-using System.Configuration;
-using System.Data;
+using Fut7Manager.Admin.Views;
 using System.Windows;
 
 namespace Fut7Manager.Admin {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application {
-
         public static AppState State { get; } = new AppState();
 
         protected override void OnStartup(StartupEventArgs e) {
@@ -20,17 +16,15 @@ namespace Fut7Manager.Admin {
                 DataContext = loginVm
             };
 
-            loginVm.LoginSucceeded += () =>
+            loginVm.LoginSucceeded += async () =>
             {
                 var mainVm = new MainViewModel(State);
-                var main = new MainWindow {
-                    DataContext = mainVm
-                };
+                var mainWindow = new MainWindow { DataContext = mainVm };
+                Application.Current.MainWindow = mainWindow;
+                mainWindow.Show();
 
-                Application.Current.MainWindow = main;
-                main.Show();
-
-                _ = mainVm.InitializeAsync();
+                // Abrir automáticamente selección de liga tras login
+                await mainVm.OpenLeagueSelectionAfterLoginAsync();
 
                 loginWindow.Close();
             };

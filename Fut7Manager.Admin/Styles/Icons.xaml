@@ -1,0 +1,15 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Fuente de iconos -->
+    <FontFamily x:Key="IconFont">Segoe MDL2 Assets</FontFamily>
+
+    <!-- Iconos -->
+    <sys:String x:Key="IconChangeLeague">&#xE72C;</sys:String>
+    <sys:String x:Key="IconTeams">&#xE902;</sys:String>
+    <sys:String x:Key="IconPlayers">&#xE77B;</sys:String>
+    <sys:String x:Key="IconMatches">&#xE787;</sys:String>
+
+</ResourceDictionary>

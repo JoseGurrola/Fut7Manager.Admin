@@ -3,111 +3,164 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:Fut7Manager.Admin.ViewModels"
         xmlns:views="clr-namespace:Fut7Manager.Admin.Views"
-        Title="Admin Liga" Height="600" Width="1000">
+        Title="Admin Liga" Height="650" Width="1000"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+   
+        WindowStartupLocation="CenterScreen">
+
     <Window.Resources>
-        <Style x:Key="MenuButtonStyle" TargetType="Button">
-            <Setter Property="Margin" Value="10"/>
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="Background" Value="#34495E"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-        </Style>
-        
+        <!-- DataTemplates para vistas dinámicas -->
         <DataTemplate DataType="{x:Type vm:LeagueSelectionViewModel}">
             <views:LeagueSelectionView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:LoginViewModel}">
-            <views:LoginView/>
-        </DataTemplate>
-        <!-- Players -->
+
         <DataTemplate DataType="{x:Type vm:PlayersViewModel}">
             <views:PlayersView/>
         </DataTemplate>
-        <!-- Teams -->
+
         <DataTemplate DataType="{x:Type vm:TeamsViewModel}">
             <views:TeamsView/>
         </DataTemplate>
 
-        <!-- Leagues -->
-        <DataTemplate DataType="{x:Type vm:LeaguesViewModel}">
-            <views:LeaguesView/>
-        </DataTemplate>
-
-        <!-- Matches -->
         <DataTemplate DataType="{x:Type vm:MatchesViewModel}">
             <views:MatchesView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type vm:LeaguesViewModel}">
+            <views:LeaguesView/>
+        </DataTemplate>
     </Window.Resources>
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        
-        <StackPanel Grid.Column="0" Background="#2C3E50">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <TextBlock Margin ="10" Text="Administrador de la liga: " 
-                       TextAlignment="Center"
-                      HorizontalAlignment="Center"
-                           TextWrapping="Wrap"
-                           FontWeight="Bold"
-                           Foreground="White"
-                            FontSize="18"
-                       />
-            <!--<TextBlock Text="⚽ Administrador de liga"
+        <!-- Barra superior -->
+        <Grid Background="#1F2F3F" MouseDown="TitleBar_MouseDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Fut7 Manager"
+                       VerticalAlignment="Center"
+                       Margin="10,0"
                        Foreground="White"
-                       FontSize="18"
-                       Margin="10"
-                       TextAlignment="Center"
-                        TextWrapping="Wrap"
-                       FontWeight="Bold"/>-->
-            <StackPanel Margin="10">
-                <TextBlock Text="Liga actual"
-               Foreground="White"
-               FontSize="12"
-               Opacity="0.7"
-               TextAlignment="Center"/>
+                       FontWeight="Bold"/>
 
-                <DockPanel Margin="0,5,0,0">
-                    <TextBlock Text="{Binding SelectedLeague.Name}"
-                   Foreground="LightBlue"
-                   FontSize="16"
-                   FontWeight="Bold"
-                   TextWrapping="Wrap"
-                   DockPanel.Dock="Left"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                <Button Content="—" Width="40" Click="Minimize_Click"/>
+                <Button Content="▢" Width="40" Click="Maximize_Click"/>
+                <Button Content="X" Width="40" Background="#C0392B" Foreground="White" Click="Close_Click"/>
+            </StackPanel>
+        </Grid>
 
-                    <Button Content="Cambiar"
-                Command="{Binding ChangeLeagueCommand}"
-                DockPanel.Dock="Right"
-                Padding="6,2"
-                Margin="5,0,0,0"
-                            Style="{StaticResource MenuButtonStyle}"/>
-                </DockPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Sidebar -->
+            <StackPanel Grid.Column="0" Background="#2C3E50">
+                <!-- Encabezado -->
+                <StackPanel Margin="10,15">
+                    <TextBlock Margin="10"
+                               Text="⚽ Administrador de la liga:"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextWrapping="Wrap"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               FontSize="18"/>
+                </StackPanel>
+
+                <!-- Liga actual -->
+                <StackPanel Margin="10,15">
+                    <TextBlock Text="Liga actual"
+                               Foreground="White"
+                               FontSize="17"
+                               Opacity="0.7"
+                               TextAlignment="Center"/>
+
+                    <StackPanel Margin="0,5,0,0" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding SelectedLeague.Name}"
+                                   Foreground="LightBlue"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   TextWrapping="Wrap"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"/>
+                        <Button Command="{Binding ChangeLeagueCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="Cambiar liga"
+                                Margin="0,6,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="{StaticResource IconFont}"
+                                           Text="{StaticResource IconChangeLeague}"
+                                           FontSize="14"
+                                           Margin="0,0,5,0"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+
+                <Separator Margin="10,5,10,15"/>
+
+                <!-- Menú principal -->
+                <StackPanel VerticalAlignment="Center">
+                    <Button Style="{StaticResource MenuButtonStyle}"
+                            Command="{Binding ShowTeamsCommand}"
+                            IsEnabled="{Binding CanNavigate}">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="{StaticResource IconFont}"
+                                       Text="{StaticResource IconTeams}"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Equipos"
+                                       FontSize="14"
+                                       Margin="0,5,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource MenuButtonStyle}"
+                            Command="{Binding ShowMatchesCommand}"
+                            IsEnabled="{Binding CanNavigate}">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="{StaticResource IconFont}"
+                                       Text="{StaticResource IconMatches}"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Calendario"
+                                       FontSize="14"
+                                       Margin="0,5,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource MenuButtonStyle}"
+                            Command="{Binding ShowPlayersCommand}"
+                            IsEnabled="{Binding CanNavigate}">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="{StaticResource IconFont}"
+                                       Text="{StaticResource IconPlayers}"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Jugadores"
+                                       FontSize="14"
+                                       Margin="0,5,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
             </StackPanel>
 
-            <Button Content="Teams" 
-                    IsEnabled="{Binding CanNavigate}"
-                    Style="{StaticResource MenuButtonStyle}"
-                    Command="{Binding ShowTeamsCommand}"/>
-            <Button Content="Players" 
-                    Style="{StaticResource MenuButtonStyle}"
-                    IsEnabled="{Binding CanNavigate}"
-                    Command="{Binding ShowPlayersCommand}"/>
-
-            <Button Content="Matches" 
-                    Style="{StaticResource MenuButtonStyle}"
-                    Command="{Binding ShowMatchesCommand}"
-                    IsEnabled="{Binding CanNavigate}"/>
-            <!--<Button Content="Leagues" Margin="10" Padding="10"
-                    Background="#34495E" Foreground="White"
-                    BorderBrush="Transparent" 
-                    IsEnabled="{Binding CanNavigate}"
-                    Command="{Binding ShowLeaguesCommand}"/>-->
-        </StackPanel>
-
-        <!-- CONTENIDO DINÁMICO -->
-        <ContentControl Content="{Binding CurrentView}" Grid.Column="1"/>
-
+            <!-- Contenido dinámico -->
+            <ContentControl Content="{Binding CurrentView}" Grid.Column="1"/>
+        </Grid>
     </Grid>
 </Window>

@@ -1,37 +1,22 @@
-﻿using Fut7Manager.Admin.Helpers;
-using Fut7Manager.Admin.ViewModels;
-using Fut7Manager.Admin.Views;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace Fut7Manager.Admin {
-
-    public static class TokenStorage {
-        public static string? Token { get; set; }
-    }
-
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
     public partial class MainWindow : Window {
-        
         public MainWindow() {
-
             InitializeComponent();
-            var vm = new MainViewModel(App.State);
-            DataContext = vm;
+        }
 
-            Loaded += async (_, __) => await vm.InitializeAsync();
+        private void Close_Click(object sender, RoutedEventArgs e) => Close();
+
+        private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+        private void Maximize_Click(object sender, RoutedEventArgs e) {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void TitleBar_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+                DragMove();
         }
     }
-
 }
