@@ -36,6 +36,7 @@
                 <DataGridTextColumn Header="GF" Binding="{Binding GoalsFor}" Width="*"/>
                 <DataGridTextColumn Header="GC" Binding="{Binding GoalsAgainst}" Width="*"/>
                 <DataGridTextColumn Header="Liga" Binding="{Binding LeagueId}" Width="*"/>
+                <DataGridTextColumn Header="Grupo" Binding="{Binding GroupId}" Width="*"/>
             </DataGrid.Columns>
 
         </DataGrid>

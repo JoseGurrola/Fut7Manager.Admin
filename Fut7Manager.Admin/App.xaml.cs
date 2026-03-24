@@ -3,6 +3,8 @@ using Fut7Manager.Admin.Services;
 using Fut7Manager.Admin.ViewModels;
 using Fut7Manager.Admin.Views;
 using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace Fut7Manager.Admin {
     public partial class App : Application {
@@ -11,25 +13,17 @@ namespace Fut7Manager.Admin {
         protected override void OnStartup(StartupEventArgs e) {
             base.OnStartup(e);
 
-            var loginVm = new LoginViewModel();
-            var loginWindow = new LoginWindow {
-                DataContext = loginVm
+            var mainVm = new MainViewModel(App.State);
+            var main = new MainWindow {
+                DataContext = mainVm
             };
 
-            loginVm.LoginSucceeded += async () =>
-            {
-                var mainVm = new MainViewModel(State);
-                var mainWindow = new MainWindow { DataContext = mainVm };
-                Application.Current.MainWindow = mainWindow;
-                mainWindow.Show();
+            Application.Current.MainWindow = main;
+            main.Show();
+        }
 
-                // Abrir automáticamente selección de liga tras login
-                await mainVm.OpenLeagueSelectionAfterLoginAsync();
-
-                loginWindow.Close();
-            };
-
-            loginWindow.Show();
+        public App() {
+            RenderOptions.ProcessRenderMode = RenderMode.Default;
         }
     }
 }

@@ -11,29 +11,29 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly TeamService _teamService = new TeamService();
         private readonly MatchService _matchService = new MatchService();
         private readonly LeagueService _leagueService = new LeagueService();
-
-        public ICommand ChangeLeagueCommand { get; }
-        public ICommand SelectLeagueCommand { get; }
-        public ICommand ShowPlayersCommand { get; }
-        public ICommand ShowTeamsCommand { get; }
-        public ICommand ShowMatchesCommand { get; }
-        public ICommand ShowLeaguesCommand { get; }
-
-        public LeagueDto? SelectedLeague => _appState.SelectedLeague;
+        // Para que otras ViewModels puedan acceder
+        public AppState AppState => _appState;
+        public TeamService TeamService => _teamService;
+        public PlayerService PlayerService => _playerService;
+        public LeagueService LeagueService => _leagueService;
 
         private BaseViewModel? _currentView;
         public BaseViewModel? CurrentView
         {
             get => _currentView;
-            set { _currentView = value; OnPropertyChanged(); }
+            set {
+                _currentView = value;
+                OnPropertyChanged(); // <- muy importante
+            }
         }
-
-        // --------------------
-        // NUEVO: Propiedad de autenticación pública
-        // --------------------
+        public LeagueDto? SelectedLeague => _appState.SelectedLeague;
         public bool IsAuthenticated { get; private set; }
+        public bool CanNavigate => IsAuthenticated && _appState.SelectedLeague != null;
 
-        public bool CanNavigate => _appState.SelectedLeague != null && IsAuthenticated;
+        public ICommand ChangeLeagueCommand { get; }
+        public ICommand ShowPlayersCommand { get; }
+        public ICommand ShowTeamsCommand { get; }
+        public ICommand ShowMatchesCommand { get; }
 
         public MainViewModel(AppState appState) {
             _appState = appState;
@@ -46,8 +46,6 @@ namespace Fut7Manager.Admin.ViewModels {
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
-
-            SelectLeagueCommand = new RelayCommand<LeagueDto?>(SelectLeague);
 
             ShowPlayersCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
@@ -70,33 +68,8 @@ namespace Fut7Manager.Admin.ViewModels {
                 await vm.InitializeAsync();
             });
 
-            ShowLeaguesCommand = new RelayCommand(async () => {
-                if (!IsAuthenticated) return;
-                var vm = new LeagueSelectionViewModel(this, _leagueService);
-                CurrentView = vm;
-                await vm.InitializeAsync();
-            });
-        }
-
-        // --------------------
-        // MÉTODO PÚBLICO para abrir selección de liga tras login
-        // --------------------
-        public async Task OpenLeagueSelectionAfterLoginAsync() {
-            IsAuthenticated = true;
-            OnPropertyChanged(nameof(IsAuthenticated));
-            OnPropertyChanged(nameof(CanNavigate));
-
-            var leagueVm = new LeagueSelectionViewModel(this, _leagueService);
-            CurrentView = leagueVm;
-            await leagueVm.InitializeAsync();
-        }
-
-        // --------------------
-        // Selección de liga
-        // --------------------
-        private void SelectLeague(LeagueDto? league) {
-            if (league == null) return;
-            _appState.SetLeague(league);
+            // Inicialmente mostrar LoginView
+            CurrentView = new LoginViewModel(LoginSucceededCallback);
         }
 
         private void OnLeagueChanged() {
@@ -104,12 +77,22 @@ namespace Fut7Manager.Admin.ViewModels {
             OnPropertyChanged(nameof(CanNavigate));
         }
 
-        // --------------------
-        // Inicialización (opcional)
-        // --------------------
-        public async Task InitializeAsync() {
-            // Ya no mostramos login aquí, eso se hace en LoginWindow
-            await Task.CompletedTask;
+        public void SelectLeague(LeagueDto? league) {
+            if (league == null) return;
+            _appState.SetLeague(league);
+            OnPropertyChanged(nameof(SelectedLeague));
+            OnPropertyChanged(nameof(CanNavigate));
+        }
+
+        private async void LoginSucceededCallback() {
+            IsAuthenticated = true;
+            OnPropertyChanged(nameof(IsAuthenticated));
+            OnPropertyChanged(nameof(CanNavigate));
+
+            // Cambiamos la vista al selector de ligas
+            var vm = new LeagueSelectionViewModel(this, _leagueService);
+            CurrentView = vm; // <- OnPropertyChanged notificará al ContentControl
+            await vm.InitializeAsync();
         }
     }
 }

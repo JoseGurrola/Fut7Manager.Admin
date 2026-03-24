@@ -112,4 +112,58 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="WindowControlButton" TargetType="Button">
+        <Setter Property="Width" Value="46"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Style.Triggers>
+            <!-- Hover -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#44000000"/>
+            </Trigger>
+
+            <!-- Click -->
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="#66000000"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="CloseWindowButton"
+       TargetType="Button"
+       BasedOn="{StaticResource WindowControlButton}">
+
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="White"/>
+
+        <Style.Triggers>
+
+            <!-- Hover -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#A93226"/>
+            </Trigger>
+
+            <!-- Click -->
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="#922B21"/>
+            </Trigger>
+
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

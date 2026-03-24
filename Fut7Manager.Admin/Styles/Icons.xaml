@@ -12,4 +12,10 @@
     <sys:String x:Key="IconPlayers">&#xE77B;</sys:String>
     <sys:String x:Key="IconMatches">&#xE787;</sys:String>
 
+    <!-- Window controls -->
+    <sys:String x:Key="IconMinimize">&#xE921;</sys:String>
+    <sys:String x:Key="IconMaximize">&#xE922;</sys:String>
+    <sys:String x:Key="IconRestore">&#xE923;</sys:String>
+    <sys:String x:Key="IconClose">&#xE8BB;</sys:String>
+
 </ResourceDictionary>

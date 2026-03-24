@@ -17,7 +17,7 @@ namespace Fut7Manager.Admin.Models {
         public int GoalsFor { get; set; }
 
         public int GoalsAgainst { get; set; }
-
+        public int GroupId { get; set; }
         public int LeagueId { get; set; }
     }
 }

@@ -6,47 +6,36 @@ using System.Windows.Input;
 
 namespace Fut7Manager.Admin.ViewModels {
     public class LoginViewModel : BaseViewModel {
-        private readonly AuthService _authService;
-
+        private readonly AuthService _authService = new AuthService();
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
-
-        private string _errorMessage = "";
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); }
-        }
-
-        private bool _isLoading;
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set { _isLoading = value; OnPropertyChanged(); }
-        }
+        public string ErrorMessage { get; set; } = "";
+        public bool IsLoading { get; set; }
 
         public ICommand LoginCommand { get; }
 
-        public event Action? LoginSucceeded;
+        private readonly Action LoginSucceededCallback;
 
-        public LoginViewModel() {
-            _authService = new AuthService();
-            LoginCommand = new RelayCommand(async () => await Login());
+        public LoginViewModel(Action loginSucceededCallback) {
+            LoginSucceededCallback = loginSucceededCallback;
+            LoginCommand = new RelayCommand(async () => await LoginAsync());
         }
 
-        private async Task Login() {
-            ErrorMessage = "";
+        private async Task LoginAsync() {
             IsLoading = true;
+            OnPropertyChanged(nameof(IsLoading));
+            ErrorMessage = "";
 
             var result = await _authService.LoginAsync(Username, Password);
-
             IsLoading = false;
+            OnPropertyChanged(nameof(IsLoading));
 
             if (result.Success && result.Token != null) {
-                TokenStorage.Token = result.Token; // ✅ Funciona ahora
-                LoginSucceeded?.Invoke();
+                TokenStorage.Token = result.Token;
+                LoginSucceededCallback.Invoke();
             } else {
                 ErrorMessage = result.Error ?? "Usuario o contraseña incorrectos.";
+                OnPropertyChanged(nameof(ErrorMessage));
             }
         }
     }
