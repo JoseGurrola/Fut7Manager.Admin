@@ -16,10 +16,17 @@ namespace Fut7Manager.Admin.Views {
     /// <summary>
     /// Interaction logic for TeamsView.xaml
     /// </summary>
-    public partial class TeamsView : UserControl{
-        public TeamsView() {
+    public partial class TeamListView : UserControl {
+        public TeamListView() {
             InitializeComponent();
-            //DataContext = new TeamsViewModel();
+        }
+
+        private void TeamsList_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            if (DataContext is TeamListViewModel vm &&
+                vm.OpenTeamCommand?.CanExecute(null) == true) {
+                vm.OpenTeamCommand.Execute(null);
+            }
         }
     }
+
 }

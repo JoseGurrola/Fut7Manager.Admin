@@ -11,11 +11,13 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly TeamService _teamService = new TeamService();
         private readonly MatchService _matchService = new MatchService();
         private readonly LeagueService _leagueService = new LeagueService();
+        private readonly GroupService _groupService = new GroupService();
         // Para que otras ViewModels puedan acceder
         public AppState AppState => _appState;
         public TeamService TeamService => _teamService;
         public PlayerService PlayerService => _playerService;
         public LeagueService LeagueService => _leagueService;
+        public GroupService GroupService => _groupService;
 
         private BaseViewModel? _currentView;
         public BaseViewModel? CurrentView
@@ -42,7 +44,7 @@ namespace Fut7Manager.Admin.ViewModels {
             ChangeLeagueCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
                 _appState.ClearLeague();
-                var vm = new LeagueSelectionViewModel(this, _leagueService);
+                var vm = new LeagueSelectionViewModel(this, _leagueService, _groupService);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
@@ -56,7 +58,8 @@ namespace Fut7Manager.Admin.ViewModels {
 
             ShowTeamsCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
-                var vm = new TeamsViewModel(_appState, _teamService);
+                if(SelectedLeague == null) return;
+                var vm = new TeamListViewModel(_appState, _teamService, SelectedLeague.Id);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
@@ -90,7 +93,7 @@ namespace Fut7Manager.Admin.ViewModels {
             OnPropertyChanged(nameof(CanNavigate));
 
             // Cambiamos la vista al selector de ligas
-            var vm = new LeagueSelectionViewModel(this, _leagueService);
+            var vm = new LeagueSelectionViewModel(this, _leagueService, _groupService);
             CurrentView = vm; // <- OnPropertyChanged notificará al ContentControl
             await vm.InitializeAsync();
         }

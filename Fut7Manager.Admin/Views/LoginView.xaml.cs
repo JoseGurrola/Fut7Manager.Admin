@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using Fut7Manager.Admin.ViewModels;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Fut7Manager.Admin.Views {
     public partial class LoginView : UserControl {
@@ -13,6 +15,11 @@ namespace Fut7Manager.Admin.Views {
                     prop.SetValue(DataContext, PasswordBox.Password);
                 }
             };
+        }
+
+        private async void UserControl_Loaded(object sender, RoutedEventArgs e) {
+            if (DataContext is LoginViewModel vm)
+                await vm.AutoLoginIfDebugAsync();
         }
     }
 }

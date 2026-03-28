@@ -8,6 +8,9 @@
                 <ResourceDictionary Source="Styles/Buttons.xaml"/>
                 <ResourceDictionary Source="Styles/Icons.xaml"/>
                 <ResourceDictionary Source="Styles/Inputs.xaml"/>
+                <ResourceDictionary Source="Styles/ToolTips.xaml"/>
+                <ResourceDictionary Source="Styles/ListBoxes.xaml"/>
+                <ResourceDictionary Source="Styles/DateTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

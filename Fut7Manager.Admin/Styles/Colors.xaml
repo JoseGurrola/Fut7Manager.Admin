@@ -5,9 +5,13 @@
     <Color x:Key="SidebarColor">#2C3E50</Color>
     <Color x:Key="SidebarHoverColor">#3E556E</Color>
     <Color x:Key="SidebarPressedColor">#1F2F3F</Color>
+    <Color x:Key="BackgroundWindowColor">White</Color>
+    <Color x:Key="PrimaryGreenColor">Lime</Color>
 
     <SolidColorBrush x:Key="SidebarBrush" Color="{StaticResource SidebarColor}"/>
     <SolidColorBrush x:Key="SidebarHoverBrush" Color="{StaticResource SidebarHoverColor}"/>
     <SolidColorBrush x:Key="SidebarPressedBrush" Color="{StaticResource SidebarPressedColor}"/>
+    <SolidColorBrush x:Key="BackgroundWindowBrush" Color="{StaticResource BackgroundWindowColor}"/>
+    <SolidColorBrush x:Key="PrimaryGreenBrush" Color="{StaticResource PrimaryGreenColor}"/>
 
 </ResourceDictionary>

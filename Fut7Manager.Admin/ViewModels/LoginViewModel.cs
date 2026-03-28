@@ -21,6 +21,15 @@ namespace Fut7Manager.Admin.ViewModels {
             LoginCommand = new RelayCommand(async () => await LoginAsync());
         }
 
+        public async Task AutoLoginIfDebugAsync() {
+#if DEBUG
+            Username = "admin";
+            Password = "1234";
+
+            await LoginAsync();
+#endif
+        }
+
         private async Task LoginAsync() {
             IsLoading = true;
             OnPropertyChanged(nameof(IsLoading));

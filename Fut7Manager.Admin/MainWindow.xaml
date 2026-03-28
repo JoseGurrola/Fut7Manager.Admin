@@ -35,8 +35,8 @@
         </DataTemplate>
 
         <!-- Teams -->
-        <DataTemplate DataType="{x:Type vm:TeamsViewModel}">
-            <views:TeamsView/>
+        <DataTemplate DataType="{x:Type vm:TeamListViewModel}">
+            <views:TeamListView/>
         </DataTemplate>
 
         <!-- Matches -->

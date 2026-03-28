@@ -1,0 +1,206 @@
+﻿<UserControl x:Class="Fut7Manager.Admin.Views.TeamListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1000"
+             d:DesignHeight="700"
+             d:Background="White">
+
+    <Grid>
+
+        <!-- Layout: contenido + barra inferior -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ===================== -->
+        <!-- LISTA DE EQUIPOS -->
+        <!-- ===================== -->
+        <Grid Grid.Row="0" Margin="20">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <TextBlock 
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                       Text="Equipos de la liga"
+                       FontSize="24"
+                       FontWeight="Bold"/>
+                <!-- Botón flotante para agregar equipo -->
+                <Button Style="{StaticResource IconFloatingButtonStyle}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Command="{Binding CreateTeamCommand}"
+                    Content="{StaticResource IconPlus}"
+                    Width="50"
+                    Height="50">
+                    <Button.ToolTip>
+                        <ToolTip Style="{StaticResource ModernToolTipStyle}" Content="Agregar equipo"/>
+                    </Button.ToolTip>
+
+                </Button>
+            </Grid>
+            <ListView Grid.Row="1"
+                      x:Name="TeamsList"
+                      ItemsSource="{Binding Teams}"
+                      SelectedItem="{Binding SelectedTeam}"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                      MouseDoubleClick="TeamsList_MouseDoubleClick">
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0,4"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border x:Name="rowCard"
+                                CornerRadius="10"
+                                BorderBrush="#DDDDDD"
+                                BorderThickness="1"
+                                Background="White"
+                                Padding="5">
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Icono del equipo -->
+                                <Border Width="40"
+                                        Height="40"
+                                        CornerRadius="20"
+                                        Background="#EEEEEE"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="{StaticResource IconTeam}"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="#555"/>
+                                </Border>
+
+                                <!-- Nombre y adeudo -->
+                                <Grid Grid.Column="1"
+                                            Margin="12,0"
+                                            VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                               FontWeight="Bold"
+                                               FontSize="14"
+                                               />
+
+                                    <TextBlock Text="{Binding AmountDue, StringFormat=Adeudo: {0:C}}" VerticalAlignment="Center"
+                                               Foreground="#777"
+                                               FontSize="12"/>
+                                </Grid>
+
+                                <!-- Indicador de estado de pago -->
+                                <Ellipse Grid.Column="2"
+                                         Width="14"
+                                         Height="14"
+                                         VerticalAlignment="Center"
+                                         Margin="8,0,0,0">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="Gray"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Pagado">
+                                                    <Setter Property="Fill" Value="#2ECC71"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Parcial">
+                                                    <Setter Property="Fill" Value="#F1C40F"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Debe">
+                                                    <Setter Property="Fill" Value="#E74C3C"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+
+                            </Grid>
+                        </Border>
+
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                                <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                                <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
+                                <Setter TargetName="rowCard" Property="Background" Value="#F8FDFC"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+
+        </Grid>
+
+        <!-- ===================== -->
+        <!-- BARRA INFERIOR CRUD -->
+        <!-- ===================== -->
+        <Border Grid.Row="1"
+                Background="{StaticResource SidebarPressedBrush}"
+                Padding="10">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="#AAAAAA"
+                           Text="Doble click para seleccionar el equipo"/>
+
+                <StackPanel Grid.Column="1" Height="30" Orientation="Horizontal">
+
+                    <Button Content="Seleccionar"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding OpenTeamCommand}"
+                            Margin="0,0,10,0"/>
+
+                    <Button Content="Editar"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Command="{Binding EditTeamCommand}"
+                            Margin="0,0,10,0"/>
+
+                    <Button Content="Eliminar"
+                            Style="{StaticResource DeleteButtonStyle}"
+                            Command="{Binding DeleteTeamCommand}"
+                            Margin="0,0,10,0"/>
+
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
+
+
+
+    </Grid>
+</UserControl>

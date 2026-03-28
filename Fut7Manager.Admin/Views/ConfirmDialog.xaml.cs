@@ -1,5 +1,4 @@
-﻿using Fut7Manager.Admin.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -9,17 +8,23 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Fut7Manager.Admin.Views {
+namespace Fut7Manager.Admin.Views
+{
     /// <summary>
-    /// Interaction logic for LeaguesView.xaml
+    /// Interaction logic for ConfirmDialog.xaml
     /// </summary>
-    public partial class LeaguesView : UserControl {
-        public LeaguesView() {
+    public partial class ConfirmDialog : Window
+    {
+        public ConfirmDialog()
+        {
             InitializeComponent();
-            //DataContext = new LeaguesViewModel();
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e) {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                DragMove();
         }
     }
 }

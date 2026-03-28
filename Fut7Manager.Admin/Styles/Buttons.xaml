@@ -166,4 +166,222 @@
 
         </Style.Triggers>
     </Style>
+<!-- botones circulares -->
+    <Style x:Key="FloatingActionButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="56"/>
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="FontSize" Value="28"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="28"
+                        SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10"
+                      ShadowDepth="2"
+                      Opacity="0.4"/>
+                        </Border.Effect>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- Hover -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border"
+                                Property="Background"
+                                Value="{StaticResource SidebarBrush}"/>
+                        </Trigger>
+
+                        <!-- Pressed -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border"
+                                Property="Background"
+                                Value="{StaticResource SidebarPressedBrush}"/>
+                        </Trigger>
+
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border"
+                                Property="Opacity"
+                                Value="0.4"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="IconFloatingButtonStyle"
+       TargetType="Button"
+       BasedOn="{StaticResource FloatingActionButtonStyle}">
+
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="FontFamily" Value="{DynamicResource IconFont}"/>
+        <Setter Property="FontSize" Value="22"/>
+    </Style>
+
+    <Style x:Key="PrimaryButtonStyle"
+       TargetType="Button"
+       BasedOn="{StaticResource MenuButtonStyle}">
+
+        <Setter Property="Background" Value="#27AE60"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="MinWidth" Value="90"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="6">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- Hover -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border"
+                                Property="Background"
+                                Value="#2ECC71"/>
+                        </Trigger>
+
+                        <!-- Pressed -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border"
+                                Property="Background"
+                                Value="#1E8449"/>
+                        </Trigger>
+
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border"
+                                Property="Background"
+                                Value="#7F8C8D"/>
+                            <Setter Property="Opacity" Value="0.6"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SecondaryButtonStyle"
+       TargetType="Button"
+       BasedOn="{StaticResource MenuButtonStyle}">
+
+        <Setter Property="Background" Value="Gray"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="MinWidth" Value="90"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="6">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border"
+                                Property="Background"
+                                Value="#3E556E"/>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border"
+                                Property="Background"
+                                Value="#1F2F3F"/>
+                        </Trigger>
+
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border"
+                            Property="Background"
+                            Value="#7F8C8D"/>
+                            <Setter Property="Opacity" Value="0.6"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Delete Button Style -->
+    <Style x:Key="DeleteButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource MenuButtonStyle}">
+
+        <Setter Property="Background" Value="#E74C3C"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="MinWidth" Value="90"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="6">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- Hover -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border"
+                                    Property="Background"
+                                    Value="#C0392B"/>
+                        </Trigger>
+
+                        <!-- Pressed -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border"
+                                    Property="Background"
+                                    Value="#922B21"/>
+                        </Trigger>
+
+                        <!-- Selected (Keyboard Focus) -->
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="border"
+                                    Property="BorderBrush"
+                                    Value="#922B21"/>
+                            <Setter TargetName="border"
+                                    Property="BorderThickness"
+                                    Value="2"/>
+                        </Trigger>
+
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border"
+                                    Property="Background"
+                                    Value="#7F8C8D"/>
+                            <Setter Property="Opacity" Value="0.6"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

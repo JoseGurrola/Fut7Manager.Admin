@@ -1,0 +1,124 @@
+﻿using Fut7Manager.Admin.Helpers;
+using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Services;
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+
+namespace Fut7Manager.Admin.ViewModels {
+    public class CreateOrEditTeamViewModel : BaseViewModel {
+        private string _teamName = string.Empty;
+        private readonly int? _teamId;
+        private string? _logoUrl = string.Empty;
+        private GroupService _groupService = new GroupService();
+        private int _leagueId;
+
+        public int LeagueId { get; set; }
+
+        public ObservableCollection<GroupDto> AvailableGroupNumbers { get; }
+        = new ObservableCollection<GroupDto>();
+
+        private int? _selectedGroup;
+        public int? SelectedGroup
+        {
+            get => _selectedGroup;
+            set {
+                _selectedGroup = value;
+                System.Diagnostics.Debug.WriteLine($"SelectedGroup changed to: {_selectedGroup}");
+                OnPropertyChanged();
+            }
+        }
+
+        private readonly TeamService _teamService = new TeamService();
+
+        public string TeamName
+        {
+            get => _teamName;
+            set {
+                if (SetProperty(ref _teamName, value)) {
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public string? LogoUrl
+        {
+            get => _logoUrl;
+            set {
+                if (SetProperty(ref _logoUrl, value)) {
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public string ButtonText { get; set; } = "Crear";
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public Action<bool> CloseAction { get; set; } = default!;
+
+        private int? _originalGroupId;
+        public CreateOrEditTeamViewModel(TeamDto? team = null, int leagueId = default!) {
+            LeagueId = leagueId;
+            if (team != null) {
+                _teamId = team.Id;
+                TeamName = team.Name;
+                LogoUrl = team.LogoUrl;
+                ButtonText = "Guardar";
+                _originalGroupId = team.GroupId;
+            }
+
+             _ = LoadGroups(LeagueId);
+
+
+            // Use RelayCommand that supports async properly with fire-and-forget
+            SaveCommand = new RelayCommand(SaveTeam);
+            CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
+        }
+
+
+        public async Task LoadGroups(int leagueId) {
+            //IsLoading = true;
+            var groups = await _groupService.GetGroupsAsync(leagueId);
+
+            LoadGroupsFromApi(groups);
+            
+            // IsLoading = false;
+        }
+
+        void LoadGroupsFromApi(IEnumerable<GroupDto> groups) {
+            AvailableGroupNumbers.Clear();
+
+            foreach (var g in groups)
+                AvailableGroupNumbers.Add(g);
+
+            // Seleccionar primer grupo por defecto
+            if (_originalGroupId.HasValue)
+                SelectedGroup = _originalGroupId.Value;
+            else {
+            if (AvailableGroupNumbers.Count > 0) {
+
+                SelectedGroup = AvailableGroupNumbers[0].Id;
+            } 
+            }
+        }
+
+        private void SaveTeam() {
+            if (SelectedGroup == null) {
+                Debug.WriteLine("No se seleccionó grupo");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(TeamName))
+                return;
+
+            CloseAction?.Invoke(true);
+        }
+
+        
+    }
+}

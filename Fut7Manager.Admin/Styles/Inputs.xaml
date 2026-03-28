@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helpers="clr-namespace:Fut7Manager.Admin.Helpers"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
 
     <!-- TextBox moderno -->
     <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
@@ -10,29 +12,30 @@
         <Setter Property="BorderBrush" Value="#CCCCCC"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="Black"/>
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
                     <Border x:Name="border"
-                            CornerRadius="4"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="{TemplateBinding Background}">
+                        CornerRadius="4"
+                        Padding="{TemplateBinding Padding}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}">
+
                         <ScrollViewer x:Name="PART_ContentHost"
-                                      Margin="{TemplateBinding Padding}"/>
+                                  Focusable="False"/>
                     </Border>
 
                     <ControlTemplate.Triggers>
 
-                        <!-- Focus -->
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="border"
-                                    Property="BorderBrush"
-                                    Value="#3498DB"/>
+                                Property="BorderBrush"
+                                Value="#3498DB"/>
                         </Trigger>
 
-                        <!-- Disabled -->
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Background" Value="#F0F0F0"/>
                             <Setter Property="Foreground" Value="#888888"/>
@@ -42,6 +45,18 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- texbox de solo decimales -->
+    <Style x:Key="CurrencyTextBoxStyle"
+           TargetType="TextBox"
+           BasedOn="{StaticResource ModernTextBoxStyle}">
+
+        <Setter Property="helpers:NumericTextBoxBehavior.IsEnabled"
+                Value="True"/>
+
+        <Setter Property="helpers:NumericTextBoxBehavior.DecimalPlaces"
+                Value="2"/>
     </Style>
 
     <!-- PasswordBox con mismo estilo -->
@@ -76,6 +91,100 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Background" Value="#F0F0F0"/>
                             <Setter Property="Foreground" Value="#888888"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+        <Setter Property="Margin" Value="0,5"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="BorderBrush" Value="#CCCCCC"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Height" Value="60"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Border x:Name="border"
+                        CornerRadius="4"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}">
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Texto seleccionado -->
+                            <ContentPresenter x:Name="contentPresenter"
+                  Margin="{TemplateBinding Padding}"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Left"
+                  RecognizesAccessKey="True"
+                  Content="{TemplateBinding SelectionBoxItem}"
+                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"/>
+
+                            <!-- Flecha -->
+                            <ToggleButton Grid.Column="1" 
+                                      Focusable="False"
+                                      Background="{StaticResource SidebarHoverBrush}"
+                                          Foreground="White"
+                                          
+                                      BorderThickness="0"
+                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                <TextBlock Text="▼"
+                                        
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       FontSize="16"/>
+                            </ToggleButton>
+
+                            <!-- Popup -->
+                            <Popup x:Name="PART_Popup"
+                               Placement="Bottom" 
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               AllowsTransparency="True"
+                               Focusable="False"
+                               PopupAnimation="Slide">
+
+                                <Border CornerRadius="4"
+                                    BorderBrush="#CCCCCC"
+                                    MinWidth="{TemplateBinding ActualWidth}"
+                                    BorderThickness="1"
+                                    Background="White">
+                                    <ScrollViewer>
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- Foco -->
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="border"
+                                Property="BorderBrush"
+                                Value="{StaticResource SidebarHoverBrush}"/>
+                        </Trigger>
+
+                        <!-- Deshabilitado -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#888888"/>
+                            <Setter TargetName="border"
+                                Property="Background"
+                                Value="#F0F0F0"/>
                         </Trigger>
 
                     </ControlTemplate.Triggers>

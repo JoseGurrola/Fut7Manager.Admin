@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fut7Manager.Admin.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -21,6 +22,13 @@ namespace Fut7Manager.Admin.Views
         public LeagueSelectionView()
         {
             InitializeComponent();
+        }
+
+        private void LeaguesList_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            if (DataContext is LeagueSelectionViewModel vm &&
+                vm.OpenLeagueCommand.CanExecute(null)) {
+                vm.OpenLeagueCommand.Execute(null);
+            }
         }
     }
 }

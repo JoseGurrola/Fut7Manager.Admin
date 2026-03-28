@@ -3,56 +3,95 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             d:DesignWidth="1000"
+             d:DesignHeight="700"
+             d:Background="White">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="20">
+    <Grid>
 
-            <TextBlock Text="Selecciona una liga"
+        <!-- Layout: contenido + barra inferior -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ===================== -->
+        <!-- LISTA DE LIGAS -->
+        <!-- ===================== -->
+        <Grid Grid.Row="0" Margin="20">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       VerticalAlignment="Center"
+                       Text="Selecciona una liga"
                        FontSize="24"
-                       FontWeight="Bold"
-                       Margin="0,0,0,20"/>
+                       FontWeight="Bold"/>
 
-            <ItemsControl ItemsSource="{Binding Leagues}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+            <ListBox Grid.Row="1"
+                     Style="{StaticResource CardListBoxStyle}"
+                     ItemsSource="{Binding Leagues}"
+                     SelectedItem="{Binding SelectedLeague}"
+                     ItemTemplate="{StaticResource LeagueCardTemplate}"
+                     MouseDoubleClick="LeaguesList_MouseDoubleClick"/>
+        </Grid>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Width="200"
-                                Height="100"
-                                Margin="10"
-                                Padding="10"
-                                CornerRadius="8"
-                                Background="#34495E"
-                                Cursor="Hand">
+        <!-- ===================== -->
+        <!-- BARRA INFERIOR CRUD -->
+        <!-- ===================== -->
+        <Border Grid.Row="1"
+                Background="{StaticResource SidebarPressedBrush}"
+                Padding="10">
 
-                            <Border.InputBindings>
-                                <MouseBinding MouseAction="LeftClick"
-                                              Command="{Binding DataContext.SelectLeagueCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                              CommandParameter="{Binding}"/>
-                            </Border.InputBindings>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Name}"
-                                           Foreground="White"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           TextWrapping="Wrap"/>
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="#AAAAAA"
+                           Text="Doble click para seleccionar la liga"/>
 
-                                <TextBlock Text="{Binding Description}"
-                                           Foreground="#DDDDDD"
-                                           FontSize="12"
-                                           TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                <StackPanel Grid.Column="1" Height="30" Orientation="Horizontal">
 
-        </StackPanel>
-    </ScrollViewer>
+                    <Button Content="Seleccionar"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding OpenLeagueCommand}"
+                            Margin="0,0,10,0"/>
+
+                    <Button Content="Editar"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Command="{Binding EditLeagueCommand}"
+                            Margin="0,0,10,0"/>
+
+                    <Button Content="Eliminar"
+                            Style="{StaticResource DeleteButtonStyle}"
+                            Command="{Binding DeleteLeagueCommand}"
+                             Margin="0,0,10,0"/>
+
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
+
+        <Button Style="{StaticResource IconFloatingButtonStyle}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="20"
+                Command="{Binding CreateLeagueCommand}"
+                Content="{StaticResource IconPlus}">
+
+            <Button.ToolTip>
+                <ToolTip Style="{StaticResource ModernToolTipStyle}" Content="Agregar liga"/>
+            </Button.ToolTip>
+
+        </Button>
+
+    </Grid>
 </UserControl>

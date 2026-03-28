@@ -17,7 +17,15 @@ namespace Fut7Manager.Admin.Helpers {
         public void Execute(object? parameter)
             => _execute();
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        public void RaiseCanExecuteChanged() {
+            CommandManager.InvalidateRequerySuggested();
+        }
     }
 
     public class RelayCommand<T> : ICommand {
@@ -35,6 +43,14 @@ namespace Fut7Manager.Admin.Helpers {
         public void Execute(object? parameter)
             => _execute((T?)parameter);
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        public void RaiseCanExecuteChanged() {
+            CommandManager.InvalidateRequerySuggested();
+        }
     }
 }

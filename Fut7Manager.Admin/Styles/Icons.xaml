@@ -11,11 +11,37 @@
     <sys:String x:Key="IconTeams">&#xE902;</sys:String>
     <sys:String x:Key="IconPlayers">&#xE77B;</sys:String>
     <sys:String x:Key="IconMatches">&#xE787;</sys:String>
+    <sys:String x:Key="IconPlus">&#xE710;</sys:String>
+    <sys:String x:Key="IconTeam">&#xEB0F;</sys:String>
 
     <!-- Window controls -->
     <sys:String x:Key="IconMinimize">&#xE921;</sys:String>
     <sys:String x:Key="IconMaximize">&#xE922;</sys:String>
     <sys:String x:Key="IconRestore">&#xE923;</sys:String>
     <sys:String x:Key="IconClose">&#xE8BB;</sys:String>
+    
 
+
+    <!-- Icono de botones-->
+    <Style x:Key="IconTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <!--<Style x:Key="IconAddStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="Text" Value="{StaticResource IconPlus}"/>
+        <Setter Property="FontSize" Value="22"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>-->
+
+    <!--<Style x:Key="FloatingActionButtonStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>-->
 </ResourceDictionary>
