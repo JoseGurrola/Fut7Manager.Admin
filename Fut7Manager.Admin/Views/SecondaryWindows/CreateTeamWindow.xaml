@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Crear liga"
         Width="400"
-        Height="350"
+        Height="400"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -20,13 +20,17 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <!--<RowDefinition Height="Auto"/>-->
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="Nombre del Equipo"
-                       Margin="0,0,0,5"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBlock Text="Nombre del Equipo" />
+                <TextBlock Text=" *" Foreground="Red"/>
+            </StackPanel>
 
             <TextBox Grid.Row="1"
                      Text="{Binding TeamName, UpdateSourceTrigger=PropertyChanged}"
@@ -36,8 +40,7 @@
                      Padding="4,0,0,0"
                      VerticalContentAlignment="Center"
                      MaxLength="50"/>
-            <TextBlock Grid.Row="2" Text="Logo"
-                    Margin="0,0,0,5"/>
+            <TextBlock Grid.Row="2" Text="Logo"/>
             <TextBox Grid.Row="3"
                      Text="{Binding LogoUrl, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource ModernTextBoxStyle}"
@@ -46,8 +49,42 @@
                      Padding="4,0,0,0"
                      VerticalContentAlignment="Center"
                      MaxLength="50"/>
-            <TextBlock Grid.Row="4" Text="Grupo" Margin="0,0,0,5"/>
-            <ComboBox Grid.Row="5" Grid.Column="1"
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="7*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0"  Orientation="Horizontal">
+                    <TextBlock Text="Representante"/>
+                    <TextBlock Text=" *" Foreground="Red"/>
+                </StackPanel>
+                <TextBox Grid.Row="1" Grid.Column="0"
+                     Text="{Binding TeamManager, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource ModernTextBoxStyle}"
+                     Height="40"
+                     FontSize="16"
+                     Padding="4,0,0,0"
+                     VerticalContentAlignment="Center"
+                     MaxLength="50"
+                         Margin="0,0,5,0"/>
+                <StackPanel Grid.Row="0" Grid.Column="1"  Orientation="Horizontal">
+                    <TextBlock Text="Telefono"/>
+                    <TextBlock Text=" *" Foreground="Red"/>
+                </StackPanel>
+                <TextBox Grid.Row="1" Grid.Column="1"
+                     Text="{Binding TeamManagerPhone, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource TelephoneTextBoxStyle}"
+                     Height="40"
+                     FontSize="16"
+                     Padding="4,0,0,0"
+                     VerticalContentAlignment="Center"/>
+            </Grid>
+            <TextBlock Grid.Row="5" Text="Grupo"/>
+            <ComboBox Grid.Row="6" Grid.Column="1"
                     Style="{StaticResource ModernComboBoxStyle}"
                     SelectedValue="{Binding SelectedGroup}"
                 
@@ -61,7 +98,7 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <StackPanel Grid.Row="6"
+            <StackPanel Grid.Row="7"
                         Height="40"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"

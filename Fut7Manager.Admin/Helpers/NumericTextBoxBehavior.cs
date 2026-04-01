@@ -20,6 +20,12 @@ namespace Fut7Manager.Admin.Helpers {
                 typeof(NumericTextBoxBehavior),
                 new PropertyMetadata(2));
 
+        public static readonly DependencyProperty OnlyDigitsProperty = DependencyProperty.RegisterAttached(
+                "OnlyDigits",
+                typeof(bool),
+                typeof(NumericTextBoxBehavior),
+                new PropertyMetadata(false));
+
         private static readonly Regex _regex = new Regex(@"^[0-9]*\.?[0-9]*$");
 
         public static bool GetIsEnabled(DependencyObject obj)
@@ -33,6 +39,14 @@ namespace Fut7Manager.Admin.Helpers {
 
         public static void SetDecimalPlaces(DependencyObject obj, int value)
             => obj.SetValue(DecimalPlacesProperty, value);
+
+        private static readonly Regex _digitsRegex = new Regex(@"^[0-9]*$");
+
+        public static bool GetOnlyDigits(DependencyObject obj)
+            => (bool)obj.GetValue(OnlyDigitsProperty);
+
+        public static void SetOnlyDigits(DependencyObject obj, bool value)
+            => obj.SetValue(OnlyDigitsProperty, value);
 
         private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is TextBox tb) {
@@ -51,6 +65,15 @@ namespace Fut7Manager.Admin.Helpers {
         private static void OnPreviewTextInput(object sender, TextCompositionEventArgs e) {
             var tb = sender as TextBox;
             string newText = tb.Text.Insert(tb.SelectionStart, e.Text);
+
+            bool onlyDigits = GetOnlyDigits(tb);
+
+            if (onlyDigits) {
+                if (!_digitsRegex.IsMatch(newText)) {
+                    e.Handled = true;
+                }
+                return;
+            }
 
             if (!_regex.IsMatch(newText)) {
                 e.Handled = true;
@@ -72,6 +95,9 @@ namespace Fut7Manager.Admin.Helpers {
 
         private static void OnLostFocus(object sender, RoutedEventArgs e) {
             if (sender is TextBox tb && !string.IsNullOrWhiteSpace(tb.Text)) {
+                if (GetOnlyDigits(tb))
+                    return;
+
                 if (decimal.TryParse(tb.Text,
                     NumberStyles.Any,
                     CultureInfo.InvariantCulture,

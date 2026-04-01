@@ -42,7 +42,7 @@
                     Width="50"
                     Height="50">
                     <Button.ToolTip>
-                        <ToolTip Style="{StaticResource ModernToolTipStyle}" Content="Agregar equipo"/>
+                        <ToolTip Style="{StaticResource DarkModernToolTipStyle}" Content="Agregar equipo"/>
                     </Button.ToolTip>
 
                 </Button>
@@ -85,8 +85,8 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="9*"/>
+                                    <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Icono del equipo -->
@@ -102,37 +102,51 @@
                                                Foreground="#555"/>
                                 </Border>
 
-                                <!-- Nombre y adeudo -->
+                                <!-- Informacion -->
                                 <Grid Grid.Column="1"
                                             Margin="12,0"
                                             VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"
                                                FontWeight="Bold"
+                                               FontSize="14"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding TeamManagerName}" VerticalAlignment="Center"
                                                FontSize="14"
                                                />
-
-                                    <TextBlock Text="{Binding AmountDue, StringFormat=Adeudo: {0:C}}" VerticalAlignment="Center"
-                                               Foreground="#777"
-                                               FontSize="12"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding TeamManagerPhone}" VerticalAlignment="Center"
+                                               FontSize="14"
+                                               />
                                 </Grid>
 
                                 <!-- Indicador de estado de pago -->
                                 <Ellipse Grid.Column="2"
-                                         Width="14"
-                                         Height="14"
+                                         Width="16"
+                                         Height="16"
                                          VerticalAlignment="Center"
                                          Margin="8,0,0,0">
+                                    <Ellipse.ToolTip>
+                                        <ToolTip Style="{StaticResource DarkModernToolTipStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Paid, StringFormat=Pagado: ${0:N2}}" Foreground="{StaticResource PrimaryGreenBrush}"/>
+                                                <TextBlock Text="{Binding Remaining, StringFormat=Restante: ${0:N2}}" Foreground="{StaticResource PrimaryRedBrush}"/>
+                                            </StackPanel>
+                                        </ToolTip>
+                                    </Ellipse.ToolTip>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse">
                                             <Setter Property="Fill" Value="Gray"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Pagado">
+                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Paid">
                                                     <Setter Property="Fill" Value="#2ECC71"/>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Parcial">
+                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Partial">
                                                     <Setter Property="Fill" Value="#F1C40F"/>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Debe">
+                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Due">
                                                     <Setter Property="Fill" Value="#E74C3C"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -187,6 +201,11 @@
                     <Button Content="Editar"
                             Style="{StaticResource SecondaryButtonStyle}"
                             Command="{Binding EditTeamCommand}"
+                            Margin="0,0,10,0"/>
+
+                    <Button Content="Pagos"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding OpenPaymentsCommand}"
                             Margin="0,0,10,0"/>
 
                     <Button Content="Eliminar"

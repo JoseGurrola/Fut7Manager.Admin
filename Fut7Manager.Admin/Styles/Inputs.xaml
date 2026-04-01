@@ -59,6 +59,28 @@
                 Value="2"/>
     </Style>
 
+    <!-- solo numeros-->
+    <Style x:Key="NumericTextBoxStyle"
+       TargetType="TextBox"
+       BasedOn="{StaticResource ModernTextBoxStyle}">
+
+        <!-- Activa el comportamiento numérico -->
+        <Setter Property="helpers:NumericTextBoxBehavior.IsEnabled"
+            Value="True"/>
+
+        <!-- Sin decimales -->
+        <Setter Property="helpers:NumericTextBoxBehavior.OnlyDigits"
+            Value="True"/>
+    </Style>
+
+    <!-- Telefono -->
+    <Style x:Key="TelephoneTextBoxStyle"
+   TargetType="TextBox"
+   BasedOn="{StaticResource NumericTextBoxStyle}">
+
+        <Setter Property="MaxLength" Value="10"/>
+    </Style>
+
     <!-- PasswordBox con mismo estilo -->
     <Style x:Key="ModernPasswordBoxStyle" TargetType="PasswordBox">
         <Setter Property="Margin" Value="0,5"/>
@@ -99,6 +121,7 @@
         </Setter>
     </Style>
 
+    <!-- combobox moderno-->
     <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
         <Setter Property="Margin" Value="0,5"/>
         <Setter Property="Padding" Value="8"/>

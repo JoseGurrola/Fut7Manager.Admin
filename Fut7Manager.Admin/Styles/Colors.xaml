@@ -7,11 +7,15 @@
     <Color x:Key="SidebarPressedColor">#1F2F3F</Color>
     <Color x:Key="BackgroundWindowColor">White</Color>
     <Color x:Key="PrimaryGreenColor">Lime</Color>
+    <Color x:Key="SecondaryGreenColor">Green</Color>
+    <Color x:Key="PrimaryRedColor">#FF3B30</Color>
 
     <SolidColorBrush x:Key="SidebarBrush" Color="{StaticResource SidebarColor}"/>
     <SolidColorBrush x:Key="SidebarHoverBrush" Color="{StaticResource SidebarHoverColor}"/>
     <SolidColorBrush x:Key="SidebarPressedBrush" Color="{StaticResource SidebarPressedColor}"/>
     <SolidColorBrush x:Key="BackgroundWindowBrush" Color="{StaticResource BackgroundWindowColor}"/>
     <SolidColorBrush x:Key="PrimaryGreenBrush" Color="{StaticResource PrimaryGreenColor}"/>
+    <SolidColorBrush x:Key="SecondaryGreenBrush" Color="{StaticResource SecondaryGreenColor}"/>
+    <SolidColorBrush x:Key="PrimaryRedBrush" Color="{StaticResource PrimaryRedColor}"/>
 
 </ResourceDictionary>

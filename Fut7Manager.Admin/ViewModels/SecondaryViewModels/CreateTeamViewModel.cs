@@ -14,7 +14,11 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly int? _teamId;
         private string? _logoUrl = string.Empty;
         private GroupService _groupService = new GroupService();
-        private int _leagueId;
+        private string _teamManager = string.Empty;
+        private string _teamManagerPhone = string.Empty;
+        private decimal _paid;
+        private decimal _remaining;
+
 
         public int LeagueId { get; set; }
 
@@ -54,6 +58,45 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
+        public decimal Paid
+        {
+            get => _paid;
+            set {
+                if (SetProperty(ref _paid, value)) {
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public decimal Remaining
+        {
+            get => _remaining;
+            set {
+                if (SetProperty(ref _remaining, value)) {
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+
+        public string TeamManager
+        {
+            get => _teamManager;
+            set {
+                if (SetProperty(ref _teamManager, value))
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+        
+        public string TeamManagerPhone
+        {
+            get => _teamManagerPhone;
+            set {
+                if (SetProperty(ref _teamManagerPhone, value))
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
         public string ButtonText { get; set; } = "Crear";
 
         public ICommand SaveCommand { get; }
@@ -70,16 +113,28 @@ namespace Fut7Manager.Admin.ViewModels {
                 LogoUrl = team.LogoUrl;
                 ButtonText = "Guardar";
                 _originalGroupId = team.GroupId;
+                Remaining = team.Remaining;
+                Paid = team.Paid;
+                TeamManager = team.TeamManagerName;
+                TeamManagerPhone = team.TeamManagerPhone;
             }
 
              _ = LoadGroups(LeagueId);
 
 
             // Use RelayCommand that supports async properly with fire-and-forget
-            SaveCommand = new RelayCommand(SaveTeam);
+            //SaveCommand = new RelayCommand(SaveTeam);
+            SaveCommand = new RelayCommand(SaveTeam, CanSaveTeam);
             CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
         }
 
+        private bool CanSaveTeam() {
+            return !string.IsNullOrWhiteSpace(TeamName)
+                && !string.IsNullOrWhiteSpace(TeamManager)
+                && !string.IsNullOrWhiteSpace(TeamManagerPhone)
+                && TeamManagerPhone.Length == 10
+                && SelectedGroup != null;
+        }
 
         public async Task LoadGroups(int leagueId) {
             //IsLoading = true;
@@ -108,17 +163,9 @@ namespace Fut7Manager.Admin.ViewModels {
         }
 
         private void SaveTeam() {
-            if (SelectedGroup == null) {
-                Debug.WriteLine("No se seleccionó grupo");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(TeamName))
-                return;
-
             CloseAction?.Invoke(true);
         }
 
-        
+
     }
 }

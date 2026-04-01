@@ -46,7 +46,9 @@ namespace Fut7Manager.Admin.Services {
                 name = team.Name,
                 logoUrl = team.LogoUrl,
                 groupId = team.GroupId,
-                leagueId = team.LeagueId
+                leagueId = team.LeagueId,
+                teamManagerName = team.TeamManagerName,
+                teamManagerPhone = team.TeamManagerPhone
             };
 
             request.Content = JsonContent.Create(body);
@@ -75,7 +77,9 @@ namespace Fut7Manager.Admin.Services {
                 name = team.Name,
                 logoUrl = team.LogoUrl,
                 groupId = team.GroupId,
-                leagueId = team.LeagueId
+                leagueId = team.LeagueId,
+                teamManagerName = team.TeamManagerName,
+                teamManagerPhone = team.TeamManagerPhone
             };
 
             request.Content = JsonContent.Create(body);
