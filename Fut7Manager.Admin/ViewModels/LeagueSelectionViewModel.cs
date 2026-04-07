@@ -92,7 +92,8 @@ namespace Fut7Manager.Admin.ViewModels {
                     new LeagueDto { 
                         Id = SelectedLeague.Id, 
                         Name = vm.LeagueName, 
-                        RegistrationFee = vm.RegistrationFee 
+                        RegistrationFee = vm.RegistrationFee,
+                        Status = vm.Status
                     }
                 );
 

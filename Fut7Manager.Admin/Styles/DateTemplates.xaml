@@ -1,5 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Fut7Manager.Admin.Converters">
+    <local:LeagueStatusConverter x:Key="LeagueStatusConverter"/>
+    <local:LeagueStatusToBrushConverter x:Key="LeagueStatusToBrushConverter"/>
     <!--DataTemplate para mostrar las ligas como tarjetas-->
     <DataTemplate x:Key="LeagueCardTemplate">
         <Border x:Name="card"
@@ -23,6 +26,12 @@
                        Foreground="{StaticResource PrimaryGreenBrush}"
                        FontSize="16"
                        FontWeight="Normal"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"/>
+                <TextBlock Text="{Binding Status, Converter={StaticResource LeagueStatusConverter}}"
+                       Foreground="{Binding Status, Converter={StaticResource LeagueStatusToBrushConverter}}"
+                       FontSize="16"
+                       FontWeight="Bold"
                        TextWrapping="Wrap"
                        TextAlignment="Center"/>
             </StackPanel>

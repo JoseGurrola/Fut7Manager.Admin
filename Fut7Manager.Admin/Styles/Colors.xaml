@@ -9,6 +9,7 @@
     <Color x:Key="PrimaryGreenColor">Lime</Color>
     <Color x:Key="SecondaryGreenColor">Green</Color>
     <Color x:Key="PrimaryRedColor">#FF3B30</Color>
+    <Color x:Key="PrimaryYellowColor">Yellow</Color>
 
     <SolidColorBrush x:Key="SidebarBrush" Color="{StaticResource SidebarColor}"/>
     <SolidColorBrush x:Key="SidebarHoverBrush" Color="{StaticResource SidebarHoverColor}"/>
@@ -17,5 +18,6 @@
     <SolidColorBrush x:Key="PrimaryGreenBrush" Color="{StaticResource PrimaryGreenColor}"/>
     <SolidColorBrush x:Key="SecondaryGreenBrush" Color="{StaticResource SecondaryGreenColor}"/>
     <SolidColorBrush x:Key="PrimaryRedBrush" Color="{StaticResource PrimaryRedColor}"/>
+    <SolidColorBrush x:Key="PrimaryYellowBrush" Color="{StaticResource PrimaryYellowColor}"/>
 
 </ResourceDictionary>

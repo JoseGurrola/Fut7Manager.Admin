@@ -11,6 +11,7 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly int? _leagueId;
         private decimal _registrationFee;
         private int _numberOfGroups = 0;
+        private LeagueStatus _status = LeagueStatus.Upcoming;
 
         //private readonly LeagueService _leagueService = new LeagueService();
 
@@ -44,6 +45,16 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
+        public LeagueStatus Status
+        {
+            get => _status;
+            set {
+                if (SetProperty(ref _status, value)) {
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
         public string ButtonText { get; set; } = "Crear";
 
         public ICommand SaveCommand { get; }
@@ -56,6 +67,7 @@ namespace Fut7Manager.Admin.ViewModels {
                 _leagueId = league.Id;
                 LeagueName = league.Name;
                 RegistrationFee = league.RegistrationFee;
+                Status = league.Status;
 
                 ButtonText = "Guardar";
             }
