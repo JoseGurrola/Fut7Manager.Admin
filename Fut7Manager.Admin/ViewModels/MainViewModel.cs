@@ -35,16 +35,34 @@ namespace Fut7Manager.Admin.ViewModels {
         public ICommand ChangeLeagueCommand { get; }
         public ICommand ShowPlayersCommand { get; }
         public ICommand ShowTeamsCommand { get; }
+
+        public ICommand ShowCentralPanelCommand { get; }
         public ICommand ShowMatchesCommand { get; }
 
         public MainViewModel(AppState appState) {
             _appState = appState;
             _appState.LeagueChanged += OnLeagueChanged;
 
+            //ShowTeamsCommand = new RelayCommand(async () => {
+            //    if (!CanNavigate) return;
+            //    if (SelectedLeague == null) return;
+            //    var vm = new CentralPanelViewModel(_appState, SelectedLeague.Id);
+            //    CurrentView = vm;
+            //    await vm.InitializeAsync();
+            //});
+
+            ShowCentralPanelCommand = new RelayCommand(async () => {
+                if (!CanNavigate) return;
+                if (SelectedLeague == null) return;
+                var vm = new CentralPanelViewModel(_appState, SelectedLeague, _teamService, _groupService);
+                CurrentView = vm;
+                await vm.InitializeAsync();
+            });
+
             ChangeLeagueCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
                 _appState.ClearLeague();
-                var vm = new LeagueSelectionViewModel(this, _leagueService, _groupService);
+                var vm = new LeagueSelectionViewModel(this, _leagueService, _teamService, _groupService);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
@@ -93,7 +111,7 @@ namespace Fut7Manager.Admin.ViewModels {
             OnPropertyChanged(nameof(CanNavigate));
 
             // Cambiamos la vista al selector de ligas
-            var vm = new LeagueSelectionViewModel(this, _leagueService, _groupService);
+            var vm = new LeagueSelectionViewModel(this, _leagueService, _teamService, _groupService);
             CurrentView = vm; // <- OnPropertyChanged notificará al ContentControl
             await vm.InitializeAsync();
         }

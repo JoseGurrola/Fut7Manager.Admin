@@ -18,6 +18,9 @@
     <Compile Update="Views\SecondaryWindows\CreateTeamWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\CentralPanelView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>

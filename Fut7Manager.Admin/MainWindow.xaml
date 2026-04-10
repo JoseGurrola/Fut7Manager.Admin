@@ -43,6 +43,10 @@
         <DataTemplate DataType="{x:Type vm:MatchesViewModel}">
             <views:MatchesView/>
         </DataTemplate>
+        <!-- CentralPanel -->
+        <DataTemplate DataType="{x:Type vm:CentralPanelViewModel}">
+            <views:CentralPanelView/>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid x:Name="MainGrid">
@@ -120,6 +124,12 @@
 
                 <!-- Menú -->
                 <StackPanel Grid.Row="3" VerticalAlignment="Top">
+                    <Button Style="{StaticResource MenuButtonStyle}" Command="{Binding ShowCentalPanelCommand}" IsEnabled="{Binding CanNavigate}">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconTeams}" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Panel central" FontSize="14" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                     <Button Style="{StaticResource MenuButtonStyle}" Command="{Binding ShowTeamsCommand}" IsEnabled="{Binding CanNavigate}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                             <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconTeams}" FontSize="28" HorizontalAlignment="Center"/>

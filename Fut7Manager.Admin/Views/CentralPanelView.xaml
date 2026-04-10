@@ -1,0 +1,156 @@
+﻿<UserControl x:Class="Fut7Manager.Admin.Views.CentralPanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1000"
+             d:DesignHeight="700"
+             d:Background="White">
+    <UserControl.Resources>
+        <DataTemplate x:Key="DefaultTemplate">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Label Content="Estado: " FontSize="16" FontWeight="Bold"/>
+                <Label Content="Grupos: " FontSize="16" FontWeight="Bold"/>
+                <Label Content="Equipos: " FontSize="16" FontWeight="Bold"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="UpcomingTemplate">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                <TextBlock Text="Todo listo para comenzar"
+                   FontSize="20"
+                   Margin="0,0,0,10"
+                   HorizontalAlignment="Center"/>
+
+                <Button Content="Iniciar Liga"
+                FontSize="22"
+                Padding="15"
+                Width="250"
+                Command="{Binding StartLeagueCommand}"/>
+
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="InProgressTemplate">
+            <StackPanel>
+
+                <TextBlock Text="{Binding CurrentMatchdayName}"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,10"/>
+
+                <ItemsControl ItemsSource="{Binding NextMatches}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="5" Padding="10" BorderBrush="#DDD" BorderThickness="1">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding HomeTeamName}" Margin="5"/>
+                                    <TextBlock Text="vs" Margin="5"/>
+                                    <TextBlock Text="{Binding AwayTeamName}" Margin="5"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="PlayoffsTemplate">
+            <StackPanel>
+                <TextBlock Text="Fase de Liguilla"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,10"/>
+
+                <TextBlock Text="Aquí irá el bracket próximamente..."/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="FinishedTemplate">
+            <StackPanel HorizontalAlignment="Center">
+
+                <TextBlock Text="🏆 Campeón"
+                   FontSize="24"
+                   FontWeight="Bold"/>
+
+                <TextBlock Text="{Binding ChampionName}"
+                   FontSize="20"
+                   Margin="0,10"/>
+
+            </StackPanel>
+        </DataTemplate>
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid Margin="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Título -->
+        <TextBlock Text="Panel de Liga"
+               FontSize="26"
+               FontWeight="Bold"/>
+
+        <!-- Resumen rápido (SIEMPRE visible) -->
+        <StackPanel Grid.Row="1"
+                Orientation="Horizontal"
+                Margin="0,10,0,20">
+
+            <Border Style="{StaticResource CardStyle}">
+                <TextBlock Text="{Binding TotalTeams, StringFormat=Equipos: {0}}"/>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <TextBlock Text="{Binding TotalGroups, StringFormat=Grupos: {0}}"/>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <TextBlock Text="{Binding LeagueStatus}"/>
+            </Border>
+
+        </StackPanel>
+
+        <!-- Contenido dinámico -->
+        <ContentControl Grid.Row="2" Content="{Binding}">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+
+                    <Setter Property="ContentTemplate" Value="{StaticResource DefaultTemplate}"/>
+
+                    <Style.Triggers>
+
+                        <DataTrigger Binding="{Binding LeagueStatus}" Value="Upcoming">
+                            <Setter Property="ContentTemplate" Value="{StaticResource UpcomingTemplate}"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding LeagueStatus}" Value="InProgress">
+                            <Setter Property="ContentTemplate" Value="{StaticResource InProgressTemplate}"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding LeagueStatus}" Value="Playoffs">
+                            <Setter Property="ContentTemplate" Value="{StaticResource PlayoffsTemplate}"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding LeagueStatus}" Value="Finished">
+                            <Setter Property="ContentTemplate" Value="{StaticResource FinishedTemplate}"/>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+
+    </Grid>
+
+</UserControl>
+    

@@ -88,6 +88,32 @@ namespace Fut7Manager.Admin.Services {
             return true;
         }
 
+        public async Task<List<MatchdayDto>?> GenerateSchedule(int leagueId, bool _interGroupMatches) {
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/api/leagues/{leagueId}/schedule");
+
+            request.Headers.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+
+            var body = new {
+                interGroupMatches = _interGroupMatches,
+            };
+
+            request.Content = JsonContent.Create(body);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode) {
+                System.Diagnostics.Debug.WriteLine($"[GenerateSchedule] [{response.StatusCode}] Error");
+                return null;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            System.Diagnostics.Debug.WriteLine($"[GenerateSchedule] STATUS: {response.StatusCode} JSON: {json}");
+
+            return JsonConvert.DeserializeObject<List<MatchdayDto>>(json) ?? new List<MatchdayDto>();
+        }
+
         public async Task<bool> DeleteLeagueAsync(int id) {
             var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/leagues/{id}");
 
