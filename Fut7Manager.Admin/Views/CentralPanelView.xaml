@@ -6,48 +6,92 @@
              mc:Ignorable="d"
              d:DesignWidth="1000"
              d:DesignHeight="700"
-             d:Background="White">
+             Background="{StaticResource BackgroundWindowBrush}">
+
     <UserControl.Resources>
+
+        <!-- ===================== -->
+        <!-- DEFAULT -->
+        <!-- ===================== -->
         <DataTemplate x:Key="DefaultTemplate">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                <Label Content="Estado: " FontSize="16" FontWeight="Bold"/>
-                <Label Content="Grupos: " FontSize="16" FontWeight="Bold"/>
-                <Label Content="Equipos: " FontSize="16" FontWeight="Bold"/>
+                <TextBlock Text="Estado: " FontSize="16" FontWeight="Bold"/>
+                <TextBlock Text="Grupos: " FontSize="16" FontWeight="Bold" Margin="10,0,0,0"/>
+                <TextBlock Text="Equipos: " FontSize="16" FontWeight="Bold" Margin="10,0,0,0"/>
             </StackPanel>
         </DataTemplate>
+
+        <!-- ===================== -->
+        <!-- UPCOMING -->
+        <!-- ===================== -->
         <DataTemplate x:Key="UpcomingTemplate">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
                 <TextBlock Text="Todo listo para comenzar"
-                   FontSize="20"
-                   Margin="0,0,0,10"
-                   HorizontalAlignment="Center"/>
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,15"
+                           HorizontalAlignment="Center"/>
 
                 <Button Content="Iniciar Liga"
-                FontSize="22"
-                Padding="15"
-                Width="250"
-                Command="{Binding StartLeagueCommand}"/>
+                        Style="{StaticResource ThirdButtonStyle}"
+                        FontSize="30"
+                        FontWeight="Bold"
+                    Height="130"
+                        Width="400"
+                        Margin="0"
+                        Command="{Binding StartLeagueCommand}"/>
 
             </StackPanel>
         </DataTemplate>
+
+        <!-- ===================== -->
+        <!-- IN PROGRESS -->
+        <!-- ===================== -->
         <DataTemplate x:Key="InProgressTemplate">
             <StackPanel>
 
                 <TextBlock Text="{Binding CurrentMatchdayName}"
-                   FontSize="22"
-                   FontWeight="Bold"
-                   Margin="0,0,0,10"/>
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Margin="0,0,0,15"/>
 
                 <ItemsControl ItemsSource="{Binding NextMatches}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Margin="5" Padding="10" BorderBrush="#DDD" BorderThickness="1">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="{Binding HomeTeamName}" Margin="5"/>
-                                    <TextBlock Text="vs" Margin="5"/>
-                                    <TextBlock Text="{Binding AwayTeamName}" Margin="5"/>
-                                </StackPanel>
+                            <Border Margin="5"
+                                    Padding="10"
+                                    CornerRadius="8"
+                                    Background="{StaticResource BackgroundWindowBrush}"
+                                    BorderBrush="{StaticResource SidebarHoverBrush}"
+                                    BorderThickness="1">
+
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.25"/>
+                                </Border.Effect>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding HomeTeamName}"
+                                               HorizontalAlignment="Right"
+                                               FontWeight="SemiBold"/>
+
+                                    <TextBlock Grid.Column="1"
+                                               Text="vs"
+                                               Margin="10,0"
+                                               Foreground="Gray"/>
+
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding AwayTeamName}"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="SemiBold"/>
+                                </Grid>
+
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -55,39 +99,63 @@
 
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="PlayoffsTemplate">
-            <StackPanel>
-                <TextBlock Text="Fase de Liguilla"
-                   FontSize="22"
-                   FontWeight="Bold"
-                   Margin="0,0,0,10"/>
 
-                <TextBlock Text="Aquí irá el bracket próximamente..."/>
+        <!-- ===================== -->
+        <!-- PLAYOFFS -->
+        <!-- ===================== -->
+        <DataTemplate x:Key="PlayoffsTemplate">
+            <StackPanel HorizontalAlignment="Center">
+
+                <TextBlock Text="Fase de Liguilla"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Margin="0,0,0,10"/>
+
+                <TextBlock Text="Aquí irá el bracket próximamente..."
+                           Foreground="Gray"
+                           FontStyle="Italic"/>
             </StackPanel>
         </DataTemplate>
+
+        <!-- ===================== -->
+        <!-- FINISHED -->
+        <!-- ===================== -->
         <DataTemplate x:Key="FinishedTemplate">
             <StackPanel HorizontalAlignment="Center">
 
                 <TextBlock Text="🏆 Campeón"
-                   FontSize="24"
-                   FontWeight="Bold"/>
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource PrimaryGreenBrush}"/>
 
                 <TextBlock Text="{Binding ChampionName}"
-                   FontSize="20"
-                   Margin="0,10"/>
+                           FontSize="20"
+                           Margin="0,10"
+                           FontWeight="SemiBold"/>
 
             </StackPanel>
         </DataTemplate>
 
+        <!-- ===================== -->
+        <!-- CARD STYLE -->
+        <!-- ===================== -->
         <Style x:Key="CardStyle" TargetType="Border">
-            <Setter Property="Background" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource BackgroundWindowBrush}"/>
             <Setter Property="CornerRadius" Value="10"/>
-            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Padding" Value="12"/>
             <Setter Property="Margin" Value="0,0,10,0"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderBrush" Value="{StaticResource SidebarHoverBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
+
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.25"/>
+                </Setter.Value>
+            </Setter>
         </Style>
+
     </UserControl.Resources>
+
     <Grid Margin="20">
 
         <Grid.RowDefinitions>
@@ -96,31 +164,34 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Título -->
+        <!-- TÍTULO -->
         <TextBlock Text="Panel de Liga"
-               FontSize="26"
-               FontWeight="Bold"/>
+                   FontSize="26"
+                   FontWeight="Bold"/>
 
-        <!-- Resumen rápido (SIEMPRE visible) -->
+        <!-- RESUMEN -->
         <StackPanel Grid.Row="1"
-                Orientation="Horizontal"
-                Margin="0,10,0,20">
+                    Orientation="Horizontal"
+                    Margin="0,15,0,25">
 
             <Border Style="{StaticResource CardStyle}">
-                <TextBlock Text="{Binding TotalTeams, StringFormat=Equipos: {0}}"/>
+                <TextBlock Text="{Binding TotalTeams, StringFormat=Equipos: {0}}"
+                           FontWeight="SemiBold"/>
             </Border>
 
             <Border Style="{StaticResource CardStyle}">
-                <TextBlock Text="{Binding TotalGroups, StringFormat=Grupos: {0}}"/>
+                <TextBlock Text="{Binding TotalGroups, StringFormat=Grupos: {0}}"
+                           FontWeight="SemiBold"/>
             </Border>
 
             <Border Style="{StaticResource CardStyle}">
-                <TextBlock Text="{Binding LeagueStatus}"/>
+                <TextBlock Text="{Binding LeagueStatus}"
+                           FontWeight="SemiBold"/>
             </Border>
 
         </StackPanel>
 
-        <!-- Contenido dinámico -->
+        <!-- CONTENIDO DINÁMICO -->
         <ContentControl Grid.Row="2" Content="{Binding}">
             <ContentControl.Style>
                 <Style TargetType="ContentControl">
@@ -153,4 +224,3 @@
     </Grid>
 
 </UserControl>
-    
