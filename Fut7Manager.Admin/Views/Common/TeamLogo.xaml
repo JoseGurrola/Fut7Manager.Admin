@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="Fut7Manager.Admin.Views.Common.TeamLogo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+
+        <Border CornerRadius="20"
+                Background="#EEEEEE"
+                ClipToBounds="True">
+
+            <Image Stretch="UniformToFill" RenderOptions.BitmapScalingMode="LowQuality">
+                <Image.Source>
+                    <Binding Path="Logo"
+                 RelativeSource="{RelativeSource AncestorType=UserControl}"
+                 TargetNullValue="{StaticResource DefaultTeamLogo}"
+                 FallbackValue="{StaticResource DefaultTeamLogo}"/>
+                </Image.Source>
+            </Image>
+
+        </Border>
+
+    </Grid>
+</UserControl>

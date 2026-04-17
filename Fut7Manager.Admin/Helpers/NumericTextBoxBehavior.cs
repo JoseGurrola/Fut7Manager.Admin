@@ -64,6 +64,7 @@ namespace Fut7Manager.Admin.Helpers {
 
         private static void OnPreviewTextInput(object sender, TextCompositionEventArgs e) {
             var tb = sender as TextBox;
+            if (tb is null) return;
             string newText = tb.Text.Insert(tb.SelectionStart, e.Text);
 
             bool onlyDigits = GetOnlyDigits(tb);

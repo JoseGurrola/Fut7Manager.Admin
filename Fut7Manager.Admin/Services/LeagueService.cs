@@ -35,6 +35,25 @@ namespace Fut7Manager.Admin.Services {
             return JsonConvert.DeserializeObject<List<LeagueDto>>(json) ?? new List<LeagueDto>();
         }
 
+        public async Task<LeagueDto> GetLeagueByIdAsync(int leagueId) {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/leagues/{leagueId}");
+
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode) {
+                System.Diagnostics.Debug.WriteLine($"[GetLeagueByIdAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
+                return new LeagueDto();
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            System.Diagnostics.Debug.WriteLine($"[GetLeagueByIdAsync] STATUS: {response.StatusCode} JSON: {json}");
+
+            return JsonConvert.DeserializeObject<LeagueDto>(json) ?? new LeagueDto();
+        }
+
         public async Task<LeagueDto?> CreateLeagueAsync(LeagueDto league) {
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/leagues");
 
@@ -131,6 +150,25 @@ namespace Fut7Manager.Admin.Services {
 
             // La API solo devuelve 200 sin body
             return true;
+        }
+
+        public async Task<LeagueDashboardDto?> GetDashboardAsync(int leagueId) {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/leagues/{leagueId}/dashboard");
+
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode) {
+                System.Diagnostics.Debug.WriteLine($"[GetDashboardAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
+                return null;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            System.Diagnostics.Debug.WriteLine($"[GetDashboardAsync] STATUS: {response.StatusCode} JSON: {json}");
+
+            return JsonConvert.DeserializeObject<LeagueDashboardDto>(json) ?? new LeagueDashboardDto();
         }
     }
 }

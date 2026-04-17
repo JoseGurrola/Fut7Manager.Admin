@@ -4,9 +4,17 @@ using Fut7Manager.Admin.Services;
 using System.Collections.ObjectModel;
 
 namespace Fut7Manager.Admin.ViewModels {
+    public class MatchdayGroupDto {
+        public int MatchdayId { get; set; }
+        public string MatchdayName { get; set; } = "";
+        public ObservableCollection<Fut7MatchDto> Matches { get; set; } = new();
+    }
+
     public class MatchesViewModel : BaseViewModel {
         private readonly AppState _appState;
-        private readonly MatchService _matchService;
+        public Fut7MatchService Fut7MatchService { get; }
+
+        public ObservableCollection<Fut7MatchDto> AllMatches { get; } = new();
 
         private bool _isLoading;
         public bool IsLoading
@@ -15,11 +23,11 @@ namespace Fut7Manager.Admin.ViewModels {
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<Fut7MatchDto> Matches { get; } = new();
+        //public ObservableCollection<MatchdayGroupDto> Matchdays { get; } = new();
 
-        public MatchesViewModel(AppState appState, MatchService matchService) {
+        public MatchesViewModel(AppState appState, Fut7MatchService fut7MatchService) {
             _appState = appState;
-            _matchService = matchService;
+            Fut7MatchService = fut7MatchService;
 
             _appState.LeagueChanged += OnLeagueChanged;
         }
@@ -28,7 +36,7 @@ namespace Fut7Manager.Admin.ViewModels {
             if (_appState.SelectedLeague != null) {
                 await LoadMatches();
             } else {
-                Matches.Clear();
+                AllMatches.Clear();
             }
         }
 
@@ -39,12 +47,18 @@ namespace Fut7Manager.Admin.ViewModels {
             IsLoading = true;
 
             var leagueId = _appState.SelectedLeague.Id;
-            var matches = await _matchService.GetMatchesAsync(leagueId);
+            var matches = await Fut7MatchService.GetFut7MatchsAsync(leagueId);
 
-            Matches.Clear();
+            AllMatches.Clear();
+
+            var grouped = matches
+                .GroupBy(m => m.MatchdayId ?? 0)
+                .OrderBy(g => g.Key);
+
+            AllMatches.Clear();
 
             foreach (var match in matches) {
-                Matches.Add(match);
+                AllMatches.Add(match);
             }
 
             IsLoading = false;
@@ -54,6 +68,13 @@ namespace Fut7Manager.Admin.ViewModels {
             if (_appState.SelectedLeague != null) {
                 await LoadMatches();
             }
+        }
+
+        public async Task UpdateMatch(Fut7MatchDto match) {
+            await Fut7MatchService.UpdateFut7MatchAsync(match);
+
+            // refrescar
+            await LoadMatches();
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         //comandos
         public ICommand RandomizeCommand { get; }
         public ICommand ConfirmCommand { get; }
-        public ICommand NextStepCommand { get; }
+        //public ICommand NextStepCommand { get; }
         public ICommand GenerateScheduleCommand { get; }
 
         public GroupAssignmentViewModel(List<TeamDto> teams, List<GroupDto> groups, int leagueId) {
@@ -71,10 +71,13 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         private async Task GenerateSchedule() {
             var result = await _leagueService.GenerateSchedule(_leagueId, InterGroupMatches);
 
-            Matchdays.Clear();
+            if (result != null) {
 
-            foreach (var md in result)
-                Matchdays.Add(md);
+                Matchdays.Clear();
+
+                foreach (var md in result)
+                    Matchdays.Add(md);
+            }
         }
 
         private void GoToSchedule() {
@@ -153,7 +156,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
             sourceGroup.Teams.Remove(team);
 
-            team.GroupId = targetGroup.Id; 
+            team.GroupId = targetGroup.Id;
             targetGroup.Teams.Add(team);
         }
 

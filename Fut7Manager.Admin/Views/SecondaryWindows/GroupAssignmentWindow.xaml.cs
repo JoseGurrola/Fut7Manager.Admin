@@ -1,5 +1,6 @@
 ﻿using Fut7Manager.Admin.Helpers;
 using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Services;
 using Fut7Manager.Admin.ViewModels.SecondaryViewModels;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,7 +9,7 @@ using System.Windows.Input;
 namespace Fut7Manager.Admin.Views.SecondaryWindows {
     public partial class GroupAssignmentWindow : Window {
 
-        private Point _startPoint;
+        //private Point _startPoint;
 
         public GroupAssignmentWindow() {
             InitializeComponent();

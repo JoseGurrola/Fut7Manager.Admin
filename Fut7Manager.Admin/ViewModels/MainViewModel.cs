@@ -9,15 +9,17 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly AppState _appState;
         private readonly PlayerService _playerService = new PlayerService();
         private readonly TeamService _teamService = new TeamService();
-        private readonly MatchService _matchService = new MatchService();
+        //private readonly MatchService _matchService = new MatchService();
         private readonly LeagueService _leagueService = new LeagueService();
         private readonly GroupService _groupService = new GroupService();
+        private readonly Fut7MatchService _fut7MatchService = new Fut7MatchService();
         // Para que otras ViewModels puedan acceder
         public AppState AppState => _appState;
         public TeamService TeamService => _teamService;
         public PlayerService PlayerService => _playerService;
         public LeagueService LeagueService => _leagueService;
         public GroupService GroupService => _groupService;
+        public Fut7MatchService Fut7MatchService => _fut7MatchService;
 
         private BaseViewModel? _currentView;
         public BaseViewModel? CurrentView
@@ -54,7 +56,7 @@ namespace Fut7Manager.Admin.ViewModels {
             ShowCentralPanelCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
                 if (SelectedLeague == null) return;
-                var vm = new CentralPanelViewModel(_appState, SelectedLeague, _teamService, _groupService);
+                var vm = new CentralPanelViewModel(_appState, _leagueService, SelectedLeague, _teamService, _groupService, _fut7MatchService);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
@@ -62,7 +64,7 @@ namespace Fut7Manager.Admin.ViewModels {
             ChangeLeagueCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
                 _appState.ClearLeague();
-                var vm = new LeagueSelectionViewModel(this, _leagueService, _teamService, _groupService);
+                var vm = new LeagueSelectionViewModel(this, _leagueService, _teamService, _groupService, _fut7MatchService);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
@@ -84,7 +86,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
             ShowMatchesCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
-                var vm = new MatchesViewModel(_appState, _matchService);
+                var vm = new MatchesViewModel(_appState, _fut7MatchService);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
@@ -111,7 +113,7 @@ namespace Fut7Manager.Admin.ViewModels {
             OnPropertyChanged(nameof(CanNavigate));
 
             // Cambiamos la vista al selector de ligas
-            var vm = new LeagueSelectionViewModel(this, _leagueService, _teamService, _groupService);
+            var vm = new LeagueSelectionViewModel(this, _leagueService, _teamService, _groupService, _fut7MatchService);
             CurrentView = vm; // <- OnPropertyChanged notificará al ContentControl
             await vm.InitializeAsync();
         }

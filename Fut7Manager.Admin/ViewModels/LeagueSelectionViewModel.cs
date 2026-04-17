@@ -13,6 +13,7 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly LeagueService _leagueService; // Servicio para llamadas a API
         private readonly GroupService _groupService;
         private readonly TeamService _teamService;
+        private readonly Fut7MatchService _fut7MatchService;
         private readonly MainViewModel _main; // ViewModel principal para navegación
 
         // Colección observable de ligas para la UI
@@ -39,11 +40,12 @@ namespace Fut7Manager.Admin.ViewModels {
         public ICommand CreateLeagueCommand { get; }
         public ICommand DeleteLeagueCommand { get; }
 
-        public LeagueSelectionViewModel(MainViewModel main, LeagueService leagueService, TeamService teamService, GroupService groupService) {
+        public LeagueSelectionViewModel(MainViewModel main, LeagueService leagueService, TeamService teamService, GroupService groupService, Fut7MatchService fut7MatchService) {
             _main = main;
             _leagueService = leagueService;
             _teamService = teamService;
             _groupService = groupService;
+            _fut7MatchService = fut7MatchService;
 
             // Inicializa los comandos con sus métodos y condiciones de habilitación
             OpenLeagueCommand = new RelayCommand(OpenLeague, CanModifyLeague);
@@ -69,7 +71,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
             _main.SelectLeague(SelectedLeague);
 
-            var vm = new CentralPanelViewModel(_main.AppState, SelectedLeague, _teamService, _groupService);
+            var vm = new CentralPanelViewModel(_main.AppState, _leagueService, SelectedLeague, _teamService, _groupService, _fut7MatchService);
 
             _main.CurrentView = vm;
             _ = vm.InitializeAsync();

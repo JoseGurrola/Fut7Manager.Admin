@@ -1,43 +1,214 @@
 ﻿<UserControl x:Class="Fut7Manager.Admin.Views.MatchesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:viewmodels="clr-namespace:Fut7Manager.Admin.ViewModels"
              xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewmodels:LeaguesViewModel}">
+             xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common">
 
     <UserControl.Resources>
+
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <!-- 🔥 Agrupación -->
+        <CollectionViewSource x:Key="MatchesViewSource"
+                              Source="{Binding AllMatches}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="MatchdayNumber"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
     </UserControl.Resources>
 
     <Grid Margin="10">
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Loading -->
         <TextBlock Grid.Row="0"
-                   Text="Cargando equipos..."
+                   Text="Cargando Datos..."
                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Matches}"
-               AutoGenerateColumns="False"
-               IsReadOnly="True">
+        <!-- 🔥 LISTA ÚNICA -->
+        <ListView Grid.Row="1"
+                  Margin="10"
+                  ItemsSource="{Binding Source={StaticResource MatchesViewSource}}"
+                  SelectedItem="{Binding SelectedMatch}"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                  MouseDoubleClick="Match_MouseDoubleClick"
+                  VirtualizingPanel.IsVirtualizing="True"
+VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+VirtualizingPanel.VirtualizationMode="Recycling"
+ScrollViewer.CanContentScroll="True">
 
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
-                <DataGridTextColumn Header="Local" Binding="{Binding HomeTeamName}" Width="*"/>
-                <DataGridTextColumn Header="" Binding="{Binding HomeGoals}" Width="*"/>
-                <DataGridTextColumn Header="" Binding="{Binding AwayGoals}" Width="*"/>
-                <DataGridTextColumn Header="Visitante" Binding="{Binding AwayTeamName}" Width="*"/>
-                <DataGridTextColumn Header="Fecha" Binding="{Binding MatchDate}" Width="*"/>
-                <DataGridTextColumn Header="Lugar" Binding="{Binding Location}" Width="*"/>
-                <DataGridTextColumn Header="Liga" Binding="{Binding LeagueId}" Width="*"/>
-            </DataGrid.Columns>
+            <!-- Quitar estilo default -->
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
 
-        </DataGrid>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="10,4"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
+                    <!-- 🔥 Template ligero pero con estados -->
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+
+                                <Border x:Name="Bd"
+                            CornerRadius="10"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="#E5E7EB"
+                            BorderThickness="0"
+                            Padding="0">
+
+                                    <ContentPresenter/>
+
+                                </Border>
+
+
+
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <!-- 🔥 HEADER DE JORNADA -->
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,12,0,6"
+                                    Padding="6"
+                                    Background="#F3F4F6"
+                                    CornerRadius="8">
+
+                                <TextBlock Text="{Binding Name, StringFormat=Jornada {0}}"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"/>
+                            </Border>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+
+            <!-- 🔥 TEMPLATE MATCH -->
+            <ListView.ItemTemplate>
+                <DataTemplate>
+
+                    <Border x:Name="rowCard"
+        CornerRadius="10"
+        Background="{StaticResource BackgroundWindowBrush}"
+        BorderBrush="#E5E7EB"
+        BorderThickness="1"
+        Padding="10"
+        Margin="0,3">
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <!-- Icon Home -->
+                                <ColumnDefinition Width="4*"/>
+                                <!-- Home -->
+                                <ColumnDefinition Width="3*"/>
+                                <!-- Score -->
+                                <ColumnDefinition Width="4*"/>
+                                <!-- Away -->
+                                <ColumnDefinition Width="1*"/>
+                                <!-- Icon Away -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- ICONO HOME -->
+                            <Image Width="40" Grid.Column="0" HorizontalAlignment="Left"
+                                   Height="40"
+                                   Margin="0,0,10,0"
+                                   Stretch="UniformToFill"
+                                   Source="{Binding HomeTeamLogo, TargetNullValue={StaticResource DefaultTeamLogo}}"/>
+
+                           
+                            <StackPanel Grid.Column="1" >
+                                <!-- DATE -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Text="{StaticResource IconCalendar}"
+                                           FontFamily="{StaticResource IconFont}"
+                                           FontSize="14"
+                                           Foreground="Gray"
+                                           Margin="0,0,4,0"/>
+
+                                    <TextBlock Text="{Binding DateDisplay}"
+                                           FontSize="12"
+                                           Foreground="Gray"/>
+
+                                </StackPanel>
+                                <!-- HOME TEAM-->
+                                <TextBlock Text="{Binding HomeTeamName}" HorizontalAlignment="Center"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"/>
+                            </StackPanel>
+                            <!-- SCORE -->
+                            <TextBlock Grid.Column="2" HorizontalAlignment="Center"
+                                       Text="{Binding ScoreDisplay}"
+                                       FontSize="22"
+                                       FontWeight="Bold"
+                                       Margin="15,0"
+                                       VerticalAlignment="Center"/>
+                            
+                            <StackPanel Grid.Column="3">
+                                <!-- LOCATION -->
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{StaticResource IconLocation}"
+                                       FontFamily="{StaticResource IconFont}"
+                                       FontSize="14"
+                                       Foreground="Gray"
+                                       Margin="0,0,4,0"/>                   
+                                    <TextBlock Text="{Binding LocationDisplay}"
+                                       FontSize="12"
+                                       Foreground="Gray"/>
+                                </StackPanel>
+                                <!-- AWAY TEAM -->
+                                <TextBlock Text="{Binding AwayTeamName}" HorizontalAlignment="Center"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"/>
+                            </StackPanel>
+
+                            <!-- ICONO AWAY -->
+                            <Image Width="40" Grid.Column="4" HorizontalAlignment="Right"
+                               Height="40"
+                               Margin="0,0,10,0"
+                               Stretch="UniformToFill"
+                               Source="{Binding AwayTeamLogo, TargetNullValue={StaticResource DefaultTeamLogo}}"/>
+
+                        </Grid>
+                    </Border>
+
+                    <!-- 🔥 HOVER + SELECT -->
+                    <DataTemplate.Triggers>
+
+                        <!-- Hover -->
+                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                            <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
+                            <Setter TargetName="rowCard" Property="Background" Value="#F8FDFC"/>
+                        </DataTrigger>
+
+                        <!-- Selected (más fuerte) -->
+                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                            <Setter TargetName="rowCard" Property="Background" Value="#D1FAE5"/>
+                            <Setter TargetName="rowCard" Property="BorderBrush" Value="#10B981"/>
+                        </DataTrigger>
+
+                    </DataTemplate.Triggers>
+
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+        </ListView>
 
     </Grid>
 </UserControl>

@@ -4,8 +4,8 @@
     xmlns:helpers="clr-namespace:Fut7Manager.Admin.Helpers"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
 
-    <!-- TextBox moderno -->
-    <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+    <!-- TextBox moderno LOGIN-->
+    <Style x:Key="ModernTextBoxLoginStyle" TargetType="TextBox">
         <Setter Property="Margin" Value="0,5"/>
         <Setter Property="Padding" Value="8"/>
         <Setter Property="FontSize" Value="14"/>
@@ -13,6 +13,50 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="White"/>
         <Setter Property="Foreground" Value="Black"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="border"
+                    CornerRadius="4"
+                    Padding="{TemplateBinding Padding}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{TemplateBinding Background}">
+
+                        <ScrollViewer x:Name="PART_ContentHost"
+                              Focusable="False"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="border"
+                            Property="BorderBrush"
+                            Value="#3498DB"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="#F0F0F0"/>
+                            <Setter Property="Foreground" Value="#888888"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!-- TextBox moderno-->
+    <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Margin" Value="0,5"/>
+        <Setter Property="Padding" Value="4,0,0,0"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="BorderBrush" Value="#CCCCCC"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
 
         <Setter Property="Template">
             <Setter.Value>
@@ -216,4 +260,92 @@
         </Setter>
     </Style>
 
+    <!--DataPicker (fecha)-->
+    <Style x:Key="ModernDatePickerStyle" TargetType="DatePicker">
+
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderBrush" Value="#CCCCCC"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+
+                    <Grid>
+
+                        <!-- INPUT -->
+                        <Border x:Name="border"
+                            CornerRadius="4"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}">
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="40"/>
+                                </Grid.ColumnDefinitions>
+
+                                <DatePickerTextBox x:Name="PART_TextBox"
+                                               BorderThickness="0"
+                                               Background="Transparent"
+                                               FocusVisualStyle="{x:Null}"
+                                               VerticalContentAlignment="Center"
+                                               Padding="4,0,0,0"/>
+
+                                <ToggleButton Grid.Column="1"
+                                          x:Name="PART_Button"
+                                          Focusable="False"
+                                          Background="Transparent"
+                                          BorderThickness="0"
+                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+
+                                    <TextBlock Text=""
+                                           FontFamily="Segoe MDL2 Assets"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                </ToggleButton>
+                            </Grid>
+                        </Border>
+
+                        <!-- 🔥 AQUÍ ESTÁ LO QUE TE FALTABA -->
+                        <Popup x:Name="PART_Popup"
+                           Placement="Bottom"
+                           AllowsTransparency="True"
+                           Focusable="False"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           StaysOpen="False">
+
+                            <Border Background="White"
+                                BorderBrush="#CCCCCC"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="5">
+
+                                <Calendar x:Name="PART_Calendar"
+                                      SelectedDate="{Binding SelectedDate, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            </Border>
+                        </Popup>
+
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#3498DB"/>
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#A0A0A0"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

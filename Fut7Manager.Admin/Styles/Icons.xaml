@@ -13,6 +13,9 @@
     <sys:String x:Key="IconMatches">&#xE787;</sys:String>
     <sys:String x:Key="IconPlus">&#xE710;</sys:String>
     <sys:String x:Key="IconTeam">&#xEB0F;</sys:String>
+    <sys:String x:Key="IconLocation">&#xE707;</sys:String>
+    <sys:String x:Key="IconCalendar">&#xE787;</sys:String>
+    <sys:String x:Key="IconDashboard">&#xE9D2;</sys:String>
 
     <!-- Window controls -->
     <sys:String x:Key="IconMinimize">&#xE921;</sys:String>

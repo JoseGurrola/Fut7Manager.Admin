@@ -126,7 +126,7 @@
                 <StackPanel Grid.Row="3" VerticalAlignment="Top">
                     <Button Style="{StaticResource MenuButtonStyle}" Command="{Binding ShowCentralPanelCommand}" IsEnabled="{Binding CanNavigate}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconTeams}" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconDashboard}" FontSize="28" HorizontalAlignment="Center"/>
                             <TextBlock Text="Panel central" FontSize="14" Margin="0,5,0,0" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Button>
