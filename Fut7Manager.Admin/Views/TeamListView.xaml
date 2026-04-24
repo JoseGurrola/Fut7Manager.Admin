@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
              mc:Ignorable="d"
              d:DesignWidth="1000"
              d:DesignHeight="700"
@@ -19,35 +20,36 @@
         <!-- ===================== -->
         <!-- LISTA DE EQUIPOS -->
         <!-- ===================== -->
-        <Grid Grid.Row="0" Margin="20">
+        <controls:LoadingContainer  Grid.Column="2" IsLoading="{Binding IsLoading}">
+            <Grid Grid.Row="0" Margin="20">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
-                <TextBlock 
+                <Grid Grid.Row="0">
+                    <TextBlock 
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
                        Text="Equipos de la liga"
                        FontSize="24"
                        FontWeight="Bold"/>
-                <!-- Botón flotante para agregar equipo -->
-                <Button Style="{StaticResource IconFloatingButtonStyle}"
+                    <!-- Botón flotante para agregar equipo -->
+                    <Button Style="{StaticResource IconFloatingButtonStyle}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Command="{Binding CreateTeamCommand}"
                     Content="{StaticResource IconPlus}"
                     Width="50"
                     Height="50">
-                    <Button.ToolTip>
-                        <ToolTip Style="{StaticResource DarkModernToolTipStyle}" Content="Agregar equipo"/>
-                    </Button.ToolTip>
+                        <Button.ToolTip>
+                            <ToolTip Style="{StaticResource DarkModernToolTipStyle}" Content="Agregar equipo"/>
+                        </Button.ToolTip>
 
-                </Button>
-            </Grid>
-            <ListView Grid.Row="1"
+                    </Button>
+                </Grid>
+                <ListView Grid.Row="1"
                       x:Name="TeamsList"
                       ItemsSource="{Binding Teams}"
                       SelectedItem="{Binding SelectedTeam}"
@@ -56,124 +58,124 @@
                       ScrollViewer.VerticalScrollBarVisibility="Hidden"
                       MouseDoubleClick="TeamsList_MouseDoubleClick">
 
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Padding" Value="0"/>
-                        <Setter Property="Margin" Value="0,4"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <ContentPresenter/>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,4"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <ContentPresenter/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
 
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Border x:Name="rowCard"
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border x:Name="rowCard"
                                 CornerRadius="10"
                                 BorderBrush="#DDDDDD"
                                 BorderThickness="1"
                                 Background="White"
                                 Padding="5">
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="9*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="9*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <!-- Icono del equipo -->
-                                <Border Width="40"
+                                    <!-- Icono del equipo -->
+                                    <Border Width="40"
                                         Height="40"
                                         CornerRadius="20"
                                         Background="#EEEEEE"
                                         VerticalAlignment="Center">
-                                    <TextBlock Text="{StaticResource IconTeam}"
+                                        <TextBlock Text="{StaticResource IconTeam}"
                                                FontFamily="Segoe MDL2 Assets"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center"
                                                Foreground="#555"/>
-                                </Border>
+                                    </Border>
 
-                                <!-- Informacion -->
-                                <Grid Grid.Column="1"
+                                    <!-- Informacion -->
+                                    <Grid Grid.Column="1"
                                             Margin="12,0"
                                             VerticalAlignment="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"
                                                FontWeight="Bold"
                                                FontSize="14"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding TeamManagerName}" VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="1" Text="{Binding TeamManagerName}" VerticalAlignment="Center"
                                                FontSize="14"
                                                />
-                                    <TextBlock Grid.Column="2" Text="{Binding TeamManagerPhone}" VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="2" Text="{Binding TeamManagerPhone}" VerticalAlignment="Center"
                                                FontSize="14"
                                                />
-                                </Grid>
+                                    </Grid>
 
-                                <!-- Indicador de estado de pago -->
-                                <Ellipse Grid.Column="2"
+                                    <!-- Indicador de estado de pago -->
+                                    <Ellipse Grid.Column="2"
                                          Width="16"
                                          Height="16"
                                          VerticalAlignment="Center"
                                          Margin="8,0,0,0">
-                                    <Ellipse.ToolTip>
-                                        <ToolTip Style="{StaticResource DarkModernToolTipStyle}">
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding Paid, StringFormat=Pagado: ${0:N2}}" Foreground="{StaticResource PrimaryGreenBrush}"/>
-                                                <TextBlock Text="{Binding Remaining, StringFormat=Restante: ${0:N2}}" Foreground="{StaticResource PrimaryRedBrush}"/>
-                                            </StackPanel>
-                                        </ToolTip>
-                                    </Ellipse.ToolTip>
-                                    <Ellipse.Style>
-                                        <Style TargetType="Ellipse">
-                                            <Setter Property="Fill" Value="Gray"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Paid">
-                                                    <Setter Property="Fill" Value="#2ECC71"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Partial">
-                                                    <Setter Property="Fill" Value="#F1C40F"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding PaymentStatus}" Value="Due">
-                                                    <Setter Property="Fill" Value="#E74C3C"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Ellipse.Style>
-                                </Ellipse>
+                                        <Ellipse.ToolTip>
+                                            <ToolTip Style="{StaticResource DarkModernToolTipStyle}">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Paid, StringFormat=Pagado: ${0:N2}}" Foreground="{StaticResource PrimaryGreenBrush}"/>
+                                                    <TextBlock Text="{Binding Remaining, StringFormat=Restante: ${0:N2}}" Foreground="{StaticResource PrimaryRedBrush}"/>
+                                                </StackPanel>
+                                            </ToolTip>
+                                        </Ellipse.ToolTip>
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill" Value="Gray"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding PaymentStatus}" Value="Paid">
+                                                        <Setter Property="Fill" Value="#2ECC71"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding PaymentStatus}" Value="Partial">
+                                                        <Setter Property="Fill" Value="#F1C40F"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding PaymentStatus}" Value="Due">
+                                                        <Setter Property="Fill" Value="#E74C3C"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
 
-                            </Grid>
-                        </Border>
+                                </Grid>
+                            </Border>
 
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
-                                <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
-                            </DataTrigger>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                                    <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
+                                </DataTrigger>
 
-                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
-                                <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
-                                <Setter TargetName="rowCard" Property="Background" Value="#F8FDFC"/>
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
+                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                                    <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
+                                    <Setter TargetName="rowCard" Property="Background" Value="#F8FDFC"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
 
-            </ListView>
+                </ListView>
 
-        </Grid>
-
+            </Grid>
+        </controls:LoadingContainer>
         <!-- ===================== -->
         <!-- BARRA INFERIOR CRUD -->
         <!-- ===================== -->

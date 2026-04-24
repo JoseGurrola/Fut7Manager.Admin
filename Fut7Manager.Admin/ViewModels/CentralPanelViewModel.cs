@@ -51,7 +51,7 @@ namespace Fut7Manager.Admin.ViewModels {
             set { _totalGroups = value; OnPropertyChanged(); }
         }
 
-        private string? _currentMatchdayName;
+        private string? _currentMatchdayName = "Jornada";
         public string? CurrentMatchdayName
         {
             get => _currentMatchdayName;

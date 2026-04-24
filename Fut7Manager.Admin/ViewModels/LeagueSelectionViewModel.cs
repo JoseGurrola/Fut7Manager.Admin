@@ -16,6 +16,13 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly Fut7MatchService _fut7MatchService;
         private readonly MainViewModel _main; // ViewModel principal para navegación
 
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set { _isLoading = value; OnPropertyChanged(); }
+        }
+
         // Colección observable de ligas para la UI
         public ObservableCollection<LeagueDto> Leagues { get; } = new ObservableCollection<LeagueDto>();
 
@@ -59,10 +66,15 @@ namespace Fut7Manager.Admin.ViewModels {
 
         // Inicializa la lista de ligas desde la API
         public async Task InitializeAsync() {
+
+            IsLoading = true;
+
             var leagues = await _leagueService.GetLeaguesAsync();
             Leagues.Clear();
             foreach (var league in leagues)
                 Leagues.Add(league);
+
+            IsLoading = false;
         }
 
         // Abre la vista central

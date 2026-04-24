@@ -13,6 +13,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         private readonly TeamService _teamService;
         private readonly LeagueService _leagueService;
         private readonly int _leagueId;
+        private bool _isLoading;
 
         public ObservableCollection<GroupWithTeams> Groups { get; set; } = new();
         public Action<bool>? CloseAction { get; set; }
@@ -38,6 +39,16 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             set { _interGroupMatches = value; OnPropertyChanged(); }
         }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set {
+                _isLoading = value;
+                OnPropertyChanged();
+                (GenerateScheduleCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
         //comandos
         public ICommand RandomizeCommand { get; }
         public ICommand ConfirmCommand { get; }
@@ -53,7 +64,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
             RandomizeCommand = new RelayCommand(Randomize);
             ConfirmCommand = new RelayCommand(async () => await Confirm());
-            GenerateScheduleCommand = new RelayCommand(async () => await GenerateSchedule());
+            GenerateScheduleCommand = new RelayCommand(async () => await GenerateSchedule(), () => !IsLoading);
 
             foreach (var group in groups) {
                 var groupVM = new GroupWithTeams {
@@ -69,7 +80,11 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         }
 
         private async Task GenerateSchedule() {
-            var result = await _leagueService.GenerateSchedule(_leagueId, InterGroupMatches);
+            if (IsLoading) return;
+            try {
+                IsLoading = true;
+
+                var result = await _leagueService.GenerateSchedule(_leagueId, InterGroupMatches);
 
             if (result != null) {
 
@@ -77,6 +92,10 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
                 foreach (var md in result)
                     Matchdays.Add(md);
+                }
+            }
+            finally {
+                IsLoading = false;
             }
         }
 

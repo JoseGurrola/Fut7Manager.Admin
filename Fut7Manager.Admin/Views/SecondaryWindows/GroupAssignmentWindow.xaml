@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Fut7Manager.Admin.Views.SecondaryWindows" 
+         xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -106,42 +107,43 @@
                               VerticalAlignment="Center"
                              />
 
-                    <Button Content="Generar calendario"
+                    <Button x:Name="btnGenerateSchedule" Content="Generar calendario"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding GenerateScheduleCommand}"
                             Width="200"
-                            Height="40"/>
+                            Height="40" />
                 </StackPanel>
 
                 <!-- MATCHDAYS -->
-                <ScrollViewer Grid.Row="1">
-                    <ItemsControl ItemsSource="{Binding Matchdays}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel ItemWidth="270"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                <controls:LoadingContainer Grid.Row="1" IsLoading="{Binding IsLoading}">
+                    <ScrollViewer >
+                        <ItemsControl ItemsSource="{Binding Matchdays}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel ItemWidth="270"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Width="250"
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="250"
                                         Margin="10"
                                         Padding="10"
                                         BorderBrush="{StaticResource SidebarHoverBrush}"
                                         BorderThickness="1"
                                         CornerRadius="10">
 
-                                    <Border.Effect>
-                                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
-                                    </Border.Effect>
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
+                                        </Border.Effect>
 
-                                    <StackPanel>
+                                        <StackPanel>
 
-                                        <TextBlock Text="{Binding Number, StringFormat=Jornada {0}}"
+                                            <TextBlock Text="{Binding Number, StringFormat=Jornada {0}}"
                                                    FontWeight="Bold"
                                                    Margin="0,0,0,10"/>
 
-                                        <ListBox ItemsSource="{Binding Matches}"
+                                            <ListBox ItemsSource="{Binding Matches}"
                                              AllowDrop="True"
                                              PreviewMouseMove="Match_PreviewMouseMove"
                                              Drop="Match_Drop"
@@ -149,62 +151,63 @@
                                              BorderThickness="0"
                                              HorizontalContentAlignment="Stretch">
 
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Border Padding="6"
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Padding="6"
                                                         Margin="2"
                                                         CornerRadius="6"
                                                         Background="{StaticResource BackgroundWindowBrush}"
                                                         BorderBrush="{StaticResource SidebarHoverBrush}"
                                                         BorderThickness="1"
-                                                        HorizontalAlignment="Stretch">  
+                                                        HorizontalAlignment="Stretch">
 
-                                                        <Grid HorizontalAlignment="Stretch">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                            </Grid.ColumnDefinitions>
+                                                            <Grid HorizontalAlignment="Stretch">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                </Grid.ColumnDefinitions>
 
-                                                            <!-- Home -->
-                                                            <TextBlock Text="{Binding HomeTeamName}"
+                                                                <!-- Home -->
+                                                                <TextBlock Text="{Binding HomeTeamName}"
                                                                 FontWeight="SemiBold"
-                                                                HorizontalAlignment="Center"/>           
+                                                                HorizontalAlignment="Center"/>
 
-                                                            <!-- VS -->
-                                                            <TextBlock Grid.Column="1"
+                                                                <!-- VS -->
+                                                                <TextBlock Grid.Column="1"
                                                                Text="vs"
                                                                Margin="10,0"
                                                                Foreground="Gray"
                                                                VerticalAlignment="Center"/>
 
-                                                            <!-- Away -->
-                                                            <TextBlock Grid.Column="2"
+                                                                <!-- Away -->
+                                                                <TextBlock Grid.Column="2"
                                                                Text="{Binding AwayTeamName}"
                                                                FontWeight="SemiBold"
                                                                HorizontalAlignment="Center"/>
 
-                                                        </Grid>
+                                                            </Grid>
 
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
 
-                                        </ListBox>
+                                            </ListBox>
 
-                                        <TextBlock Text="{Binding RestingTeamsDisplay}"
+                                            <TextBlock Text="{Binding RestingTeamsDisplay}"
                                                    Foreground="{StaticResource SidebarHoverBrush}"
                                                    FontWeight="SemiBold"
                                                    Margin="5,8,0,0"/>
 
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
 
-                    </ItemsControl>
-                </ScrollViewer>
+                        </ItemsControl>
+                    </ScrollViewer>
 
+                </controls:LoadingContainer>
                 <!-- BOTÓN FINAL -->
                 <StackPanel Grid.Row="2"
                             Orientation="Horizontal"

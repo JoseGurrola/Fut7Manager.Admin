@@ -16,6 +16,8 @@
                 <ResourceDictionary Source="Styles/ToolTips.xaml"/>
                 <ResourceDictionary Source="Styles/ListBoxes.xaml"/>
                 <ResourceDictionary Source="Styles/DateTemplates.xaml"/>
+
+                <ResourceDictionary Source="Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <BitmapImage x:Key="DefaultTeamLogo"
@@ -23,6 +25,9 @@
 
             <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
             <conv:NullToVisibilityInverseConverter x:Key="NullToVisibilityInverseConverter"/>
+            <conv:HalfConverter x:Key="HalfConverter"/>
+            <conv:LeagueStatusConverter x:Key="LeagueStatusConverter"/>
+            <conv:InverseBoolConverter x:Key="InverseBoolConverter"/>
 
         </ResourceDictionary>
 

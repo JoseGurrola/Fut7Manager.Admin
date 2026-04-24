@@ -17,13 +17,17 @@ namespace Fut7Manager.Admin.Services {
         }
 
         public async Task<List<Fut7MatchDto>> GetFut7MatchsAsync(int leagueId) {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Fut7Matches?LeagueId={leagueId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Fut7Matches?LeagueId={leagueId}&pageSize=0");
 
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
 
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode) {
+                if (response.Headers.TryGetValues("X-Pagination", out var values)) {
+                    var paginationJson = values.FirstOrDefault();
+                    System.Diagnostics.Debug.WriteLine($"Pagination: {paginationJson}");
+                }
                 System.Diagnostics.Debug.WriteLine($"[GetFut7MatchsAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
                 return new List<Fut7MatchDto>();
             }
