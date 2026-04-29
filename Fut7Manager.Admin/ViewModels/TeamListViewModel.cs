@@ -13,7 +13,8 @@ namespace Fut7Manager.Admin.ViewModels {
     public class TeamListViewModel : BaseViewModel {
         private readonly TeamService _teamService;
         private readonly AppState _appState; // ViewModel principal para navegación
-        private int _leagueId;
+        //private int _leagueId;
+        private LeagueDto _league;
 
         private bool _isLoading;
         public bool IsLoading
@@ -29,6 +30,24 @@ namespace Fut7Manager.Admin.ViewModels {
             set { _selectedTeam = value; OnPropertyChanged(); }
         }
 
+        public LeagueDto League
+        {
+            get => _league;
+            set {
+                _league = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CanEditTeamInfo));
+
+                (CreateTeamCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public string CreateTeamTooltip =>
+    CanEditTeamInfo
+        ? "Agregar equipo"
+        : "No se pueden agregar equipos porque la liga ya inició";
+
+        public bool CanEditTeamInfo => _league.Status == LeagueStatus.Upcoming;
         //private TeamDto? _selectedTeam;
         //public TeamDto? SelectedTeam
         //{
@@ -52,15 +71,15 @@ namespace Fut7Manager.Admin.ViewModels {
 
         public ICommand OpenPaymentsCommand { get; }
 
-        public TeamListViewModel(AppState appState, TeamService teamService, int leagueId) {
+        public TeamListViewModel(AppState appState, TeamService teamService, LeagueDto league) {
             _appState = appState;
             _teamService = teamService;
-            _leagueId = leagueId;
+            _league = league;
 
             OpenTeamCommand = new RelayCommand(OpenTeam, CanModifyTeam);
             EditTeamCommand = new RelayCommand(async () => await EditTeamAsync(), CanModifyTeam);
             DeleteTeamCommand = new RelayCommand(async () => await DeleteTeamAsync(), CanModifyTeam);
-            CreateTeamCommand = new RelayCommand(async () => await CreateTeamAsync(), () => true);
+            CreateTeamCommand = new RelayCommand(async () => await CreateTeamAsync(), () => CanEditTeamInfo);
             OpenPaymentsCommand = new RelayCommand(OpenPayments, CanModifyTeam);
 
             //main.LeagueChanged += OnLeagueChanged;
@@ -82,7 +101,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
             IsLoading = true;
 
-            var teams = await _teamService.GetTeamsAsync(_leagueId);
+            var teams = await _teamService.GetTeamsAsync(_league.Id);
 
             Teams.Clear();
 
@@ -136,7 +155,7 @@ namespace Fut7Manager.Admin.ViewModels {
             if (SelectedTeam == null) return;
 
             var window = new CreateTeamWindow(); // Reusa ventana de crear liga
-            var vm = new CreateOrEditTeamViewModel(SelectedTeam, _leagueId); // ViewModel unificado para crear/editar
+            var vm = new CreateOrEditTeamViewModel(SelectedTeam, _league); // ViewModel unificado para crear/editar
             window.DataContext = vm;
 
             // Permite que el ViewModel cierre la ventana con DialogResult
@@ -153,7 +172,7 @@ namespace Fut7Manager.Admin.ViewModels {
                         Name = vm.TeamName,
                         LogoUrl = vm.LogoUrl,
                         GroupId = vm.SelectedGroup,
-                        LeagueId = _leagueId,
+                        LeagueId = _league.Id,
                         Paid = vm.Paid,
                         Remaining = vm.Remaining,
 
@@ -170,7 +189,7 @@ namespace Fut7Manager.Admin.ViewModels {
                         Name = vm.TeamName,
                         LogoUrl = vm.LogoUrl,
                         GroupId = vm.SelectedGroup,
-                        LeagueId = vm.LeagueId,
+                        LeagueId = _league.Id,
                         Paid = vm.Paid,
                         Remaining = vm.Remaining,
                         TeamManagerName = vm.TeamManager,
@@ -205,7 +224,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
         private async Task CreateTeamAsync() {
             var window = new CreateTeamWindow();
-            var vm = new CreateOrEditTeamViewModel(null, _leagueId); // Null indica creación
+            var vm = new CreateOrEditTeamViewModel(null, _league); // Null indica creación
             window.DataContext = vm;
 
             vm.CloseAction = result => window.DialogResult = result;
@@ -218,7 +237,7 @@ namespace Fut7Manager.Admin.ViewModels {
                     Name = vm.TeamName, 
                     LogoUrl = vm.LogoUrl, 
                     GroupId = vm.SelectedGroup,
-                    LeagueId = vm.LeagueId,
+                    LeagueId = _league.Id,
                     Paid = vm.Paid,
                     Remaining = vm.Remaining,
                     TeamManagerName = vm.TeamManager,

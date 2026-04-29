@@ -2,6 +2,7 @@
 using Fut7Manager.Admin.Models;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Fut7Manager.Admin.Services {
@@ -169,6 +170,22 @@ namespace Fut7Manager.Admin.Services {
             System.Diagnostics.Debug.WriteLine($"[GetDashboardAsync] STATUS: {response.StatusCode} JSON: {json}");
 
             return JsonConvert.DeserializeObject<LeagueDashboardDto>(json) ?? new LeagueDashboardDto();
+        }
+
+        public async Task<StandingsResponseDto?> GetStandingsAsync(int leagueId) {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/leagues/{leagueId}/standings");
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<StandingsResponseDto>(json);
         }
     }
 }

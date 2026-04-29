@@ -18,12 +18,13 @@ namespace Fut7Manager.Admin.ViewModels {
         private string _teamManagerPhone = string.Empty;
         private decimal _paid;
         private decimal _remaining;
-
-
-        public int LeagueId { get; set; }
+        private LeagueDto _league;
+        //public int LeagueId { get; set; }
 
         public ObservableCollection<GroupDto> AvailableGroupNumbers { get; }
         = new ObservableCollection<GroupDto>();
+
+        public bool CanEditTeamInfo => _league.Status == LeagueStatus.Upcoming;
 
         private int? _selectedGroup;
         public int? SelectedGroup
@@ -105,8 +106,8 @@ namespace Fut7Manager.Admin.ViewModels {
         public Action<bool> CloseAction { get; set; } = default!;
 
         private int? _originalGroupId;
-        public CreateOrEditTeamViewModel(TeamDto? team = null, int leagueId = default!) {
-            LeagueId = leagueId;
+        public CreateOrEditTeamViewModel(TeamDto? team = null, LeagueDto league = default!) {
+            _league = league;
             if (team != null) {
                 _teamId = team.Id;
                 TeamName = team.Name;
@@ -119,7 +120,7 @@ namespace Fut7Manager.Admin.ViewModels {
                 TeamManagerPhone = team.TeamManagerPhone;
             }
 
-             _ = LoadGroups(LeagueId);
+             _ = LoadGroups(_league.Id);
 
 
             // Use RelayCommand that supports async properly with fire-and-forget

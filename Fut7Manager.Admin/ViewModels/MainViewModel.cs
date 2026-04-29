@@ -41,6 +41,8 @@ namespace Fut7Manager.Admin.ViewModels {
         public ICommand ShowCentralPanelCommand { get; }
         public ICommand ShowMatchesCommand { get; }
 
+        public ICommand ShowStandingsCommand { get; }
+
         public MainViewModel(AppState appState) {
             _appState = appState;
             _appState.LeagueChanged += OnLeagueChanged;
@@ -57,6 +59,14 @@ namespace Fut7Manager.Admin.ViewModels {
                 if (!CanNavigate) return;
                 if (SelectedLeague == null) return;
                 var vm = new CentralPanelViewModel(_appState, _leagueService, SelectedLeague, _teamService, _groupService, _fut7MatchService);
+                CurrentView = vm;
+                await vm.InitializeAsync();
+            });
+
+            ShowStandingsCommand = new RelayCommand(async () => {
+                if (!CanNavigate) return;
+                if (SelectedLeague == null) return;
+                var vm = new StandingsViewModel(_appState, _leagueService, SelectedLeague, _teamService, _groupService, _fut7MatchService);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
@@ -79,7 +89,7 @@ namespace Fut7Manager.Admin.ViewModels {
             ShowTeamsCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
                 if(SelectedLeague == null) return;
-                var vm = new TeamListViewModel(_appState, _teamService, SelectedLeague.Id);
+                var vm = new TeamListViewModel(_appState, _teamService, SelectedLeague);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });

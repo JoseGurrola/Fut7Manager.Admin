@@ -47,6 +47,10 @@
         <DataTemplate DataType="{x:Type vm:CentralPanelViewModel}">
             <views:CentralPanelView/>
         </DataTemplate>
+        <!-- Standings  -->
+        <DataTemplate DataType="{x:Type vm:StandingsViewModel}">
+            <views:StandingsView/>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid x:Name="MainGrid">
@@ -131,26 +135,31 @@
                             <TextBlock Text="Panel central" FontSize="14" Margin="0,5,0,0" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource MenuButtonStyle}" Command="{Binding ShowTeamsCommand}" IsEnabled="{Binding CanNavigate}">
+                    <Button Style="{StaticResource MenuButtonStyle}" Command="{Binding ShowStandingsCommand}" IsEnabled="{Binding CanNavigate}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconTeams}" FontSize="28" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Equipos" FontSize="14" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconStandings}" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Clasificación" FontSize="14" Margin="0,5,0,0" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Button>
-
                     <Button Style="{StaticResource MenuButtonStyle}" Command="{Binding ShowMatchesCommand}" IsEnabled="{Binding CanNavigate}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                             <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconMatches}" FontSize="28" HorizontalAlignment="Center"/>
                             <TextBlock Text="Calendario" FontSize="14" Margin="0,5,0,0" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Button>
-
+                    <Button Style="{StaticResource MenuButtonStyle}" Command="{Binding ShowTeamsCommand}" IsEnabled="{Binding CanNavigate}">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconTeams}" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Equipos" FontSize="14" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                     <Button Style="{StaticResource MenuButtonStyle}" Command="{Binding ShowPlayersCommand}" IsEnabled="{Binding CanNavigate}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                             <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource IconPlayers}" FontSize="28" HorizontalAlignment="Center"/>
                             <TextBlock Text="Jugadores" FontSize="14" Margin="0,5,0,0" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Button>
+
                 </StackPanel>
             </Grid>
 

@@ -41,11 +41,11 @@
                     VerticalAlignment="Top"
                     Command="{Binding CreateTeamCommand}"
                     Content="{StaticResource IconPlus}"
+                    IsEnabled="{Binding CanEditTeamInfo}"
                     Width="50"
+                            ToolTip="{Binding CreateTeamTooltip}"  ToolTipService.ShowOnDisabled="True"
                     Height="50">
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource DarkModernToolTipStyle}" Content="Agregar equipo"/>
-                        </Button.ToolTip>
+                    
 
                     </Button>
                 </Grid>
