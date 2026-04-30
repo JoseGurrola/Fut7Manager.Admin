@@ -64,7 +64,8 @@ namespace Fut7Manager.Admin.Services {
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
-                status = league.Status
+                status = league.Status,
+                logoUrl = league.LogoUrl
             };
 
             request.Content = JsonContent.Create(body);
@@ -92,7 +93,8 @@ namespace Fut7Manager.Admin.Services {
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
-                status = league.Status
+                status = league.Status,
+                logoUrl = league.LogoUrl
             };
 
             request.Content = JsonContent.Create(body);

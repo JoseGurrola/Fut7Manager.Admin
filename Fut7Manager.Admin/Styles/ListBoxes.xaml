@@ -12,7 +12,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <WrapPanel ItemWidth="220" ItemHeight="120"/>
+                    <WrapPanel/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>

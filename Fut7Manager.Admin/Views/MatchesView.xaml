@@ -3,12 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters"
              xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
-             xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls">
+             xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d"
+            d:DesignWidth="1000"
+            d:DesignHeight="700"
+              Background="{StaticResource BackgroundWindowBrush}">
 
     <UserControl.Resources>
 
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-
+        <conv:SafeImageConverter x:Key="SafeImageConverter"/>
         <!-- Agrupación -->
         <CollectionViewSource x:Key="MatchesViewSource"
                               Source="{Binding AllMatches}">
@@ -21,10 +27,25 @@
 
 
     <controls:LoadingContainer IsLoading="{Binding IsLoading}">
-        <!-- CONTENIDO -->
-            <Grid>
+        <Grid Grid.Row="0" Margin="20">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <TextBlock 
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+           Text="Calendario"
+           FontSize="24"
+           FontWeight="Bold"/>
+            </Grid>
+            <!-- CONTENIDO -->
+            <Grid Grid.Row="1">
                 <!--LISTA ÚNICA -->
-                <ListView Grid.Row="1"
+                <ListView 
                   Margin="10"
                   ItemsSource="{Binding Source={StaticResource MatchesViewSource}}"
                   SelectedItem="{Binding SelectedMatch}"
@@ -120,11 +141,61 @@ ScrollViewer.CanContentScroll="True"
                                     </Grid.ColumnDefinitions>
 
                                     <!-- ICONO HOME -->
-                                    <Image Width="40" Grid.Column="0" HorizontalAlignment="Left"
-                                   Height="40"
-                                   Margin="0,0,10,0"
-                                   Stretch="UniformToFill"
-                                   Source="{Binding HomeTeamLogo, TargetNullValue={StaticResource DefaultTeamLogo}}"/>
+                                    <Grid Grid.Column="0"
+      Width="40"
+      Height="40"
+      Margin="0,0,10,0">
+
+                                        <!-- Fondo -->
+                                        <Ellipse Fill="Transparent"/>
+
+                                        <!-- Imagen -->
+                                        <Ellipse>
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding HomeTeamLogo, Converter={StaticResource SafeImageConverter}}"
+                        Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HomeTeamLogo}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding HomeTeamLogo}" Value="">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                        </Ellipse>
+
+                                        <!-- Fallback -->
+                                        <TextBlock Text="{StaticResource IconTeam}"
+               FontFamily="Segoe MDL2 Assets"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Foreground="#777"
+               FontSize="18">
+
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HomeTeamLogo}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding HomeTeamLogo}" Value="">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                    </Grid>
 
 
                                     <StackPanel Grid.Column="1" >
@@ -174,11 +245,61 @@ ScrollViewer.CanContentScroll="True"
                                     </StackPanel>
 
                                     <!-- ICONO AWAY -->
-                                    <Image Width="40" Grid.Column="4" HorizontalAlignment="Right"
-                               Height="40"
-                               Margin="0,0,10,0"
-                               Stretch="UniformToFill"
-                               Source="{Binding AwayTeamLogo, TargetNullValue={StaticResource DefaultTeamLogo}}"/>
+                                    <Grid Grid.Column="4"
+      Width="40"
+      Height="40"
+      Margin="0,0,10,0">
+
+                                        <!-- Fondo -->
+                                        <Ellipse Fill="Transparent"/>
+
+                                        <!-- Imagen -->
+                                        <Ellipse>
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding AwayTeamLogo, Converter={StaticResource SafeImageConverter}}"
+                        Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding AwayTeamLogo}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding AwayTeamLogo}" Value="">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                        </Ellipse>
+
+                                        <!-- Fallback -->
+                                        <TextBlock Text="{StaticResource IconTeam}"
+               FontFamily="Segoe MDL2 Assets"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Foreground="#777"
+               FontSize="18">
+
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding AwayTeamLogo}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding AwayTeamLogo}" Value="">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                    </Grid>
 
                                 </Grid>
                             </Border>
@@ -205,7 +326,7 @@ ScrollViewer.CanContentScroll="True"
 
                 </ListView>
             </Grid>
-    
+        </Grid>
 
     </controls:LoadingContainer>
 

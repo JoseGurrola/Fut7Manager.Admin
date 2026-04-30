@@ -110,7 +110,8 @@ namespace Fut7Manager.Admin.ViewModels {
                         Id = SelectedLeague.Id, 
                         Name = vm.LeagueName, 
                         RegistrationFee = vm.RegistrationFee,
-                        Status = vm.Status
+                        Status = vm.Status,
+                        LogoUrl = vm.FinalLogoUrl
                     }
                 );
 
@@ -120,7 +121,9 @@ namespace Fut7Manager.Admin.ViewModels {
                     var updatedLeague = new LeagueDto {
                         Id = SelectedLeague.Id,
                         Name = vm.LeagueName,
-                        RegistrationFee = vm.RegistrationFee
+                        RegistrationFee = vm.RegistrationFee,
+                        Status = vm.Status,
+                        LogoUrl = vm.FinalLogoUrl
                     };
 
                     Leagues[index] = updatedLeague;
@@ -141,7 +144,11 @@ namespace Fut7Manager.Admin.ViewModels {
             var result = window.ShowDialog();
             if (result == true) {
 
-                var created = await _leagueService.CreateLeagueAsync(new LeagueDto {Name = vm.LeagueName, RegistrationFee = vm.RegistrationFee });
+                var created = await _leagueService.CreateLeagueAsync(new LeagueDto {
+                    Name = vm.LeagueName, 
+                    RegistrationFee = vm.RegistrationFee,
+                    LogoUrl = vm.FinalLogoUrl
+                });
                 if (created != null) {
                     if (vm.NumberOfGroups == 0) vm.NumberOfGroups = 1;
                     for( var i = 0; i < vm.NumberOfGroups; i++) {

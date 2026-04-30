@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
@@ -19,7 +20,11 @@ namespace Fut7Manager.Admin.ViewModels {
         private decimal _paid;
         private decimal _remaining;
         private LeagueDto _league;
-        //public int LeagueId { get; set; }
+        public ICommand UploadLogoCommand { get; }
+        private string? _logoFileName;
+        private string? _localImagePath;
+        
+
 
         public ObservableCollection<GroupDto> AvailableGroupNumbers { get; }
         = new ObservableCollection<GroupDto>();
@@ -98,6 +103,17 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
+        public string? LogoFileName
+        {
+            get => _logoFileName;
+            set => SetProperty(ref _logoFileName, value);
+        }
+        public string? LocalImagePath
+        {
+            get => _localImagePath;
+            set => SetProperty(ref _localImagePath, value);
+        }
+
         public string ButtonText { get; set; } = "Crear";
 
         public ICommand SaveCommand { get; }
@@ -120,6 +136,8 @@ namespace Fut7Manager.Admin.ViewModels {
                 TeamManagerPhone = team.TeamManagerPhone;
             }
 
+
+
              _ = LoadGroups(_league.Id);
 
 
@@ -127,6 +145,7 @@ namespace Fut7Manager.Admin.ViewModels {
             //SaveCommand = new RelayCommand(SaveTeam);
             SaveCommand = new RelayCommand(SaveTeam, CanSaveTeam);
             CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
+            UploadLogoCommand = new RelayCommand(async () => await UploadLogo());
         }
 
         private bool CanSaveTeam() {
@@ -146,6 +165,19 @@ namespace Fut7Manager.Admin.ViewModels {
             // IsLoading = false;
         }
 
+        public async Task UploadLogo() {
+            var dialog = new Microsoft.Win32.OpenFileDialog {
+                Filter = "Imágenes (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg"
+            };
+
+            if (dialog.ShowDialog() == true) {
+                LocalImagePath = dialog.FileName;
+                LogoFileName = System.IO.Path.GetFileName(dialog.FileName);
+
+                LogoUrl = LocalImagePath;
+            }
+        }
+
         void LoadGroupsFromApi(IEnumerable<GroupDto> groups) {
             AvailableGroupNumbers.Clear();
 
@@ -163,8 +195,42 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
-        private void SaveTeam() {
-            CloseAction?.Invoke(true);
+        private async void SaveTeam() {
+            try {
+                // 🔥 Subir imagen SOLO si seleccionaron una nueva
+                if (!string.IsNullOrEmpty(LocalImagePath)) {
+                    var uploadService = new UploadFileService();
+                    var url = await uploadService.UploadLogoAsync(LocalImagePath, "team");
+
+                    if (string.IsNullOrEmpty(url)) {
+                        // 🔥 Aquí está el control que te faltaba
+                        MessageBox.Show("Error al subir la imagen");
+                        return;
+                    }
+
+                    LogoUrl = url;
+                }
+
+                //var team = new TeamDto {
+                //    Id = _teamId ?? 0,
+                //    Name = TeamName,
+                //    LogoUrl = LogoUrl,
+                //    GroupId = SelectedGroup,
+                //    LeagueId = _league.Id,
+                //    TeamManagerName = TeamManager,
+                //    TeamManagerPhone = TeamManagerPhone
+                //};
+
+                //if (_teamId.HasValue)
+                //    await _teamService.EditTeamAsync(team);
+                //else
+                //    await _teamService.CreateTeamAsync(team);
+
+                CloseAction?.Invoke(true);
+            }
+            catch (Exception ex) {
+                Debug.WriteLine($"Error al guardar equipo: {ex.Message}");
+            }
         }
 
 
