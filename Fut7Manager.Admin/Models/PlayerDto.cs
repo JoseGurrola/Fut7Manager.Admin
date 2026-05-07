@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Windows;
 
 namespace Fut7Manager.Admin.Models
 {
@@ -10,18 +12,22 @@ namespace Fut7Manager.Admin.Models
         Midfielder,
         Forward
     }
+
     public class PlayerDto {
         public int Id { get; set; }
 
+        [Required]
+        [MaxLength(100)]
         public string Name { get; set; } = default!;
 
         public int JerseyNumber { get; set; }
 
-        public DateTime? DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
+        [MaxLength(20)]
         public string? Phone { get; set; }
 
-        public PlayerPosition? Position { get; set; } = default!;
+        public PlayerPosition Position { get; set; } = default!;
 
         public int Goals { get; set; }
 
@@ -29,6 +35,10 @@ namespace Fut7Manager.Admin.Models
 
         public bool Active { get; set; }
 
+        // Foreign Key
         public int TeamId { get; set; }
+
+        public string TeamName { get; set; } = default!;
+        public string TeamLogoUrl { get; set; } = default!;
     }
 }

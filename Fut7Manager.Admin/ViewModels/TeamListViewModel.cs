@@ -42,10 +42,13 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
-        public string CreateTeamTooltip =>
-    CanEditTeamInfo
-        ? "Agregar equipo"
-        : "No se pueden agregar equipos porque la liga ya inició";
+        public string CreateTeamTooltip => CanEditTeamInfo
+                ? "Agregar equipo"
+                : "No se pueden agregar equipos porque la liga ya inició";
+
+        public string DeleteTeamTooltip => CanEditTeamInfo
+                ? "Agregar equipo"
+                : "No se pueden eliminar equipos porque la liga ya inició";
 
         public bool CanEditTeamInfo => _league.Status == LeagueStatus.Upcoming;
         //private TeamDto? _selectedTeam;

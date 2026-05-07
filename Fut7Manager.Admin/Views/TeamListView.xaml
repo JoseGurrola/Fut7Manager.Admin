@@ -78,7 +78,7 @@
                                 BorderBrush="#DDDDDD"
                                 BorderThickness="1"
                                 Background="White"
-                                Padding="5">
+                                Padding="6">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -86,8 +86,8 @@
                                         <ColumnDefinition Width="1*"/>
                                     </Grid.ColumnDefinitions>
                                     <!-- Icono del equipo -->
-                                    <Grid Width="40"
-      Height="40"
+                                    <Grid Width="50"
+      Height="50"
       VerticalAlignment="Center">
                                         <!-- Fondo -->
                                         <Ellipse Fill="Transparent"/>
@@ -143,18 +143,18 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"
                                                FontWeight="Bold"
-                                               FontSize="14"/>
+                                               FontSize="18"/>
                                         <TextBlock Grid.Column="1" Text="{Binding TeamManagerName}" VerticalAlignment="Center"
-                                               FontSize="14"
+                                               FontSize="16"
                                                />
                                         <TextBlock Grid.Column="2" Text="{Binding TeamManagerPhone}" VerticalAlignment="Center"
-                                               FontSize="14"
+                                               FontSize="16"
                                                />
                                     </Grid>
                                     <!-- Indicador de estado de pago -->
                                     <Ellipse Grid.Column="2"
-                                         Width="16"
-                                         Height="16"
+                                         Width="24"
+                                         Height="24"
                                          VerticalAlignment="Center"
                                          Margin="8,0,0,0">
                                         <Ellipse.ToolTip>
@@ -218,7 +218,7 @@
                             Command="{Binding OpenTeamCommand}"
                             Margin="0,0,10,0"/>
                     <Button Content="Editar"
-                            Style="{StaticResource SecondaryButtonStyle}"
+                            Style="{StaticResource ThirdButtonStyle}"
                             Command="{Binding EditTeamCommand}"
                             Margin="0,0,10,0"/>
                     <Button Content="Pagos"
@@ -228,6 +228,9 @@
                     <Button Content="Eliminar"
                             Style="{StaticResource DeleteButtonStyle}"
                             Command="{Binding DeleteTeamCommand}"
+                            IsEnabled="{Binding CanEditTeamInfo}"
+                            ToolTip="{Binding CreateTeamTooltip}"  
+                            ToolTipService.ShowOnDisabled="True"
                             Margin="0,0,10,0"/>
                 </StackPanel>
             </Grid>

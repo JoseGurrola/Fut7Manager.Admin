@@ -1,0 +1,142 @@
+﻿using Fut7Manager.Admin.Helpers;
+using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Services;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
+using System.Windows.Input;
+
+namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
+{
+    public class CreateOrEditPlayerViewModel : BaseViewModel {
+        private readonly TeamService _teamService = new TeamService();
+        private readonly LeagueDto _league;
+        private string _name;
+        private string _dateOfBirthString = "";
+        private PlayerPosition _position;
+        private int _selectedTeamId;
+        private PositionItem _selectedPosition;
+        private DateTime? _dateOfBirth;
+        private readonly PlayerDto? _editingPlayer;
+
+
+        public List<PositionItem> Positions { get; } = new()
+        {
+            new() { Value = PlayerPosition.Goalkeeper, Label = "Portero" },
+            new() { Value = PlayerPosition.Defender, Label = "Defensa" },
+            new() { Value = PlayerPosition.Midfielder, Label = "Medio" },
+            new() { Value = PlayerPosition.Forward, Label = "Delantero" }
+        };
+
+        public ObservableCollection<TeamDto> Teams { get; } = new();
+
+        public Action<bool> CloseAction { get; set; }
+
+        
+        public string DateOfBirthString
+        {
+            get => _dateOfBirthString;
+            set {
+                _dateOfBirthString = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public PlayerPosition Position
+        {
+            get => _position;
+            set { _position = value; OnPropertyChanged(); }
+        }
+
+        public string Name
+        {
+            get => _name;
+            set {
+                _name = value;
+                OnPropertyChanged();
+                (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public DateTime? DateOfBirth
+        {
+            get => _dateOfBirth;
+            set => SetProperty(ref _dateOfBirth, value);
+        }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public CreateOrEditPlayerViewModel(LeagueDto league, PlayerDto? player = null) {
+
+            _league = league;
+            _editingPlayer = player;
+
+            SaveCommand = new RelayCommand(Save, CanSave);
+            CancelCommand = new RelayCommand(() => CloseAction(false));
+
+            if (player != null) {
+                Name = player.Name;
+                JerseyNumber = player.JerseyNumber;
+                Phone = player.Phone ?? "";
+                Position = player.Position;
+                SelectedTeamId = player.TeamId;
+                Active = player.Active;
+
+                if (player.DateOfBirth != DateTime.MinValue)
+                    DateOfBirthString = player.DateOfBirth.ToString("yyyy-MM-dd");
+            }
+
+            _ = LoadTeams();
+        }
+
+        private async Task LoadTeams() {
+            var teams = await _teamService.GetTeamsAsync(_league.Id);
+
+            Teams.Clear();
+
+            foreach (var t in teams)
+                Teams.Add(t);
+        }
+
+        // PROPERTIES
+
+
+        public int JerseyNumber { get; set; }
+
+        public string Phone { get; set; }
+
+        public bool Active { get; set; } = true;
+
+        
+        public int SelectedTeamId
+        {
+            get => _selectedTeamId;
+            set {
+                _selectedTeamId = value;
+                OnPropertyChanged();
+                (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
+        private bool CanSave() {
+            return !string.IsNullOrWhiteSpace(Name)
+                && SelectedTeamId > 0;
+        }
+
+        private void Save() {
+
+            if (DateTime.TryParse(DateOfBirthString, out var dob))
+                DateOfBirth = dob;
+
+            CloseAction(true);
+        }
+    }
+
+    public class PositionItem {
+        public PlayerPosition Value { get; set; }
+        public string Label { get; set; } = "";
+
+    }
+}
