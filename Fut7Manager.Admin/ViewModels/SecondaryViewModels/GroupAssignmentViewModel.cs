@@ -14,7 +14,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         private readonly LeagueService _leagueService;
         private readonly int _leagueId;
         private bool _isLoading;
-
+        public bool CompletedSuccessfully { get; private set; }
         public ObservableCollection<GroupWithTeams> Groups { get; set; } = new();
         public Action<bool>? CloseAction { get; set; }
 
@@ -55,6 +55,8 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         //public ICommand NextStepCommand { get; }
         public ICommand GenerateScheduleCommand { get; }
 
+        public ICommand FinishCommand { get; }
+
         public GroupAssignmentViewModel(List<TeamDto> teams, List<GroupDto> groups, int leagueId) {
             _leagueId = leagueId;
             _teamService = new TeamService();
@@ -65,7 +67,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             RandomizeCommand = new RelayCommand(Randomize);
             ConfirmCommand = new RelayCommand(async () => await Confirm());
             GenerateScheduleCommand = new RelayCommand(async () => await GenerateSchedule(), () => !IsLoading);
-
+            FinishCommand = new RelayCommand(FinalizeSetup);
             foreach (var group in groups) {
                 var groupVM = new GroupWithTeams {
                     Id = group.Id ?? 0,
@@ -77,6 +79,12 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
                 Groups.Add(groupVM);
             }
+        }
+
+        private void FinalizeSetup() {
+            CompletedSuccessfully = true;
+
+            CloseAction?.Invoke(true);
         }
 
         private async Task GenerateSchedule() {
@@ -157,6 +165,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
                         LeagueId = team.LeagueId,
                         TeamManagerName = team.TeamManagerName,
                         TeamManagerPhone = team.TeamManagerPhone,
+                        TeamPrimaryColor = team.TeamPrimaryColor,
                         Paid = team.Paid,
                         Remaining = team.Remaining
                     });

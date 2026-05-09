@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Input;
+using System.Text.RegularExpressions;
 
 namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
 {
@@ -19,7 +20,17 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
         private PositionItem _selectedPosition;
         private DateTime? _dateOfBirth;
         private readonly PlayerDto? _editingPlayer;
+        private string _email;
 
+        public string Email
+        {
+            get => _email;
+            set {
+                _email = value;
+                OnPropertyChanged();
+                (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
 
         public List<PositionItem> Positions { get; } = new()
         {
@@ -80,6 +91,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
                 Name = player.Name;
                 JerseyNumber = player.JerseyNumber;
                 Phone = player.Phone ?? "";
+                Email = player.Email ?? "";
                 Position = player.Position;
                 SelectedTeamId = player.TeamId;
                 Active = player.Active;
@@ -106,7 +118,6 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
         public int JerseyNumber { get; set; }
 
         public string Phone { get; set; }
-
         public bool Active { get; set; } = true;
 
         
@@ -122,7 +133,8 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
 
         private bool CanSave() {
             return !string.IsNullOrWhiteSpace(Name)
-                && SelectedTeamId > 0;
+            && SelectedTeamId > 0
+            && IsValidEmail(Email);
         }
 
         private void Save() {
@@ -131,6 +143,14 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
                 DateOfBirth = dob;
 
             CloseAction(true);
+        }
+
+        private bool IsValidEmail(string email) {
+            if (string.IsNullOrWhiteSpace(email))
+                return true; // opcional: vacío permitido
+
+            return Regex.IsMatch(email,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
     }
 

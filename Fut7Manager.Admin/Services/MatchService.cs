@@ -1,40 +1,19 @@
-﻿using Fut7Manager.Admin.Helpers;
-using Fut7Manager.Admin.Models;
-using Newtonsoft.Json;
+﻿using Fut7Manager.Admin.Models;
 using System.Net.Http;
-using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 namespace Fut7Manager.Admin.Services {
-    public class MatchService {
-        private readonly HttpClient _httpClient;
-
-        public MatchService() {
-            //_httpClient = new HttpClient();
-            _httpClient = new HttpClient(new HttpClientHandler {
-                ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) => true
-            });
-            _httpClient.BaseAddress = new System.Uri("https://localhost:7202");
-        }
+    public class MatchService : BaseService {
 
         public async Task<List<Fut7MatchDto>> GetMatchesAsync(int leagueId) {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/fut7matches?LeagueId={leagueId}");
 
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"/api/fut7matches?LeagueId={leagueId}");
 
-            var response = await _httpClient.SendAsync(request);
+            var result = await SendAsync<List<Fut7MatchDto>>(request);
 
-            if (!response.IsSuccessStatusCode) {
-                System.Diagnostics.Debug.WriteLine($"[GetMatchesAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
-
-                return new List<Fut7MatchDto>();
-            }
-                
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            System.Diagnostics.Debug.WriteLine($"[GetMatchesAsync] STATUS: {response.StatusCode} JSON: {json}");
-
-            return JsonConvert.DeserializeObject<List<Fut7MatchDto>>(json) ?? new List<Fut7MatchDto>();
+            return result ?? new List<Fut7MatchDto>();
         }
     }
 }

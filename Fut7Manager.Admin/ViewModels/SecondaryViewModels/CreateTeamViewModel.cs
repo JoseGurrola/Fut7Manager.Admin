@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace Fut7Manager.Admin.ViewModels {
@@ -17,14 +18,13 @@ namespace Fut7Manager.Admin.ViewModels {
         private GroupService _groupService = new GroupService();
         private string _teamManager = string.Empty;
         private string _teamManagerPhone = string.Empty;
+        private Color _teamPrimaryColor = Colors.White;
         private decimal _paid;
         private decimal _remaining;
         private LeagueDto _league;
         public ICommand UploadLogoCommand { get; }
         private string? _logoFileName;
         private string? _localImagePath;
-        
-
 
         public ObservableCollection<GroupDto> AvailableGroupNumbers { get; }
         = new ObservableCollection<GroupDto>();
@@ -103,6 +103,15 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
+        public Color TeamPrimaryColor
+        {
+            get => _teamPrimaryColor;
+            set {
+                if (SetProperty(ref _teamPrimaryColor, value))
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+
         public string? LogoFileName
         {
             get => _logoFileName;
@@ -124,7 +133,11 @@ namespace Fut7Manager.Admin.ViewModels {
         private int? _originalGroupId;
         public CreateOrEditTeamViewModel(TeamDto? team = null, LeagueDto league = default!) {
             _league = league;
+
+
             if (team != null) {
+              
+
                 _teamId = team.Id;
                 TeamName = team.Name;
                 LogoUrl = team.LogoUrl;
@@ -134,6 +147,9 @@ namespace Fut7Manager.Admin.ViewModels {
                 Paid = team.Paid;
                 TeamManager = team.TeamManagerName;
                 TeamManagerPhone = team.TeamManagerPhone;
+                TeamPrimaryColor = !string.IsNullOrWhiteSpace(team.TeamPrimaryColor)
+                        ? (Color)ColorConverter.ConvertFromString(team.TeamPrimaryColor)
+                        : Colors.White;
             }
 
 
@@ -203,28 +219,12 @@ namespace Fut7Manager.Admin.ViewModels {
                     var url = await uploadService.UploadLogoAsync(LocalImagePath, "team");
 
                     if (string.IsNullOrEmpty(url)) {
-                        // 🔥 Aquí está el control que te faltaba
                         MessageBox.Show("Error al subir la imagen");
                         return;
                     }
 
                     LogoUrl = url;
                 }
-
-                //var team = new TeamDto {
-                //    Id = _teamId ?? 0,
-                //    Name = TeamName,
-                //    LogoUrl = LogoUrl,
-                //    GroupId = SelectedGroup,
-                //    LeagueId = _league.Id,
-                //    TeamManagerName = TeamManager,
-                //    TeamManagerPhone = TeamManagerPhone
-                //};
-
-                //if (_teamId.HasValue)
-                //    await _teamService.EditTeamAsync(team);
-                //else
-                //    await _teamService.CreateTeamAsync(team);
 
                 CloseAction?.Invoke(true);
             }

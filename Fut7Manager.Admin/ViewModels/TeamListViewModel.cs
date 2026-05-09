@@ -14,6 +14,7 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly TeamService _teamService;
         private readonly AppState _appState; // ViewModel principal para navegación
         //private int _leagueId;
+
         private LeagueDto _league;
 
         private bool _isLoading;
@@ -180,7 +181,8 @@ namespace Fut7Manager.Admin.ViewModels {
                         Remaining = vm.Remaining,
 
                         TeamManagerName = vm.TeamManager,
-                        TeamManagerPhone = vm.TeamManagerPhone
+                        TeamManagerPhone = vm.TeamManagerPhone,
+                        TeamPrimaryColor = vm.TeamPrimaryColor.ToString()
                     }
                 );
 
@@ -196,7 +198,8 @@ namespace Fut7Manager.Admin.ViewModels {
                         Paid = vm.Paid,
                         Remaining = vm.Remaining,
                         TeamManagerName = vm.TeamManager,
-                        TeamManagerPhone= vm.TeamManagerPhone
+                        TeamManagerPhone = vm.TeamManagerPhone,
+                        TeamPrimaryColor = vm.TeamPrimaryColor.ToString()
                     };
 
                     Teams[index] = updateTeam;
@@ -244,7 +247,8 @@ namespace Fut7Manager.Admin.ViewModels {
                     Paid = vm.Paid,
                     Remaining = vm.Remaining,
                     TeamManagerName = vm.TeamManager,
-                    TeamManagerPhone = vm.TeamManagerPhone
+                    TeamManagerPhone = vm.TeamManagerPhone,
+                    TeamPrimaryColor = vm.TeamPrimaryColor.ToString()
 
                 });
                 if (created != null) {

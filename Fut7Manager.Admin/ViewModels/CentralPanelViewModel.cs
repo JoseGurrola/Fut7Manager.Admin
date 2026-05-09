@@ -142,29 +142,29 @@ namespace Fut7Manager.Admin.ViewModels {
 
             window.DataContext = vm;
 
-            vm.CloseAction = result =>
-            {
+            vm.CloseAction = result => {
                 window.DialogResult = result;
                 window.Close();
             };
 
             window.ShowDialog();
 
-            _league.Status = LeagueStatus.InProgress;
+            if (vm.CompletedSuccessfully) {
+                _league.Status = LeagueStatus.InProgress;
 
-            var success = await _leagueService.EditLeagueAsync(_league);
+                var success = await _leagueService.EditLeagueAsync(_league);
 
-            if (success) {
-                MessageBox.Show("Liga iniciada");
-                // 🔹 1. Recargar liga
-                _league = await _leagueService.GetLeagueByIdAsync(_league.Id);
-                LeagueStatus = _league.Status;
+                if (success) {
+                    MessageBox.Show("Liga iniciada");
+                    // 🔹 1. Recargar liga
+                    _league = await _leagueService.GetLeagueByIdAsync(_league.Id);
+                    LeagueStatus = _league.Status;
 
-                await LoadDashboardData();
-            } else {
-                MessageBox.Show("No se pudo iniciar la liga correctamente");
+                    await LoadDashboardData();
+                } else {
+                    MessageBox.Show("No se pudo iniciar la liga correctamente");
+                }
             }
-
             return;
             
         }

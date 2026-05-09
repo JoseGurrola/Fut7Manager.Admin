@@ -51,12 +51,6 @@ namespace Fut7Manager.Admin.ViewModels {
 
             AllMatches.Clear();
 
-            var grouped = matches
-                .GroupBy(m => m.MatchdayId ?? 0)
-                .OrderBy(g => g.Key);
-
-            AllMatches.Clear();
-
             foreach (var match in matches) {
                 AllMatches.Add(match);
             }

@@ -1,66 +1,33 @@
-﻿using Fut7Manager.Admin.Helpers;
-using Fut7Manager.Admin.Models;
-using Newtonsoft.Json;
+﻿using Fut7Manager.Admin.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Fut7Manager.Admin.Services {
-    public class LeagueService {
-        private readonly HttpClient _httpClient;
-
-        public LeagueService() {
-            //_httpClient = new HttpClient();
-            _httpClient = new HttpClient(new HttpClientHandler {
-                ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) => true
-            });
-            _httpClient.BaseAddress = new System.Uri("https://localhost:7202"); 
-        }
-
+    public class LeagueService : BaseService {
         public async Task<List<LeagueDto>> GetLeaguesAsync() {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/api/leagues");
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                "/api/leagues");
 
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+            var result =
+                await SendAsync<List<LeagueDto>>(request);
 
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode) {
-                System.Diagnostics.Debug.WriteLine($"[GetLeaguesAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
-                return new List<LeagueDto>();
-            }
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            System.Diagnostics.Debug.WriteLine($"[GetLeaguesAsync] STATUS: {response.StatusCode} JSON: {json}");
-
-            return JsonConvert.DeserializeObject<List<LeagueDto>>(json) ?? new List<LeagueDto>();
+            return result ?? new List<LeagueDto>();
         }
 
         public async Task<LeagueDto> GetLeagueByIdAsync(int leagueId) {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/leagues/{leagueId}");
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"/api/leagues/{leagueId}");
 
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+            var result =
+                await SendAsync<LeagueDto>(request);
 
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode) {
-                System.Diagnostics.Debug.WriteLine($"[GetLeagueByIdAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
-                return new LeagueDto();
-            }
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            System.Diagnostics.Debug.WriteLine($"[GetLeagueByIdAsync] STATUS: {response.StatusCode} JSON: {json}");
-
-            return JsonConvert.DeserializeObject<LeagueDto>(json) ?? new LeagueDto();
+            return result ?? new LeagueDto();
         }
 
         public async Task<LeagueDto?> CreateLeagueAsync(LeagueDto league) {
-            var request = new HttpRequestMessage(HttpMethod.Post, "/api/leagues");
-
-            request.Headers.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
-
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
@@ -68,27 +35,16 @@ namespace Fut7Manager.Admin.Services {
                 logoUrl = league.LogoUrl
             };
 
-            request.Content = JsonContent.Create(body);
+            var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                "/api/leagues") {
+                Content = JsonContent.Create(body)
+            };
 
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode) {
-                System.Diagnostics.Debug.WriteLine($"[CreateLeagueAsync] [{response.StatusCode}] Error");
-                return null;
-            }
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            System.Diagnostics.Debug.WriteLine($"[CreateLeagueAsync] STATUS: {response.StatusCode} JSON: {json}");
-
-            return JsonConvert.DeserializeObject<LeagueDto>(json);
+            return await SendAsync<LeagueDto>(request);
         }
 
         public async Task<bool> EditLeagueAsync(LeagueDto league) {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/api/leagues/{league.Id}");
-
-            request.Headers.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
 
             var body = new {
                 name = league.Name,
@@ -97,97 +53,58 @@ namespace Fut7Manager.Admin.Services {
                 logoUrl = league.LogoUrl
             };
 
-            request.Content = JsonContent.Create(body);
-
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode) {
-                System.Diagnostics.Debug.WriteLine($"[EditLeagueAsync] [{response.StatusCode}] Error");
-                return false;
-            }
-
-            System.Diagnostics.Debug.WriteLine($"[EditLeagueAsync] STATUS: {response.StatusCode}");
-            return true;
-        }
-
-        public async Task<List<MatchdayDto>?> GenerateSchedule(int leagueId, bool _interGroupMatches) {
-            var request = new HttpRequestMessage(HttpMethod.Post, $"/api/leagues/{leagueId}/schedule");
-
-            request.Headers.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
-
-            var body = new {
-                interGroupMatches = _interGroupMatches,
+            var request = new HttpRequestMessage(
+                HttpMethod.Put,
+                $"/api/leagues/{league.Id}") {
+                Content = JsonContent.Create(body)
             };
 
-            request.Content = JsonContent.Create(body);
-
             var response = await _httpClient.SendAsync(request);
 
-            if (!response.IsSuccessStatusCode) {
-                System.Diagnostics.Debug.WriteLine($"[GenerateSchedule] [{response.StatusCode}] Error");
-                return null;
-            }
+            return response.IsSuccessStatusCode;
+        }
 
-            var json = await response.Content.ReadAsStringAsync();
+        public async Task<List<MatchdayDto>?> GenerateSchedule(
+            int leagueId,
+            bool interGroupMatches) {
+            var body = new {
+                interGroupMatches
+            };
 
-            System.Diagnostics.Debug.WriteLine($"[GenerateSchedule] STATUS: {response.StatusCode} JSON: {json}");
+            var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                $"/api/leagues/{leagueId}/schedule") {
+                Content = JsonContent.Create(body)
+            };
 
-            return JsonConvert.DeserializeObject<List<MatchdayDto>>(json) ?? new List<MatchdayDto>();
+            return await SendAsync<List<MatchdayDto>>(request);
         }
 
         public async Task<bool> DeleteLeagueAsync(int id) {
-            var request = new HttpRequestMessage(HttpMethod.Delete, $"/api/leagues/{id}");
+            var request = new HttpRequestMessage(
+                HttpMethod.Delete,
+                $"/api/leagues/{id}");
 
-            request.Headers.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
+            var result =
+                await SendAsync<object>(request);
 
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode) {
-                System.Diagnostics.Debug.WriteLine($"[DeleteLeagueAsync] [{response.StatusCode}] Error");
-                return false;
-            }
-
-            System.Diagnostics.Debug.WriteLine($"[DeleteLeagueAsync] STATUS: {response.StatusCode}");
-
-            // La API solo devuelve 200 sin body
-            return true;
+            return result != null;
         }
 
         public async Task<LeagueDashboardDto?> GetDashboardAsync(int leagueId) {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/leagues/{leagueId}/dashboard");
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"/api/leagues/{leagueId}/dashboard");
 
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenStorage.Token);
-
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode) {
-                System.Diagnostics.Debug.WriteLine($"[GetDashboardAsync] [{response.StatusCode}]IsSuccessStatusCode: " + response.IsSuccessStatusCode);
-                return null;
-            }
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            System.Diagnostics.Debug.WriteLine($"[GetDashboardAsync] STATUS: {response.StatusCode} JSON: {json}");
-
-            return JsonConvert.DeserializeObject<LeagueDashboardDto>(json) ?? new LeagueDashboardDto();
+            return await SendAsync<LeagueDashboardDto>(request);
         }
 
         public async Task<StandingsResponseDto?> GetStandingsAsync(int leagueId) {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/leagues/{leagueId}/standings");
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"/api/leagues/{leagueId}/standings");
 
-            request.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer", TokenStorage.Token);
-
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<StandingsResponseDto>(json);
+            return await SendAsync<StandingsResponseDto>(request);
         }
     }
 }

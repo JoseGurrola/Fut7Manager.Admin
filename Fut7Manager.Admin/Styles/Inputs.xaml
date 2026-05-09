@@ -125,6 +125,14 @@
         <Setter Property="MaxLength" Value="10"/>
     </Style>
 
+    <!-- Email-->
+    <Style x:Key="EmailTextBoxStyle"
+       TargetType="TextBox"
+       BasedOn="{StaticResource ModernTextBoxStyle}">
+        <Setter Property="MaxLength" Value="255"/>
+        <Setter Property="helpers:EmailTextBoxBehavior.IsEnabled" Value="True"/>
+    </Style>
+
     <!-- PasswordBox con mismo estilo -->
     <Style x:Key="ModernPasswordBoxStyle" TargetType="PasswordBox">
         <Setter Property="Margin" Value="0,5"/>

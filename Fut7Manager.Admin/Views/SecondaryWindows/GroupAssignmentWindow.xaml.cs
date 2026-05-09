@@ -65,6 +65,7 @@ namespace Fut7Manager.Admin.Views.SecondaryWindows {
         }
 
         private void Close_Click(object sender, RoutedEventArgs e) {
+
             this.Close();
         }
     }

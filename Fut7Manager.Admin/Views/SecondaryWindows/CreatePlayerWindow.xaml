@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Fut7Manager.Admin.Views.SecondaryWindows"
+        xmlns:local="clr-namespace:Fut7Manager.Admin.Views.SecondaryWindows" xmlns:local1="clr-namespace:Fut7Manager.Admin.Helpers"
         mc:Ignorable="d"
         Title="Crear jugador"
         Width="400"
-        Height="500"
+        Height="560"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -24,6 +24,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/><!-- Teléfono -->
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -56,19 +58,38 @@
             <TextBox Grid.Row="5"
                      Text="{Binding Phone}"
                      Style="{StaticResource TelephoneTextBoxStyle}"/>
-<!--fecha de nacimiento -->
-            <StackPanel Grid.Row="6" Orientation="Horizontal">
+            <!-- Email -->
+            <TextBlock Grid.Row="6" Text="Correo"/>
+            <TextBox Grid.Row="7"
+                Style="{StaticResource EmailTextBoxStyle}">
+                <TextBox.Text>
+                    <Binding Path="Email"
+             UpdateSourceTrigger="PropertyChanged"
+             ValidatesOnDataErrors="True">
+                        <Binding.ValidationRules>
+                            <local1:EmailValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+                <TextBox.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Si ingresas correo, debe ser válido (ej: usuario@dominio.com)"/>
+                    </ToolTip>
+                </TextBox.ToolTip>
+            </TextBox>
+            <!--fecha de nacimiento -->
+            <StackPanel Grid.Row="8" Orientation="Horizontal">
                 <TextBlock Text="Fecha de nacimiento"/>
             </StackPanel>
 
-            <TextBox Grid.Row="7"
+            <TextBox Grid.Row="9"
          Text="{Binding DateOfBirthString}"
          Style="{StaticResource ModernTextBoxStyle}"
          ToolTip="Formato: YYYY-MM-DD"/>
             
             <!-- Posición -->
-            <TextBlock Grid.Row="8" Text="Posición"/>
-            <ComboBox Grid.Row="9"
+            <TextBlock Grid.Row="10" Text="Posición"/>
+            <ComboBox Grid.Row="11"
           ItemsSource="{Binding Positions}"
           SelectedValue="{Binding Position}"
           SelectedValuePath="Value"
@@ -84,11 +105,11 @@
             </ComboBox>
 
             <!-- Equipo -->
-            <StackPanel Grid.Row="10" Orientation="Horizontal">
+            <StackPanel Grid.Row="12" Orientation="Horizontal">
                 <TextBlock Text="Equipo"/>
                 <TextBlock Text=" *" Foreground="Red"/>
             </StackPanel>
-            <ComboBox Grid.Row="11"
+            <ComboBox Grid.Row="13"
           ItemsSource="{Binding Teams}"
           SelectedValuePath="Id"
           SelectedValue="{Binding SelectedTeamId}"
@@ -104,13 +125,13 @@
             </ComboBox>
 
             <!-- Activo -->
-            <CheckBox Grid.Row="12"
+            <CheckBox Grid.Row="14"
                       Content="Jugador activo"
                       IsChecked="{Binding Active}"
                       Margin="0,10,0,0"/>
 
             <!-- Botones -->
-            <StackPanel Grid.Row="13" Height="40"
+            <StackPanel Grid.Row="15" Height="40"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="0,15,0,0">

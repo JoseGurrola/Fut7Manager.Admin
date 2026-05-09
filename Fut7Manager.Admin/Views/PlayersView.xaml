@@ -4,62 +4,84 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
-	xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters"
+	xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters" 
+             xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
              mc:Ignorable="d"
-             d:DesignWidth="1000"
-             d:DesignHeight="700"
-             d:Background="White">
-
-        <UserControl.Resources>
+    d:DesignWidth="1100"
+    d:DesignHeight="700"
+    d:Background="White">
+    <UserControl.Resources>
         <conv:SafeImageConverter x:Key="SafeImageConverter"/>
     </UserControl.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-        <!-- LISTA -->
         <controls:LoadingContainer IsLoading="{Binding IsLoading}">
             <Grid Margin="20">
-
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
                 <!-- HEADER -->
-                <Grid Grid.Row="0">
-                    <TextBlock 
+                <Grid Grid.Row="0" Margin="0,0,0,15">
+                    <TextBlock
                         Text="Jugadores"
                         FontSize="24"
                         FontWeight="Bold"
-                        VerticalAlignment="Top"
-                        HorizontalAlignment="Left"/>
-
+                        VerticalAlignment="Center"/>
                     <Button Style="{StaticResource IconFloatingButtonStyle}"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
-                        Content="{StaticResource IconPlus}"
-                        Width="50"
-                        Height="50"
-                        Command="{Binding CreatePlayerCommand}"/>
+                            HorizontalAlignment="Right"
+                            Content="{StaticResource IconPlus}"
+                            Width="50"
+                            Height="50"
+                            Command="{Binding CreatePlayerCommand}"/>
                 </Grid>
-
+                <!-- FILTROS -->
+                <Border Grid.Row="1"
+                        Background="#F7F7F7"
+                        BorderBrush="#E5E5E5"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="10"
+                        Margin="0,0,0,15">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- Buscar -->
+                        <TextBox Width="260"
+                         Height="40"
+                         Margin="0,0,10,0"
+                         VerticalContentAlignment="Center"
+                         Style="{StaticResource ModernTextBoxStyle}"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                        ToolTip="Buscar por nombre, teléfono o correo"/>
+                        <!-- Equipo -->
+                        <ComboBox Width="220" x:Name="cmbTeams"
+                          Height="40"
+                          Margin="0,0,10,0"
+                          ItemsSource="{Binding TeamFilters}"
+                          SelectedItem="{Binding SelectedTeamFilter}"
+                          Style="{StaticResource ModernComboBoxStyle}"/>
+                        <!-- Estado -->
+                        <ComboBox Width="150"
+                          Height="40"
+                          ItemsSource="{Binding StatusFilters}"
+                          SelectedItem="{Binding SelectedStatusFilter}"
+                          Style="{StaticResource ModernComboBoxStyle}"/>        
+                    </StackPanel>
+                </Border>
                 <!-- LISTA -->
-                <ListView Grid.Row="1"
+                <ListView Grid.Row="2"
                           ItemsSource="{Binding Players}"
                           SelectedItem="{Binding SelectedPlayer}"
                           Background="Transparent"
                           BorderThickness="0"
                           ScrollViewer.VerticalScrollBarVisibility="Hidden">
-
-                    <!-- ITEM STYLE -->
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="0,6"/>
+                            <Setter Property="Margin" Value="0,0,0,8"/>
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -72,180 +94,194 @@
                             </Setter>
                         </Style>
                     </ListView.ItemContainerStyle>
-
-                    <!-- TEMPLATE -->
                     <ListView.ItemTemplate>
                         <DataTemplate>
-
                             <Border x:Name="card"
-                                    CornerRadius="12"
                                     Background="White"
                                     BorderBrush="#E5E5E5"
                                     BorderThickness="1"
-                                    Padding="10">
-
-                                <Grid>
+                                    CornerRadius="12" Height="50" 
+                                    Padding="0">
+                                <Grid Height="50">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="60"/><!-- Número -->
+                                        <ColumnDefinition Width="220"/><!-- Nombre -->
+                                        <ColumnDefinition Width="120"/> <!-- Posición -->
+                                        <ColumnDefinition Width="120"/> <!-- Teléfono -->
+                                        <ColumnDefinition Width="160"/> <!-- Correo -->
+                                        <ColumnDefinition Width="*"/> <!-- Equipo -->
+                                        <ColumnDefinition Width="25"/><!-- Status -->
                                     </Grid.ColumnDefinitions>
+                                    <!-- Número -->
+                                    <common:PlayerShirt
+                                         ShirtColor="{Binding TeamPrimaryColor}"
+                                        JerseyNumber="{Binding JerseyNumber}"
+                                        Width="40"
+                                        Height="40"
+                                        />
 
-                                    <!-- 🔢 JERSEY BADGE -->
-                                    <Border Width="45"
-                                            Height="45"
-                                            CornerRadius="22"
-                                            Background="#1ABC9C"
-                                            VerticalAlignment="Center">
-
-                                        <TextBlock Text="{Binding JerseyNumber}"
-                                                   Foreground="White"
-                                                   FontWeight="Bold"
-                                                   FontSize="16"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"/>
-                                    </Border>
-
-                                    <!-- 📛 INFO -->
-                                    <Grid Grid.Column="1" Margin="12,0">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-
-                                        <!-- Nombre -->
-                                        <TextBlock Text="{Binding Name}"
-                                                   FontSize="16"
-                                                   FontWeight="Bold"/>
-
-                                        <!-- Meta info -->
-                                        <StackPanel Grid.Row="1" Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Phone}"
-                                                       Margin="0,0,12,0"
-                                                       Foreground="#666"
-                                                       FontSize="13"/>
-
-                                            <TextBlock Foreground="#888" FontSize="13">
-
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-
-                                                        <Setter Property="Text" Value="Portero"/>
-
-                                                        <Style.Triggers>
-
-                                                            <DataTrigger Binding="{Binding Position}" Value="Defender">
-                                                                <Setter Property="Text" Value="Defensa"/>
-                                                            </DataTrigger>
-
-                                                            <DataTrigger Binding="{Binding Position}" Value="Midfielder">
-                                                                <Setter Property="Text" Value="Medio"/>
-                                                            </DataTrigger>
-
-                                                            <DataTrigger Binding="{Binding Position}" Value="Forward">
-                                                                <Setter Property="Text" Value="Delantero"/>
-                                                            </DataTrigger>
-
-                                                        </Style.Triggers>
-
-                                                    </Style>
-                                                </TextBlock.Style>
-
-                                            </TextBlock>
-                                        </StackPanel>
-                                    </Grid>
-
-                                    <!-- 🛡️ EQUIPO -->
-                                    <StackPanel Grid.Column="2"
-                                                Orientation="Horizontal"
-                                                VerticalAlignment="Center"
-                                                Margin="10,0">
-
-                                        <Ellipse Width="28" Height="28">
-                                            <Ellipse.Fill>
-                                                <ImageBrush ImageSource="{Binding TeamLogoUrl, Converter={StaticResource SafeImageConverter}}"/>
-                                            </Ellipse.Fill>
-                                        </Ellipse>
-
-                                        <TextBlock Text="{Binding TeamName}"
-                                                   Margin="6,0,0,0"
-                                                   VerticalAlignment="Center"
-                                                   FontSize="13"/>
-                                    </StackPanel>
-
-                                    <!-- 🟢 STATUS -->
-                                    <Ellipse Grid.Column="2"
-                                             Width="14"
-                                             Height="14"
-                                             HorizontalAlignment="Right"
-                                             VerticalAlignment="Top"
-                                             Margin="0,-4,-4,0">
-
-                                        <Ellipse.Style>
-                                            <Style TargetType="Ellipse">
-                                                <Setter Property="Fill" Value="#E74C3C"/>
+                                    <!-- Nombre -->
+                                    <TextBlock Grid.Column="1"
+                                       Text="{Binding Name}"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                       TextTrimming="CharacterEllipsis"/>           
+                                    <!-- Posición -->
+                                    <TextBlock Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       Foreground="#666"
+                                       FontSize="16">   
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="Portero"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Active}" Value="True">
-                                                        <Setter Property="Fill" Value="#2ECC71"/>
+                                                    <DataTrigger Binding="{Binding Position}" Value="Defender">
+                                                        <Setter Property="Text" Value="Defensa"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Position}" Value="Midfielder">
+                                                        <Setter Property="Text" Value="Medio"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Position}" Value="Forward">
+                                                        <Setter Property="Text" Value="Delantero"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <!-- Teléfono -->
+                                    <TextBlock Grid.Column="3"
+                                       Text="{Binding Phone}"
+                                       VerticalAlignment="Center"
+                                       Foreground="#666"
+                                       FontSize="16"/>
+                                    <!-- Correo -->
+                                    <TextBlock Grid.Column="4"
+                                       Text="{Binding Email}"
+                                       VerticalAlignment="Center"
+                                       Foreground="#888"
+                                       FontSize="16"/>
+                                    <!-- Equipo -->
+                                    <StackPanel Grid.Column="5"
+                                        Orientation="Horizontal"
+                                        VerticalAlignment="Center">
+                                        <Grid Width="100" Grid.Column="5" Height="100" VerticalAlignment="Center">
+                                            <!-- Fondo -->
+                                            <Rectangle Fill="Transparent"/>
+                                            <!-- Imagen circular -->
+                                            <Rectangle >
+                                                <Rectangle.Fill>
+                                                    <ImageBrush ImageSource="{Binding TeamLogoUrl, Converter={StaticResource SafeImageConverter}}" Stretch="UniformToFill"/>
+                                                </Rectangle.Fill>
+                                                <!-- Ocultar si no hay imagen -->
+                                                <Rectangle.Style>
+                                                    <Style TargetType="Rectangle">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Rectangle.Style>
+                                            </Rectangle>
+                                            <!-- Fallback -->
+                                            <TextBlock Text="🛡️" FontSize="50"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Foreground="{StaticResource SidebarHoverBrush}">       
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                        <TextBlock Text="{Binding TeamName}"
+                                                   Margin="10,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="16"
+                                                   TextTrimming="CharacterEllipsis"/>       
+                                    </StackPanel>
+                                    <!-- Status -->
+                                    <Ellipse Grid.Column="6" Width="16"  Height="16"  VerticalAlignment="Center">
+
+                                        <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="#E74C3C"/>
+                                            <Setter Property="ToolTip">
+                                                <Setter.Value>
+                                                    <ToolTip Content="Inactivo"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Active}" Value="True">
+                                                    <Setter Property="Fill" Value="#2ECC71"/>
+                                                    <Setter Property="ToolTip">
+                                                        <Setter.Value>
+                                                            <ToolTip Content="Activo"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
                                         </Ellipse.Style>
                                     </Ellipse>
-
                                 </Grid>
                             </Border>
-
                             <!-- HOVER -->
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
                                     <Setter TargetName="card" Property="BorderBrush" Value="#1ABC9C"/>
                                 </DataTrigger>
-
                                 <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
                                     <Setter TargetName="card" Property="BorderBrush" Value="#1ABC9C"/>
                                     <Setter TargetName="card" Property="Background" Value="#F8FDFC"/>
+ 
                                 </DataTrigger>
                             </DataTemplate.Triggers>
-
                         </DataTemplate>
                     </ListView.ItemTemplate>
-
                 </ListView>
             </Grid>
         </controls:LoadingContainer>
-
-        <!-- ===================== -->
-        <!-- BARRA INFERIOR CRUD -->
-        <!-- ===================== -->
+        <!-- FOOTER -->
         <Border Grid.Row="1"
-         Background="{StaticResource SidebarPressedBrush}"
-         Padding="10">
+                Background="{StaticResource SidebarPressedBrush}"
+                Padding="10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock VerticalAlignment="Center"
-                    Foreground="#AAAAAA"
-                    Text="Lista de jugadores"/>
-                <StackPanel Grid.Column="1" Height="30" Orientation="Horizontal">
-                    <!--<Button Content="Seleccionar"
-                     Style="{StaticResource PrimaryButtonStyle}"
-                     Command="{Binding OpenTeamCommand}"
-                     Margin="0,0,10,0"/>-->
+                           Foreground="#AAAAAA"
+                           Text="Lista de jugadores"/>
+                <StackPanel Grid.Column="1"
+                            Height="30"
+                            Orientation="Horizontal">
                     <Button Content="Editar"
-                     Style="{StaticResource ThirdButtonStyle}"
-                     Command="{Binding EditPlayerCommand}"
-                     Margin="0,0,10,0"/>
-                   
+                            Style="{StaticResource ThirdButtonStyle}"
+                            Command="{Binding EditPlayerCommand}"
+                            Margin="0,0,10,0"/>
                     <Button Content="Eliminar"
-                     Style="{StaticResource DeleteButtonStyle}"
-                     Command="{Binding DeletePlayerCommand}"
-                     Margin="0,0,10,0"/>
+                            Style="{StaticResource DeleteButtonStyle}"
+                            Command="{Binding DeletePlayerCommand}"
+                            Margin="0,0,10,0"/>
                 </StackPanel>
             </Grid>
         </Border>
-
     </Grid>
 </UserControl>

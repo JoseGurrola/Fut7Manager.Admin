@@ -26,6 +26,8 @@ namespace Fut7Manager.Admin.Models
 
         [MaxLength(20)]
         public string? Phone { get; set; }
+        [MaxLength(255)]
+        public string? Email { get; set; }
 
         public PlayerPosition Position { get; set; } = default!;
 
@@ -40,5 +42,7 @@ namespace Fut7Manager.Admin.Models
 
         public string TeamName { get; set; } = default!;
         public string TeamLogoUrl { get; set; } = default!;
+
+        public string TeamPrimaryColor { get; set; } = default!;
     }
 }

@@ -38,6 +38,8 @@ namespace Fut7Manager.Admin.Models {
 
         public string TeamManagerPhone { get; set; } = default!;
 
+        public string TeamPrimaryColor { get; set; } = default!;
+
         public int? GroupId { get; set; }
         public int LeagueId { get; set; }
     }
