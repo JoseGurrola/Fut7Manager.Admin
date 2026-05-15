@@ -6,6 +6,7 @@ using Fut7Manager.Admin.Views;
 using Fut7Manager.Admin.Views.SecondaryWindows;
 using System.Collections.ObjectModel;
 using System.DirectoryServices.ActiveDirectory;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -14,8 +15,11 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly TeamService _teamService;
         private readonly AppState _appState; // ViewModel principal para navegación
         //private int _leagueId;
+        private readonly MainViewModel _mainViewModel;
 
         private LeagueDto _league;
+        private string _sortColumn = "Name";
+        private bool _sortAscending = true;
 
         private bool _isLoading;
         public bool IsLoading
@@ -52,19 +56,28 @@ namespace Fut7Manager.Admin.ViewModels {
                 : "No se pueden eliminar equipos porque la liga ya inició";
 
         public bool CanEditTeamInfo => _league.Status == LeagueStatus.Upcoming;
-        //private TeamDto? _selectedTeam;
-        //public TeamDto? SelectedTeam
-        //{
-        //    get => _selectedTeam;
-        //    set {
-        //        if (SetProperty(ref _selectedTeam, value)) {
-        //            // Notifica a los comandos que puedan cambiar su estado (habilitado/deshabilitado)
-        //            (OpenLeagueCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        //            (EditLeagueCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        //            (DeleteLeagueCommand as RelayCommand)?.RaiseCanExecuteChanged();
-        //        }
-        //    }
-        //}
+
+        public string SortColumn
+        {
+            get => _sortColumn;
+            set {
+                _sortColumn = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool SortAscending
+        {
+            get => _sortAscending;
+            set {
+                _sortAscending = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SortDirectionSymbol));
+            }
+        }
+
+        public string SortDirectionSymbol =>
+            SortAscending ? "↑" : "↓";
 
         public ObservableCollection<TeamDto> Teams { get; } = new();
 
@@ -75,7 +88,9 @@ namespace Fut7Manager.Admin.ViewModels {
 
         public ICommand OpenPaymentsCommand { get; }
 
-        public TeamListViewModel(AppState appState, TeamService teamService, LeagueDto league) {
+        public ICommand SortCommand { get; }
+        public TeamListViewModel(MainViewModel mainViewModel, AppState appState, TeamService teamService, LeagueDto league) {
+            _mainViewModel = mainViewModel;
             _appState = appState;
             _teamService = teamService;
             _league = league;
@@ -85,20 +100,12 @@ namespace Fut7Manager.Admin.ViewModels {
             DeleteTeamCommand = new RelayCommand(async () => await DeleteTeamAsync(), CanModifyTeam);
             CreateTeamCommand = new RelayCommand(async () => await CreateTeamAsync(), () => CanEditTeamInfo);
             OpenPaymentsCommand = new RelayCommand(OpenPayments, CanModifyTeam);
-
+            SortCommand = new RelayCommand<string>(SortBy);
             //main.LeagueChanged += OnLeagueChanged;
         }
 
 
         private bool CanModifyTeam() => SelectedTeam != null;
-
-        //private async void OnLeagueChanged() {
-        //    if (_appState.SelectedLeague != null) {
-        //        await LoadTeams();
-        //    } else {
-        //        Teams.Clear();
-        //    }
-        //}
 
         private async Task LoadTeams() {
             //if(SelectedTeam == null) return;
@@ -112,6 +119,8 @@ namespace Fut7Manager.Admin.ViewModels {
             foreach (var team in teams) {
                 Teams.Add(team);
             }
+
+            ApplySorting();
 
             IsLoading = false;
         }
@@ -145,14 +154,23 @@ namespace Fut7Manager.Admin.ViewModels {
             //}
         }
 
-        private void OpenTeam() {
-            if (SelectedTeam == null) return;
+        private async void OpenTeam() {
 
-            //_main.SelectedTeam(SelectedLeague);
-            //TODO: al seleccionar que hacer, abrir vista de detalles del equipo o algo similar
-            //var vm = new TeamListViewModel(_main.AppState, _main.TeamService);
-           // _main.CurrentView = vm;
-           // _ = vm.InitializeAsync();
+            if (SelectedTeam == null)
+                return;
+
+            // guardar filtro pendiente
+            _appState.PendingPlayerTeamFilter =
+                SelectedTeam.Name;
+
+            // navegar
+            var vm = new PlayersViewModel(
+                _appState,
+                _mainViewModel.PlayerService);
+
+            _mainViewModel.CurrentView = vm;
+
+            await vm.InitializeAsync();
         }
 
         private async Task EditTeamAsync() {
@@ -170,12 +188,11 @@ namespace Fut7Manager.Admin.ViewModels {
 
             if (result == true) {
 
-                var success = await _teamService.EditTeamAsync(
-                    new TeamDto {
+                var success = await _teamService.EditTeamAsync(new TeamDto {
                         Id = SelectedTeam.Id,
                         Name = vm.TeamName,
                         LogoUrl = vm.LogoUrl,
-                        GroupId = vm.SelectedGroup,
+                        GroupId = SelectedTeam.GroupId,
                         LeagueId = _league.Id,
                         Paid = vm.Paid,
                         Remaining = vm.Remaining,
@@ -193,7 +210,7 @@ namespace Fut7Manager.Admin.ViewModels {
                         Id = SelectedTeam.Id,
                         Name = vm.TeamName,
                         LogoUrl = vm.LogoUrl,
-                        GroupId = vm.SelectedGroup,
+                        GroupId = SelectedTeam.GroupId,
                         LeagueId = _league.Id,
                         Paid = vm.Paid,
                         Remaining = vm.Remaining,
@@ -242,7 +259,7 @@ namespace Fut7Manager.Admin.ViewModels {
                 var created = await _teamService.CreateTeamAsync(new TeamDto { 
                     Name = vm.TeamName, 
                     LogoUrl = vm.LogoUrl, 
-                    GroupId = vm.SelectedGroup,
+                    //GroupId = vm.SelectedGroup,
                     LeagueId = _league.Id,
                     Paid = vm.Paid,
                     Remaining = vm.Remaining,
@@ -254,6 +271,73 @@ namespace Fut7Manager.Admin.ViewModels {
                 if (created != null) {
                     Teams.Add(created); // Añade a la colección observable
                 }
+            }
+        }
+
+        private void SortBy(string? column) {
+            if (string.IsNullOrWhiteSpace(column))
+                return;
+
+            if (SortColumn == column) {
+                SortAscending = !SortAscending;
+            } else {
+                SortColumn = column;
+                SortAscending = true;
+            }
+
+            ApplySorting();
+        }
+
+        private void ApplySorting() {
+
+            IEnumerable<TeamDto> sorted = Teams;
+
+            switch (SortColumn) {
+
+                case "Name":
+
+                sorted = SortAscending
+                    ? Teams.OrderBy(t => t.Name)
+                    : Teams.OrderByDescending(t => t.Name);
+
+                break;
+
+                case "PaymentStatus":
+
+                sorted = SortAscending
+                    ? Teams.OrderBy(t => GetPaymentOrder(t.PaymentStatus))
+                    : Teams.OrderByDescending(t => GetPaymentOrder(t.PaymentStatus));
+
+                break;
+            }
+
+            // MATERIALIZAR antes de Clear()
+            var sortedList = sorted.ToList();
+
+            var currentSelection = SelectedTeam;
+
+            Teams.Clear();
+
+            foreach (var team in sortedList)
+                Teams.Add(team);
+
+            SelectedTeam = currentSelection;
+        }
+
+        private int GetPaymentOrder(string status) {
+            switch (status) {
+
+                case "Paid":
+                return 0;
+
+                case "Partial":
+                return 1;
+
+                case "Due":
+                return 2;
+
+                default:
+                return 99;
             }
         }
     }

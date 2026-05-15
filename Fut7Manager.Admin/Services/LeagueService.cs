@@ -1,33 +1,20 @@
 ﻿using Fut7Manager.Admin.Models;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fut7Manager.Admin.Services {
     public class LeagueService : BaseService {
         public async Task<List<LeagueDto>> GetLeaguesAsync() {
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                "/api/leagues");
-
-            var result =
-                await SendAsync<List<LeagueDto>>(request);
-
-            return result ?? new List<LeagueDto>();
+            return await GetAsync<List<LeagueDto>>("/api/leagues")
+                   ?? new List<LeagueDto>();
         }
 
         public async Task<LeagueDto> GetLeagueByIdAsync(int leagueId) {
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                $"/api/leagues/{leagueId}");
-
-            var result =
-                await SendAsync<LeagueDto>(request);
-
-            return result ?? new LeagueDto();
+            return await GetAsync<LeagueDto>($"/api/leagues/{leagueId}")
+                   ?? new LeagueDto();
         }
 
-        public async Task<LeagueDto?> CreateLeagueAsync(LeagueDto league) {
+        public async Task<LeagueDto> CreateLeagueAsync(LeagueDto league) {
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
@@ -35,17 +22,10 @@ namespace Fut7Manager.Admin.Services {
                 logoUrl = league.LogoUrl
             };
 
-            var request = new HttpRequestMessage(
-                HttpMethod.Post,
-                "/api/leagues") {
-                Content = JsonContent.Create(body)
-            };
-
-            return await SendAsync<LeagueDto>(request);
+            return await PostAsync<LeagueDto>("/api/leagues", body) ?? new LeagueDto();
         }
 
         public async Task<bool> EditLeagueAsync(LeagueDto league) {
-
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
@@ -53,58 +33,51 @@ namespace Fut7Manager.Admin.Services {
                 logoUrl = league.LogoUrl
             };
 
-            var request = new HttpRequestMessage(
-                HttpMethod.Put,
-                $"/api/leagues/{league.Id}") {
-                Content = JsonContent.Create(body)
-            };
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response.IsSuccessStatusCode;
+            return await PutAsync($"/api/leagues/{league.Id}", body);
         }
 
-        public async Task<List<MatchdayDto>?> GenerateSchedule(
-            int leagueId,
-            bool interGroupMatches) {
+        // ============================================
+        // PREVIEW SCHEDULE
+        // ============================================
+
+        public async Task<List<MatchdayDto>> PreviewScheduleAsync(int leagueId, bool interGroupMatches, List<TeamGroupAssignmentDto> teams) {
             var body = new {
-                interGroupMatches
+                interGroupMatches,
+                teams
             };
 
-            var request = new HttpRequestMessage(
-                HttpMethod.Post,
-                $"/api/leagues/{leagueId}/schedule") {
-                Content = JsonContent.Create(body)
+            return await PostAsync<List<MatchdayDto>>($"/api/leagues/{leagueId}/schedule/preview", body) ?? new List<MatchdayDto>();
+        }
+
+        // ============================================
+        // FINALIZE SETUP
+        // ============================================
+
+        public async Task<bool> FinalizeSetupAsync(int leagueId,bool interGroupMatches,List<TeamGroupAssignmentDto> teams) {
+            var body = new {
+                interGroupMatches,
+                teams
             };
 
-            return await SendAsync<List<MatchdayDto>>(request);
+            await PostAsync<object>(
+                $"/api/leagues/{leagueId}/finalize-setup",
+                body);
+
+            return true;
         }
 
         public async Task<bool> DeleteLeagueAsync(int id) {
-            var request = new HttpRequestMessage(
-                HttpMethod.Delete,
-                $"/api/leagues/{id}");
-
-            var result =
-                await SendAsync<object>(request);
-
-            return result != null;
+            return await DeleteAsync($"/api/leagues/{id}");
         }
 
-        public async Task<LeagueDashboardDto?> GetDashboardAsync(int leagueId) {
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                $"/api/leagues/{leagueId}/dashboard");
-
-            return await SendAsync<LeagueDashboardDto>(request);
+        public async Task<LeagueDashboardDto> GetDashboardAsync(int leagueId) {
+            return await GetAsync<LeagueDashboardDto>(
+                $"/api/leagues/{leagueId}/dashboard") ?? new LeagueDashboardDto();
         }
 
-        public async Task<StandingsResponseDto?> GetStandingsAsync(int leagueId) {
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                $"/api/leagues/{leagueId}/standings");
-
-            return await SendAsync<StandingsResponseDto>(request);
+        public async Task<StandingsResponseDto> GetStandingsAsync(int leagueId) {
+            return await GetAsync<StandingsResponseDto>(
+                $"/api/leagues/{leagueId}/standings") ?? new StandingsResponseDto();
         }
     }
 }

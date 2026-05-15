@@ -43,7 +43,7 @@
 
                     <!-- fallback -->
                     <TextBlock Text="{StaticResource IconLeague}"
-                           FontSize="28"
+                           FontSize="40" Foreground="White"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center">
 

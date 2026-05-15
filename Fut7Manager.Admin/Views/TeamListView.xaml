@@ -4,241 +4,556 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
-	xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters" xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
-             mc:Ignorable="d"
-             d:DesignWidth="1000"
-             d:DesignHeight="700"
-             d:Background="White">
+	xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters"
+    xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
+    mc:Ignorable="d"
+    d:DesignWidth="1000"
+    d:DesignHeight="700"
+    d:Background="White">
+
     <UserControl.Resources>
+
         <conv:SafeImageConverter x:Key="SafeImageConverter"/>
         <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <conv:NullToVisibilityInverseConverter x:Key="NullToVisibilityInverseConverter"/>
+
     </UserControl.Resources>
+
     <Grid>
-        <!-- Layout: contenido + barra inferior -->
+
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <!-- ===================== -->
-        <!-- LISTA DE EQUIPOS -->
-        <!-- ===================== -->
-        <controls:LoadingContainer  Grid.Column="2" IsLoading="{Binding IsLoading}">
-            <Grid Grid.Row="0" Margin="20">
+
+        <controls:LoadingContainer Grid.Column="2"
+                                   IsLoading="{Binding IsLoading}">
+
+            <Grid Margin="20">
+
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+
+                <!-- HEADER -->
                 <Grid Grid.Row="0">
-                    <TextBlock 
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                       Text="Equipos"
-                       FontSize="24"
-                       FontWeight="Bold"/>
-                    <!-- Botón flotante para agregar equipo -->
+
+                    <TextBlock VerticalAlignment="Top"
+                               HorizontalAlignment="Left"
+                               Text="Equipos"
+                               FontSize="26"
+                               FontWeight="Bold"/>
+
                     <Button Style="{StaticResource IconFloatingButtonStyle}"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Command="{Binding CreateTeamCommand}"
-                    Content="{StaticResource IconPlus}"
-                    IsEnabled="{Binding CanEditTeamInfo}"
-                    Width="50"
-                            ToolTip="{Binding CreateTeamTooltip}"  ToolTipService.ShowOnDisabled="True"
-                    Height="50"></Button>
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Command="{Binding CreateTeamCommand}"
+                            Content="{StaticResource IconPlus}"
+                            IsEnabled="{Binding CanEditTeamInfo}"
+                            Width="50"
+                            ToolTip="{Binding CreateTeamTooltip}"
+                            ToolTipService.ShowOnDisabled="True"
+                            Height="50"/>
+
                 </Grid>
-                <ListView Grid.Row="1"
-                      x:Name="TeamsList"
-                      ItemsSource="{Binding Teams}"
-                      SelectedItem="{Binding SelectedTeam}"
-                      Background="Transparent"
-                      BorderThickness="0"
-                      ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                      MouseDoubleClick="TeamsList_MouseDoubleClick">
+
+                <!-- HEADERS -->
+                <Border Grid.Row="1"
+                        Background="#FAFAFA"
+                        BorderBrush="#EAEAEA"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="0,10"
+                        Margin="0,15,22,15">
+
+                    <Grid Margin="12,0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="2.5*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="50"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Logo -->
+                        <TextBlock Grid.Column="0"/>
+
+                        <!-- Equipo -->
+                        <Button Grid.Column="1"
+                                Style="{StaticResource ColumnHeaderButtonStyle}"
+                                Command="{Binding SortCommand}"
+                                CommandParameter="Name">
+
+                            <StackPanel Orientation="Horizontal">
+
+                                <TextBlock Text="Equipo"/>
+
+                                <TextBlock Margin="4,0,0,0"
+                                           FontSize="11">
+
+                                    <TextBlock.Style>
+
+                                        <Style TargetType="TextBlock">
+
+                                            <Setter Property="Text"
+                                                    Value=""/>
+
+                                            <Style.Triggers>
+
+                                                <DataTrigger Binding="{Binding SortColumn}"
+                                                             Value="Name">
+
+                                                    <Setter Property="Text"
+                                                            Value="{Binding SortDirectionSymbol}"/>
+
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+
+                                        </Style>
+
+                                    </TextBlock.Style>
+
+                                </TextBlock>
+
+                            </StackPanel>
+
+                        </Button>
+
+                        <!-- Manager -->
+                        <TextBlock Grid.Column="2"
+                                   Text="Manager"
+                                   Foreground="#777"
+                                   FontWeight="SemiBold"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"/>
+
+                        <!-- Teléfono -->
+                        <TextBlock Grid.Column="3"
+                                   Text="Teléfono"
+                                   Foreground="#777"
+                                   FontWeight="SemiBold"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"/>
+
+                        <!-- Jersey -->
+                        <TextBlock Grid.Column="4"/>
+
+                        <!-- Status -->
+                        <Button Grid.Column="5"
+                                Style="{StaticResource ColumnHeaderButtonStyle}"
+                                HorizontalContentAlignment="Center"
+                                Command="{Binding SortCommand}"
+                                CommandParameter="PaymentStatus">
+
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center">
+
+                                <TextBlock Text="●"/>
+
+                                <TextBlock Margin="4,0,0,0"
+                                           FontSize="11">
+
+                                    <TextBlock.Style>
+
+                                        <Style TargetType="TextBlock">
+
+                                            <Setter Property="Text"
+                                                    Value=""/>
+
+                                            <Style.Triggers>
+
+                                                <DataTrigger Binding="{Binding SortColumn}"
+                                                             Value="PaymentStatus">
+
+                                                    <Setter Property="Text"
+                                                            Value="{Binding SortDirectionSymbol}"/>
+
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+
+                                        </Style>
+
+                                    </TextBlock.Style>
+
+                                </TextBlock>
+
+                            </StackPanel>
+
+                        </Button>
+
+                    </Grid>
+
+                </Border>
+
+                <!-- LISTA -->
+                <ListView Grid.Row="2"
+                          x:Name="TeamsList"
+                          ItemsSource="{Binding Teams}"
+                          SelectedItem="{Binding SelectedTeam}"
+                          Background="Transparent"
+                          BorderThickness="0" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"           
+                            ScrollViewer.CanContentScroll="False"
+                          MouseDoubleClick="TeamsList_MouseDoubleClick">
+
                     <ListView.ItemContainerStyle>
+
                         <Style TargetType="ListViewItem">
-                            <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="0,4"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                            
+                            <Setter Property="Padding"
+                                    Value="0"/>
+
+                            <Setter Property="Margin"
+                                    Value="0,4,4,4"/>
+
+                            <Setter Property="Background"
+                                    Value="Transparent"/>
+
+                            <Setter Property="BorderThickness"
+                                    Value="0"/>
+
+                            <Setter Property="HorizontalContentAlignment"
+                                    Value="Stretch"/>
+
+                            <Setter Property="FocusVisualStyle"
+                                    Value="{x:Null}"/>
+
                             <Setter Property="Template">
+
                                 <Setter.Value>
+
                                     <ControlTemplate TargetType="ListViewItem">
                                         <ContentPresenter/>
                                     </ControlTemplate>
+
                                 </Setter.Value>
+
                             </Setter>
+
                         </Style>
+
                     </ListView.ItemContainerStyle>
+
                     <ListView.ItemTemplate>
+
                         <DataTemplate>
+
                             <Border x:Name="rowCard"
-                                CornerRadius="10"
-                                BorderBrush="#DDDDDD"
-                                BorderThickness="1"
-                                Background="White"
-                                Padding="6">
-                                <Grid>
+                                    CornerRadius="10"
+                                    BorderBrush="#DDDDDD"
+                                    BorderThickness="1"
+                                    Background="White"
+                                    Height="72"
+                                    Padding="0">
+
+                                <Grid Margin="12,0"
+                                      ClipToBounds="True">
+
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="5*"/> <!-- Icono del equipo -->
-                                        <ColumnDefinition Width="95*"/> <!-- Informacion -->
-                                        <ColumnDefinition Width="5*"/> <!-- Indicador de estado de pago -->
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="3*"/>
+                                        <ColumnDefinition Width="2.5*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="50"/>
                                     </Grid.ColumnDefinitions>
-                                    <!-- Icono del equipo -->
-                                    <Grid Width="50"
-      Height="50"
-      VerticalAlignment="Center">
-                                        <!-- Fondo -->
-                                        <Ellipse Fill="Transparent"/>
-                                        <!-- Imagen circular -->
-                                        <Ellipse>
-                                            <Ellipse.Fill>
+
+                                    <!-- ICON -->
+                                    <Grid Grid.Column="0"
+                                          Width="65"
+                                          Height="65"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center">
+
+                                        <Rectangle Fill="Transparent"/>
+
+                                        <Rectangle>
+
+                                            <Rectangle.Fill>
+
                                                 <ImageBrush ImageSource="{Binding LogoUrl, Converter={StaticResource SafeImageConverter}}"
-                        Stretch="UniformToFill"/>
-                                            </Ellipse.Fill>
-                                            <!-- Ocultar si no hay imagen -->
-                                            <Ellipse.Style>
-                                                <Style TargetType="Ellipse">
-                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                            Stretch="Uniform"/>
+
+                                            </Rectangle.Fill>
+
+                                            <Rectangle.Style>
+
+                                                <Style TargetType="Rectangle">
+
+                                                    <Setter Property="Visibility"
+                                                            Value="Visible"/>
+
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding LogoUrl}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
+
+                                                        <DataTrigger Binding="{Binding LogoUrl}"
+                                                                     Value="{x:Null}">
+
+                                                            <Setter Property="Visibility"
+                                                                    Value="Collapsed"/>
+
                                                         </DataTrigger>
-                                                        <DataTrigger Binding="{Binding LogoUrl}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
+
+                                                        <DataTrigger Binding="{Binding LogoUrl}"
+                                                                     Value="">
+
+                                                            <Setter Property="Visibility"
+                                                                    Value="Collapsed"/>
+
                                                         </DataTrigger>
+
                                                     </Style.Triggers>
+
                                                 </Style>
-                                            </Ellipse.Style>
-                                        </Ellipse>
-                                        <!-- Fallback -->
-                                        <TextBlock Text="🛡️" FontSize="30"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Foreground="{StaticResource SidebarHoverBrush}">
+
+                                            </Rectangle.Style>
+
+                                        </Rectangle>
+
+                                        <TextBlock Text="🛡️"
+                                                   FontSize="30"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{StaticResource SidebarHoverBrush}">
+
                                             <TextBlock.Style>
+
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
+
+                                                    <Setter Property="Visibility"
+                                                            Value="Collapsed"/>
+
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding LogoUrl}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Visible"/>
+
+                                                        <DataTrigger Binding="{Binding LogoUrl}"
+                                                                     Value="{x:Null}">
+
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+
                                                         </DataTrigger>
-                                                        <DataTrigger Binding="{Binding LogoUrl}" Value="">
-                                                            <Setter Property="Visibility" Value="Visible"/>
+
+                                                        <DataTrigger Binding="{Binding LogoUrl}"
+                                                                     Value="">
+
+                                                            <Setter Property="Visibility"
+                                                                    Value="Visible"/>
+
                                                         </DataTrigger>
+
                                                     </Style.Triggers>
+
                                                 </Style>
+
                                             </TextBlock.Style>
+
                                         </TextBlock>
+
                                     </Grid>
-                                    <!-- Informacion -->
-                                    <Grid Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="30*"/>
-                                            <ColumnDefinition Width="30*"/>
-                                            <ColumnDefinition Width="30*"/>
-                                            <ColumnDefinition Width="10*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"
+
+                                    <!-- EQUIPO -->
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               VerticalAlignment="Center"
                                                FontWeight="Bold"
-                                               FontSize="18"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding TeamManagerName}" VerticalAlignment="Center"
+                                               FontSize="18"
+                                               Margin="10,0,12,0"
+                                               TextWrapping="NoWrap"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                    <!-- MANAGER -->
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding TeamManagerName}"
+                                               VerticalAlignment="Center"
                                                FontSize="16"
-                                               />
-                                        <TextBlock Grid.Column="2" Text="{Binding TeamManagerPhone}" VerticalAlignment="Center"
+                                               Foreground="#666"
+                                               Margin="0,0,12,0"
+                                               TextWrapping="NoWrap"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                    <!-- TELÉFONO -->
+                                    <TextBlock Grid.Column="3"
+                                               Text="{Binding TeamManagerPhone}"
+                                               VerticalAlignment="Center"
                                                FontSize="16"
-                                               />
-                                        <common:PlayerShirt Grid.Column="3"
-                                             ShirtColor="{Binding TeamPrimaryColor}"
-                                            JerseyNumber="{x:Null}" 
-                                            Width="40"
-                                            Height="40"
-                                            />
+                                               Foreground="#666"
+                                               Margin="0,0,12,0"
+                                               TextWrapping="NoWrap"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                    <!-- PLAYER SHIRT -->
+                                    <Grid Grid.Column="4"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center">
+
+                                        <common:PlayerShirt ShirtColor="{Binding TeamPrimaryColor}"
+                                                            JerseyNumber="{x:Null}"
+                                                            Width="42"
+                                                            Height="42"/>
+
                                     </Grid>
-                                    <!-- Indicador de estado de pago -->
-                                    <Ellipse Grid.Column="2"
-                                         Width="24"
-                                         Height="24"
-                                         VerticalAlignment="Center"
-                                         Margin="8,0,0,0">
+
+                                    <!-- STATUS -->
+                                    <Ellipse Grid.Column="5"
+                                             Width="24"
+                                             Height="24"
+                                             VerticalAlignment="Center"
+                                             HorizontalAlignment="Center">
+
                                         <Ellipse.ToolTip>
+
                                             <ToolTip Style="{StaticResource DarkModernToolTipStyle}">
+
                                                 <StackPanel>
-                                                    <TextBlock Text="{Binding Paid, StringFormat=Pagado: ${0:N2}}" Foreground="{StaticResource PrimaryGreenBrush}"/>
-                                                    <TextBlock Text="{Binding Remaining, StringFormat=Restante: ${0:N2}}" Foreground="{StaticResource PrimaryRedBrush}"/>
+
+                                                    <TextBlock Text="{Binding Paid, StringFormat=Pagado: ${0:N2}}"
+                                                               Foreground="{StaticResource PrimaryGreenBrush}"/>
+
+                                                    <TextBlock Text="{Binding Remaining, StringFormat=Restante: ${0:N2}}"
+                                                               Foreground="{StaticResource PrimaryRedBrush}"/>
+
                                                 </StackPanel>
+
                                             </ToolTip>
+
                                         </Ellipse.ToolTip>
+
                                         <Ellipse.Style>
+
                                             <Style TargetType="Ellipse">
-                                                <Setter Property="Fill" Value="Gray"/>
+
+                                                <Setter Property="Fill"
+                                                        Value="Gray"/>
+
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding PaymentStatus}" Value="Paid">
-                                                        <Setter Property="Fill" Value="#2ECC71"/>
+
+                                                    <DataTrigger Binding="{Binding PaymentStatus}"
+                                                                 Value="Paid">
+
+                                                        <Setter Property="Fill"
+                                                                Value="#2ECC71"/>
+
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding PaymentStatus}" Value="Partial">
-                                                        <Setter Property="Fill" Value="#F1C40F"/>
+
+                                                    <DataTrigger Binding="{Binding PaymentStatus}"
+                                                                 Value="Partial">
+
+                                                        <Setter Property="Fill"
+                                                                Value="#F1C40F"/>
+
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding PaymentStatus}" Value="Due">
-                                                        <Setter Property="Fill" Value="#E74C3C"/>
+
+                                                    <DataTrigger Binding="{Binding PaymentStatus}"
+                                                                 Value="Due">
+
+                                                        <Setter Property="Fill"
+                                                                Value="#E74C3C"/>
+
                                                     </DataTrigger>
+
                                                 </Style.Triggers>
+
                                             </Style>
+
                                         </Ellipse.Style>
+
                                     </Ellipse>
+
                                 </Grid>
+
                             </Border>
+
                             <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
-                                    <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
+
+                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListViewItem}}"
+                                             Value="True">
+
+                                    <Setter TargetName="rowCard"
+                                            Property="BorderBrush"
+                                            Value="#1ABC9C"/>
+
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
-                                    <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
-                                    <Setter TargetName="rowCard" Property="Background" Value="#F8FDFC"/>
+
+                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}"
+                                             Value="True">
+
+                                    <Setter TargetName="rowCard"
+                                            Property="BorderBrush"
+                                            Value="#1ABC9C"/>
+
+                                    <Setter TargetName="rowCard"
+                                            Property="Background"
+                                            Value="#F8FDFC"/>
+
                                 </DataTrigger>
+
                             </DataTemplate.Triggers>
+
                         </DataTemplate>
+
                     </ListView.ItemTemplate>
+
                 </ListView>
+
             </Grid>
+
         </controls:LoadingContainer>
-        <!-- ===================== -->
-        <!-- BARRA INFERIOR CRUD -->
-        <!-- ===================== -->
+
+        <!-- FOOTER -->
         <Border Grid.Row="1"
                 Background="{StaticResource SidebarPressedBrush}"
                 Padding="10">
+
             <Grid>
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
+
                 <TextBlock VerticalAlignment="Center"
                            Foreground="#AAAAAA"
                            Text="Doble click para seleccionar el equipo"/>
-                <StackPanel Grid.Column="1" Height="30" Orientation="Horizontal">
+
+                <StackPanel Grid.Column="1"
+                            Height="30"
+                            Orientation="Horizontal">
+
                     <Button Content="Seleccionar"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding OpenTeamCommand}"
                             Margin="0,0,10,0"/>
+
                     <Button Content="Editar"
                             Style="{StaticResource ThirdButtonStyle}"
                             Command="{Binding EditTeamCommand}"
                             Margin="0,0,10,0"/>
+
                     <Button Content="Pagos"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding OpenPaymentsCommand}"
                             Margin="0,0,10,0"/>
+
                     <Button Content="Eliminar"
                             Style="{StaticResource DeleteButtonStyle}"
                             Command="{Binding DeleteTeamCommand}"
                             IsEnabled="{Binding CanEditTeamInfo}"
-                            ToolTip="{Binding CreateTeamTooltip}"  
+                            ToolTip="{Binding DeleteTeamTooltip}"
                             ToolTipService.ShowOnDisabled="True"
                             Margin="0,0,10,0"/>
+
                 </StackPanel>
+
             </Grid>
+
         </Border>
+
     </Grid>
+
 </UserControl>

@@ -31,6 +31,9 @@ namespace Fut7Manager.Admin.Models {
         public string? HomeTeamLogo { get; set; }
         public string? AwayTeamLogo { get; set; }
 
+        public string HomeTeamPrimaryColor { get; set; } = default!;
+        public string AwayTeamPrimaryColor { get; set; } = default!;
+
         public string ScoreDisplay =>
     HomeGoals.HasValue && AwayGoals.HasValue
         ? $"{HomeGoals} - {AwayGoals}"

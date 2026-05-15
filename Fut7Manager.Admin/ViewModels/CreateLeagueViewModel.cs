@@ -11,7 +11,7 @@ namespace Fut7Manager.Admin.ViewModels {
         private string _leagueName = string.Empty;
         private readonly int? _leagueId;
         private decimal _registrationFee;
-        private int _numberOfGroups = 0;
+        private int _numberOfGroups = 1;
         private LeagueStatus _status = LeagueStatus.Upcoming;
         private string? _logoUrl = string.Empty;
         public ICommand UploadLogoCommand { get; }
@@ -89,13 +89,15 @@ namespace Fut7Manager.Admin.ViewModels {
 
         public Action<bool> CloseAction { get; set; } = default!;
 
-        public CreateOrEditLeagueViewModel(LeagueDto? league = null) {
+        public CreateOrEditLeagueViewModel(LeagueDto? league = null, int? numberOfGroups = 1) {
             if (league != null) {
                 _leagueId = league.Id;
                 LeagueName = league.Name;
                 RegistrationFee = league.RegistrationFee;
                 Status = league.Status;
                 LogoUrl = league.LogoUrl;
+                if(numberOfGroups.HasValue)
+                    NumberOfGroups = numberOfGroups.Value;
 
                 ButtonText = "Guardar";
             }
@@ -122,6 +124,7 @@ namespace Fut7Manager.Admin.ViewModels {
         }
 
         private async void SaveLeague() {
+
             if (string.IsNullOrWhiteSpace(LeagueName))
                 return;
 
@@ -131,11 +134,16 @@ namespace Fut7Manager.Admin.ViewModels {
             FinalLogoUrl = LogoUrl;
 
             try {
-                // 🔥 Subir imagen si seleccionó una nueva
+
+                // Subir imagen si seleccionó una nueva
                 if (!string.IsNullOrEmpty(LocalImagePath)) {
+
                     var uploadService = new UploadFileService();
 
-                    var uploadedUrl = await uploadService.UploadLogoAsync(LocalImagePath, "league");
+                    var uploadedUrl =
+                        await uploadService.UploadLogoAsync(
+                            LocalImagePath,
+                            "league");
 
                     if (!string.IsNullOrEmpty(uploadedUrl)) {
                         FinalLogoUrl = uploadedUrl;
@@ -143,7 +151,8 @@ namespace Fut7Manager.Admin.ViewModels {
                 }
 
                 var league = new LeagueDto {
-                    Id = _leagueId ?? 0, // por si estás editando
+
+                    Id = _leagueId ?? 0,
                     Name = LeagueName,
                     RegistrationFee = RegistrationFee,
                     //NumberOfGroups = NumberOfGroups,
@@ -151,17 +160,13 @@ namespace Fut7Manager.Admin.ViewModels {
                     LogoUrl = FinalLogoUrl
                 };
 
-                // 🔹 Guardar (crear o editar)
-                // if (_leagueId.HasValue)
-                //     await _leagueService.UpdateLeagueAsync(league);
-                // else
-                //     await _leagueService.CreateLeagueAsync(league);
-
                 CloseAction?.Invoke(true);
             }
             catch (Exception ex) {
-                MessageBox.Show($"[SaveLeague] Error: {ex.Message}");
-                // aquí podrías mostrar mensaje al usuario si quieres
+
+                MessageService.Show(
+                    $"[SaveLeague] Error: {ex.Message}",
+                    "Error");
             }
         }
 

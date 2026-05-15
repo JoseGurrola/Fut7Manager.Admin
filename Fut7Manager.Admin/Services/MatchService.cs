@@ -1,19 +1,15 @@
 ﻿using Fut7Manager.Admin.Models;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Fut7Manager.Admin.Services {
-    public class MatchService : BaseService {
 
-        public async Task<List<Fut7MatchDto>> GetMatchesAsync(int leagueId) {
+    //public class MatchService : BaseService {
 
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                $"/api/fut7matches?LeagueId={leagueId}");
+    //    public async Task<List<Fut7MatchDto>> GetMatchesAsync(
+    //        int leagueId) {
 
-            var result = await SendAsync<List<Fut7MatchDto>>(request);
-
-            return result ?? new List<Fut7MatchDto>();
-        }
-    }
+    //        return await GetAsync<List<Fut7MatchDto>>(
+    //            $"/api/fut7matches?LeagueId={leagueId}")
+    //            ?? new List<Fut7MatchDto>();
+    //    }
+    //}
 }

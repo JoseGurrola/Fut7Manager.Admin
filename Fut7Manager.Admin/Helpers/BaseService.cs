@@ -1,210 +1,231 @@
 ﻿using Fut7Manager.Admin.Helpers;
+using Fut7Manager.Admin.ViewModels;
 using Newtonsoft.Json;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Windows;
 
 namespace Fut7Manager.Admin.Services {
+
     public abstract class BaseService {
+
         protected readonly HttpClient _httpClient;
 
         protected BaseService() {
             _httpClient = ApiClient.Instance;
         }
 
-        protected async Task<T?> SendAsync<T>(HttpRequestMessage request) {
+        // =========================================================
+        // REQUESTS CON RESPONSE BODY
+        // =========================================================
+
+        protected async Task<T?> SendAsync<T>(
+            HttpRequestMessage request) {
+
             try {
-                // 🔐 Bearer token automático
+
                 if (!string.IsNullOrWhiteSpace(TokenStorage.Token)) {
+
                     request.Headers.Authorization =
                         new AuthenticationHeaderValue(
                             "Bearer",
                             TokenStorage.Token);
                 }
 
-                var response = await _httpClient.SendAsync(request);
+                var response =
+                    await _httpClient.SendAsync(request);
 
-                // ❌ Error HTTP
-                if (!response.IsSuccessStatusCode) {
-                    var error = await response.Content.ReadAsStringAsync();
+                // TOKEN EXPIRADO
+                if (response.StatusCode ==
+                    HttpStatusCode.Unauthorized) {
 
-                    MessageBox.Show(
-                        $"Error del servidor:\n{response.StatusCode}\n\n{error}",
-                        "Error",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
+                    HandleUnauthorized();
 
                     return default;
                 }
 
-                // 📦 Sin contenido
+                // ERROR HTTP
+                if (!response.IsSuccessStatusCode) {
+
+                    var error =
+                        await response.Content.ReadAsStringAsync();
+
+                    MessageService.Show(
+                        $"Error del servidor:\n{response.StatusCode}\n\n{error}",
+                        "Error");
+
+                    return default;
+                }
+
+                // SIN CONTENIDO
                 if (response.Content == null)
                     return default;
 
-                var json = await response.Content.ReadAsStringAsync();
+                var json =
+                    await response.Content.ReadAsStringAsync();
 
-                // 📭 JSON vacío
                 if (string.IsNullOrWhiteSpace(json))
                     return default;
 
                 return JsonConvert.DeserializeObject<T>(json);
             }
-            catch (HttpRequestException) {
-                MessageBox.Show(
-                    "No se pudo conectar con el servidor.",
-                    "Sin conexión",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                return default;
-            }
-            catch (TaskCanceledException) {
-                MessageBox.Show(
-                    "El servidor tardó demasiado en responder.",
-                    "Timeout",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-
-                return default;
-            }
             catch (Exception ex) {
-                MessageBox.Show(
+
+                MessageService.Show(
                     ex.Message,
-                    "Error inesperado",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                    "Error");
 
                 return default;
             }
         }
+
+        // =========================================================
+        // REQUESTS SIN RESPONSE BODY
+        // =========================================================
+
+        protected async Task<bool> SendAsync(
+            HttpRequestMessage request) {
+
+            try {
+
+                if (!string.IsNullOrWhiteSpace(TokenStorage.Token)) {
+
+                    request.Headers.Authorization =
+                        new AuthenticationHeaderValue(
+                            "Bearer",
+                            TokenStorage.Token);
+                }
+
+                var response =
+                    await _httpClient.SendAsync(request);
+
+                // TOKEN EXPIRADO
+                if (response.StatusCode ==
+                    HttpStatusCode.Unauthorized) {
+
+                    HandleUnauthorized();
+
+                    return false;
+                }
+
+                // ERROR HTTP
+                if (!response.IsSuccessStatusCode) {
+
+                    var error =
+                        await response.Content.ReadAsStringAsync();
+
+                    MessageService.Show(
+                        $"Error del servidor:\n{response.StatusCode}\n\n{error}",
+                        "Error");
+
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex) {
+
+                MessageService.Show(ex.Message,"Error");
+
+                return false;
+            }
+        }
+
+        // =========================================================
+        // GET
+        // =========================================================
 
         protected async Task<T?> GetAsync<T>(string url) {
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                url);
+
+            if (string.IsNullOrWhiteSpace(url))
+                return default;
+
+            var request =
+                new HttpRequestMessage(
+                    HttpMethod.Get,
+                    url);
 
             return await SendAsync<T>(request);
         }
 
-        protected async Task<T?> PostAsync<T>(string url, object body) {
-            var request = new HttpRequestMessage(
-                HttpMethod.Post,
-                url);
+        // =========================================================
+        // POST
+        // =========================================================
 
-            request.Content = JsonContent.Create(body);
+        protected async Task<T?> PostAsync<T>(
+            string url,
+            object body) {
+
+            if (string.IsNullOrWhiteSpace(url))
+                return default;
+
+            var request =
+                new HttpRequestMessage(
+                    HttpMethod.Post,
+                    url);
+
+            request.Content =
+                JsonContent.Create(body);
 
             return await SendAsync<T>(request);
         }
 
-        protected async Task<bool> PutAsync(string url, object body) {
-            try {
-                // 🔐 Bearer token automático
-                if (!string.IsNullOrWhiteSpace(TokenStorage.Token)) {
-                    _httpClient.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue(
-                            "Bearer",
-                            TokenStorage.Token);
-                }
+        // =========================================================
+        // PUT
+        // =========================================================
 
-                var response = await _httpClient.PutAsJsonAsync(url, body);
+        protected async Task<bool> PutAsync(
+            string url,
+            object body) {
 
-                if (!response.IsSuccessStatusCode) {
-                    var error = await response.Content.ReadAsStringAsync();
+            var request =
+                new HttpRequestMessage(
+                    HttpMethod.Put,
+                    url);
 
-                    MessageBox.Show(
-                        $"Error del servidor:\n{response.StatusCode}\n\n{error}",
-                        "Error",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
+            request.Content =
+                JsonContent.Create(body);
 
-                    return false;
-                }
-
-                return true;
-            }
-            catch (HttpRequestException) {
-                MessageBox.Show(
-                    "No se pudo conectar con el servidor.",
-                    "Sin conexión",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                return false;
-            }
-            catch (TaskCanceledException) {
-                MessageBox.Show(
-                    "El servidor tardó demasiado en responder.",
-                    "Timeout",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-
-                return false;
-            }
-            catch (Exception ex) {
-                MessageBox.Show(
-                    ex.Message,
-                    "Error inesperado",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-
-                return false;
-            }
+            return await SendAsync(request);
         }
 
-        protected async Task<bool> DeleteAsync(string url) {
-            try {
-                // 🔐 Bearer token automático
-                if (!string.IsNullOrWhiteSpace(TokenStorage.Token)) {
-                    _httpClient.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue(
-                            "Bearer",
-                            TokenStorage.Token);
-                }
+        // =========================================================
+        // DELETE
+        // =========================================================
 
-                var response = await _httpClient.DeleteAsync(url);
+        protected async Task<bool> DeleteAsync(
+            string url) {
 
-                if (!response.IsSuccessStatusCode) {
-                    var error = await response.Content.ReadAsStringAsync();
+            var request =
+                new HttpRequestMessage(
+                    HttpMethod.Delete,
+                    url);
 
-                    MessageBox.Show(
-                        $"Error del servidor:\n{response.StatusCode}\n\n{error}",
-                        "Error",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
+            return await SendAsync(request);
+        }
 
-                    return false;
-                }
+        // =========================================================
+        // TOKEN EXPIRADO
+        // =========================================================
 
-                return true;
-            }
-            catch (HttpRequestException) {
-                MessageBox.Show(
-                    "No se pudo conectar con el servidor.",
-                    "Sin conexión",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+        private void HandleUnauthorized() {
 
-                return false;
-            }
-            catch (TaskCanceledException) {
-                MessageBox.Show(
-                    "El servidor tardó demasiado en responder.",
-                    "Timeout",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+            TokenStorage.Token = null;
 
-                return false;
-            }
-            catch (Exception ex) {
-                MessageBox.Show(
-                    ex.Message,
-                    "Error inesperado",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+            MessageService.Show(
+                "Tu sesión expiró. Inicia sesión nuevamente.",
+                "Sesión expirada");
 
-                return false;
-            }
+            Application.Current.Dispatcher.Invoke(() => {
+
+                var mainWindow =
+                    (MainWindow)Application.Current.MainWindow;
+
+                if (mainWindow.DataContext is MainViewModel vm)
+                    vm.Logout();
+            });
         }
     }
 }

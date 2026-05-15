@@ -114,13 +114,16 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         // =========================
 
         private async Task Save() {
+
             if (MatchDate == null) {
-                MessageBox.Show("Selecciona una fecha");
+
+                MessageService.Show("Selecciona una fecha");
                 return;
             }
 
             if (HomeGoals < 0 || AwayGoals < 0) {
-                MessageBox.Show("El marcador no puede ser negativo");
+
+                MessageService.Show("El marcador no puede ser negativo");
                 return;
             }
 
@@ -132,9 +135,14 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             var success = await _fut7MatchService.UpdateFut7MatchAsync(_match);
 
             if (success) {
+
                 CloseAction?.Invoke(true);
+
             } else {
-                MessageBox.Show("Error al guardar partido");
+
+                MessageService.Show(
+                    "Error al guardar partido",
+                    "Error");
             }
         }
 

@@ -25,9 +25,25 @@ namespace Fut7Manager.Admin.Views
         }
 
         private void LeaguesList_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+
+            DependencyObject source =
+                (DependencyObject)e.OriginalSource;
+
+            while (source != null &&
+                   source is not ListBoxItem) {
+
+                source = VisualTreeHelper.GetParent(source);
+            }
+
+            if (source is not ListBoxItem)
+                return;
+
             if (DataContext is LeagueSelectionViewModel vm &&
                 vm.OpenLeagueCommand.CanExecute(null)) {
+
                 vm.OpenLeagueCommand.Execute(null);
+
+                e.Handled = true;
             }
         }
     }

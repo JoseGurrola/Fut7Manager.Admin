@@ -4,6 +4,7 @@ using Fut7Manager.Admin.Services;
 using Fut7Manager.Admin.ViewModels.SecondaryViewModels;
 using Fut7Manager.Admin.Views.SecondaryWindows;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -14,7 +15,8 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly AppState _appState;
         private readonly PlayerService _playerService;
         private Color _teamPrimaryColor;
-
+        private string _sortColumn = "Name";
+        private bool _sortAscending = true;
         public ObservableCollection<PlayerDto> Players { get; } = new();
 
         private List<PlayerDto> _allPlayers = new();
@@ -87,10 +89,16 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
+        public string NameSortIcon => _sortColumn == "Name" ? (_sortAscending ? " ↑" : " ↓") : "";
+        public string PositionSortIcon => _sortColumn == "Position" ? (_sortAscending ? " ↑" : " ↓") : "";
+        public string TeamSortIcon => _sortColumn == "TeamName" ? (_sortAscending ? " ↑" : " ↓") : "";
+        public string NumberSortIcon => _sortColumn == "JerseyNumber" ? (_sortAscending ? " ↑" : " ↓") : "";
+        public string StatusSortIcon => _sortColumn == "Active" ? (_sortAscending ? " ↑" : " ↓") : "";
+
         public ICommand CreatePlayerCommand { get; }
         public ICommand EditPlayerCommand { get; }
         public ICommand DeletePlayerCommand { get; }
-
+        public ICommand SortCommand { get; }
         public PlayersViewModel(
             AppState appState,
             PlayerService playerService) {
@@ -106,6 +114,8 @@ namespace Fut7Manager.Admin.ViewModels {
 
             DeletePlayerCommand =
                 new RelayCommand(async () => await DeletePlayer());
+
+            SortCommand = new RelayCommand<string>(SortBy);
 
             _appState.LeagueChanged += OnLeagueChanged;
         }
@@ -124,6 +134,25 @@ namespace Fut7Manager.Admin.ViewModels {
                 await LoadPlayers();
         }
 
+        private void SortBy(string? column) {
+            if (string.IsNullOrWhiteSpace(column))
+                return;
+
+            if (_sortColumn == column) {
+                _sortAscending = !_sortAscending;
+            } else {
+                _sortColumn = column;
+                _sortAscending = true;
+            }
+
+            OnPropertyChanged(nameof(NameSortIcon));
+            OnPropertyChanged(nameof(PositionSortIcon));
+            OnPropertyChanged(nameof(TeamSortIcon));
+            OnPropertyChanged(nameof(NumberSortIcon));
+            OnPropertyChanged(nameof(StatusSortIcon));
+
+            ApplyFilters();
+        }
         private async Task LoadPlayers() {
             if (_appState.SelectedLeague == null)
                 return;
@@ -140,6 +169,16 @@ namespace Fut7Manager.Admin.ViewModels {
                 SelectedPlayer = null;
 
                 LoadTeamFilters();
+
+                // aplicar filtro pendiente desde equipos
+                if (!string.IsNullOrWhiteSpace(_appState.PendingPlayerTeamFilter)
+                    && TeamFilters.Contains(_appState.PendingPlayerTeamFilter)) {
+
+                    SelectedTeamFilter =
+                        _appState.PendingPlayerTeamFilter;
+
+                    _appState.PendingPlayerTeamFilter = null;
+                }
 
                 // Validar filtro
                 if (!TeamFilters.Contains(SelectedTeamFilter))
@@ -210,10 +249,58 @@ namespace Fut7Manager.Admin.ViewModels {
                 filtered = filtered.Where(p => !p.Active);
             }
 
+            filtered = ApplySorting(filtered);
+
             Players.Clear();
 
             foreach (var player in filtered)
                 Players.Add(player);
+        }
+
+        private IEnumerable<PlayerDto> ApplySorting(IEnumerable<PlayerDto> players) {
+
+            switch (_sortColumn) {
+
+                case "JerseyNumber":
+                return _sortAscending
+                    ? players.OrderBy(p => p.JerseyNumber)
+                    : players.OrderByDescending(p => p.JerseyNumber);
+
+                case "Name":
+                return _sortAscending
+                    ? players.OrderBy(p => p.Name)
+                    : players.OrderByDescending(p => p.Name);
+
+                case "Position":
+                return _sortAscending
+                    ? players.OrderBy(p => p.Position)
+                    : players.OrderByDescending(p => p.Position);
+
+                case "Phone":
+                return _sortAscending
+                    ? players.OrderBy(p => p.Phone)
+                    : players.OrderByDescending(p => p.Phone);
+
+                case "Email":
+                return _sortAscending
+                    ? players.OrderBy(p => p.Email)
+                    : players.OrderByDescending(p => p.Email);
+
+                case "TeamName":
+                return _sortAscending
+                    ? players.OrderBy(p => p.TeamName)
+                    : players.OrderByDescending(p => p.TeamName);
+
+                case "Active":
+                return _sortAscending
+                    ? players.OrderBy(p => p.Active)
+                    : players.OrderByDescending(p => p.Active);
+
+                default:
+                return _sortAscending
+                    ? players.OrderBy(p => p.Name)
+                    : players.OrderByDescending(p => p.Name);
+            }
         }
 
         private async Task CreatePlayerAsync() {
@@ -301,13 +388,9 @@ namespace Fut7Manager.Admin.ViewModels {
             if (SelectedPlayer == null)
                 return;
 
-            var result = MessageBox.Show(
-                $"¿Eliminar a {SelectedPlayer.Name}?",
-                "Confirmar",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+            var result = MessageService.Confirm($"¿Eliminar a {SelectedPlayer.Name}?","Confirmar");
 
-            if (result != MessageBoxResult.Yes)
+            if (!result)
                 return;
 
             var success =

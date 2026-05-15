@@ -66,27 +66,34 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <StackPanel Grid.Row="1"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right"
+                <Grid Grid.Row="1"
                             Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="Cancelar" 
+                             Style="{StaticResource DeleteButtonStyle}"
+                             Command="{Binding CancelCommand}"
+                             Height="40"
+                             />
 
-                    <Button Content="Aleatorizar"
+                    <Button Grid.Column="1" Content="Aleatorizar"
                             Style="{StaticResource ThirdButtonStyle}"
                             Command="{Binding RandomizeCommand}"
                             Height="40"
                             />
 
-                    <Button Content="Siguiente"
+                    <Button Grid.Column="2" Content="Siguiente"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding ConfirmCommand}"
                             Height="40"
                             />
-                </StackPanel>
+                </Grid>
 
             </Grid>
         </DataTemplate>
-
 
         <!-- ===================== -->
         <!-- TEMPLATE: CALENDARIO -->
@@ -101,18 +108,12 @@
                 </Grid.RowDefinitions>
 
                 <!-- OPCIONES -->
-                <Grid Margin="0,0,0,10">
+                <Grid Margin="0,10,0,10" Grid.Row="0">
                     <CheckBox Content="Permitir partidos entre grupos"
                               IsChecked="{Binding InterGroupMatches}"
                               VerticalAlignment="Center"
                              />
 
-                    <Button x:Name="btnGenerateSchedule" Content="Generar calendario"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            Command="{Binding GenerateScheduleCommand}"
-                            HorizontalAlignment="Right"
-                            Width="220"
-                            Height="40" />
                 </Grid>
 
                 <!-- MATCHDAYS -->
@@ -145,12 +146,10 @@
                                                    Margin="0,0,0,10"/>
 
                                             <ListBox ItemsSource="{Binding Matches}"
-                                             AllowDrop="True"
-                                             PreviewMouseMove="Match_PreviewMouseMove"
-                                             Drop="Match_Drop"
-                                             Background="Transparent" Width="Auto"
-                                             BorderThickness="0"
-                                             HorizontalContentAlignment="Stretch">
+         Background="Transparent"
+         Width="Auto"
+         BorderThickness="0"
+         HorizontalContentAlignment="Stretch">
 
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate>
@@ -210,15 +209,26 @@
 
                 </controls:LoadingContainer>
                 <!-- BOTÓN FINAL -->
-                <StackPanel Grid.Row="2"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right"
+                <Grid Grid.Row="2"
                             Margin="0,10,0,0">
-                    <Button Content="Finalizar"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btnBack" Content="Atras"
+                         Style="{StaticResource DeleteButtonStyle}"
+                         Command="{Binding BackCommand}"
+                         Height="40" />
+                    <Button Grid.Column="1" x:Name="btnGenerateSchedule" Content="Generar calendario"
+                            Style="{StaticResource ThirdButtonStyle}"
+                            Command="{Binding GenerateScheduleCommand}"
+                            Height="40" />
+                    <Button Grid.Column="2" Content="Finalizar"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding FinishCommand}"
                             Height="40"/>
-                </StackPanel>
+                </Grid>
 
             </Grid>
         </DataTemplate>

@@ -68,7 +68,7 @@
             <Button Style="{StaticResource IconFloatingButtonStyle}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
-                Margin="20"
+                Margin="50,20"
                 Command="{Binding CreateLeagueCommand}"
                 Content="{StaticResource IconPlus}">
                 <Button.ToolTip>

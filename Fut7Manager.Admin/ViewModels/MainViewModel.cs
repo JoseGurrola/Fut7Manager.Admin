@@ -1,6 +1,7 @@
 ﻿using Fut7Manager.Admin.Helpers;
 using Fut7Manager.Admin.Models;
 using Fut7Manager.Admin.Services;
+using Fut7Manager.Admin.Views;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -89,7 +90,7 @@ namespace Fut7Manager.Admin.ViewModels {
             ShowTeamsCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
                 if(SelectedLeague == null) return;
-                var vm = new TeamListViewModel(_appState, _teamService, SelectedLeague);
+                var vm = new TeamListViewModel(this, _appState, _teamService, SelectedLeague);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });
@@ -126,6 +127,19 @@ namespace Fut7Manager.Admin.ViewModels {
             var vm = new LeagueSelectionViewModel(this, _leagueService, _teamService, _groupService, _fut7MatchService);
             CurrentView = vm; // <- OnPropertyChanged notificará al ContentControl
             await vm.InitializeAsync();
+        }
+
+        public void Logout() {
+
+            IsAuthenticated = false;
+
+            OnPropertyChanged(nameof(IsAuthenticated));
+            OnPropertyChanged(nameof(CanNavigate));
+
+            _appState.ClearLeague();
+
+            CurrentView =
+                new LoginViewModel(LoginSucceededCallback);
         }
     }
 }

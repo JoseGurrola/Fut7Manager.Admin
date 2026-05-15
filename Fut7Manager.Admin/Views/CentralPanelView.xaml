@@ -33,7 +33,7 @@
                         Style="{StaticResource ThirdButtonStyle}"
                         FontSize="30"
                         FontWeight="Bold"
-                    Height="130"
+                        Height="130"
                         Width="400"
                         Margin="0"
                         Command="{Binding StartLeagueCommand}"/>
@@ -43,23 +43,117 @@
         <!-- IN PROGRESS -->
         <!-- ===================== -->
         <DataTemplate x:Key="InProgressTemplate">
-            <Grid Margin="10,0,10,0">
+            <Grid Margin="0,0,10,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="6*"/>
                     <ColumnDefinition Width="10"/>
                     <ColumnDefinition Width="4*"/>
                 </Grid.ColumnDefinitions>
+                <!-- ===================== -->
+                <!-- STANDINGS -->
+                <!-- ===================== -->
+                <controls:LoadingContainer Grid.Column="0"
+                           IsLoading="{Binding IsLoading}">
+
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Clasificación"
+                            FontSize="22"
+                            FontWeight="Bold"
+                            Margin="0,0,0,10"/>
+                        <ScrollViewer Grid.Row="1" Padding="0,0,3,0"
+              VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Disabled">
+
+                            <ItemsControl ItemsSource="{Binding GroupedStandings}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="10"
+         BorderBrush="{StaticResource SidebarHoverBrush}"
+         BorderThickness="1"
+         Padding="10"
+         Margin="0,4"
+         Background="{StaticResource BackgroundWindowBrush}">
+                                            <StackPanel>
+                                                <!-- Nombre del grupo -->
+                                                <TextBlock Text="{Binding GroupName}"
+                    FontWeight="SemiBold"
+                    Margin="0,0,0,8"/>
+                                                <!-- 🔹 HEADER -->
+                                                <Grid Margin="0,0,0,5">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="30"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="40"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="#" FontWeight="Bold" Foreground="Gray"/>
+                                                    <TextBlock Grid.Column="1" Text="Equipo" FontWeight="Bold" Foreground="Gray"/>
+                                                    <TextBlock Grid.Column="2" Text="PJ" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="3" Text="PG" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="4" Text="PE" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="5" Text="PP" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="6" Text="Pts" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Right"/>
+                                                </Grid>
+                                                <Border Height="1" Background="#E5E7EB" Margin="0,0,0,5"/>
+                                                <!-- 🔹 FILAS -->
+                                                <ItemsControl ItemsSource="{Binding Standings}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Grid Margin="0,2">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="30"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="40"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <!-- Posición -->
+                                                                <TextBlock Text="{Binding Position}" FontWeight="Bold"/>
+                                                                <!-- Equipo -->
+                                                                <TextBlock Grid.Column="1"  Text="{Binding TeamName}" Margin="5,0"/>
+                                                                <!-- Stats -->
+                                                                <TextBlock Grid.Column="2" Text="{Binding Played}" HorizontalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="3" Text="{Binding Won}" HorizontalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="4" Text="{Binding Draw}" HorizontalAlignment="Center"/>
+                                                                <TextBlock Grid.Column="5" Text="{Binding Lost}" HorizontalAlignment="Center"/>
+                                                                <!-- Puntos -->
+                                                                <TextBlock Grid.Column="6" Text="{Binding Points}"  HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </controls:LoadingContainer>
                 <controls:LoadingContainer  Grid.Column="2" IsLoading="{Binding IsLoading}">
-                    <StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
                         <TextBlock Text="{Binding CurrentMatchdayName}"
                            FontSize="22"
                            FontWeight="Bold"
                            Margin="10,0,0,10"/>
-                        <ListView ItemsSource="{Binding NextMatches}"
+                        <ListView Grid.Row="1" ItemsSource="{Binding NextMatches}" ScrollViewer.CanContentScroll="False"
                           SelectedItem="{Binding SelectedMatch}"
                           Background="Transparent"
-                          BorderThickness="0"
-                          MouseDoubleClick="MatchesList_MouseDoubleClick"
+                          BorderThickness="0" 
+                          MouseDoubleClick="MatchesList_MouseDoubleClick" Padding="0,0,3,0"
                           >
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
@@ -140,87 +234,9 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                    </StackPanel>
+                    </Grid>
                 </controls:LoadingContainer>
-                <!-- ===================== -->
-                <!-- STANDINGS -->
-                <!-- ===================== -->
-                <controls:LoadingContainer  Grid.Column="0" IsLoading="{Binding IsLoading}">
-                    <StackPanel>
-                        <TextBlock Text="Clasificación"
-               FontSize="22"
-               FontWeight="Bold"
-               Margin="0,0,0,10"/>
-                        <ItemsControl ItemsSource="{Binding GroupedStandings}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border CornerRadius="10"
-                        BorderBrush="{StaticResource SidebarHoverBrush}"
-                        BorderThickness="1"
-                        Padding="10"
-                        Margin="0,4"
-                        Background="{StaticResource BackgroundWindowBrush}">
-                                        <StackPanel>
-                                            <!-- Nombre del grupo -->
-                                            <TextBlock Text="{Binding GroupName}"
-                                   FontWeight="SemiBold"
-                                   Margin="0,0,0,8"/>
-                                            <!-- 🔹 HEADER -->
-                                            <Grid Margin="0,0,0,5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="30"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="40"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="#" FontWeight="Bold" Foreground="Gray"/>
-                                                <TextBlock Grid.Column="1" Text="Equipo" FontWeight="Bold" Foreground="Gray"/>
-                                                <TextBlock Grid.Column="2" Text="PJ" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
-                                                <TextBlock Grid.Column="3" Text="PG" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
-                                                <TextBlock Grid.Column="4" Text="PE" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
-                                                <TextBlock Grid.Column="5" Text="PP" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
-                                                <TextBlock Grid.Column="6" Text="Pts" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Right"/>
-                                            </Grid>
-                                            <Border Height="1" Background="#E5E7EB" Margin="0,0,0,5"/>
-                                            <!-- 🔹 FILAS -->
-                                            <ItemsControl ItemsSource="{Binding Standings}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Grid Margin="0,2">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="30"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="40"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <!-- Posición -->
-                                                            <TextBlock Text="{Binding Position}" FontWeight="Bold"/>
-                                                            <!-- Equipo -->
-                                                            <TextBlock Grid.Column="1"  Text="{Binding TeamName}" Margin="5,0"/>
-                                                            <!-- Stats -->
-                                                            <TextBlock Grid.Column="2" Text="{Binding Played}" HorizontalAlignment="Center"/>
-                                                            <TextBlock Grid.Column="3" Text="{Binding Won}" HorizontalAlignment="Center"/>
-                                                            <TextBlock Grid.Column="4" Text="{Binding Draw}" HorizontalAlignment="Center"/>
-                                                            <TextBlock Grid.Column="5" Text="{Binding Lost}" HorizontalAlignment="Center"/>
-                                                            <!-- Puntos -->
-                                                            <TextBlock Grid.Column="6" Text="{Binding Points}"  HorizontalAlignment="Right" FontWeight="SemiBold"/>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </controls:LoadingContainer>
+               
             </Grid>
         </DataTemplate>
         <!-- ===================== -->

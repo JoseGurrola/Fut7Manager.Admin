@@ -63,7 +63,8 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             }
         }
 
-        private async Task DeletePaymentAsync(PaymentDto payment) {
+        private async Task DeletePaymentAsync(PaymentDto? payment) {
+            if (payment == null) return;
             var success = await _paymentService.DeletePaymentAsync(payment.Id);
             if (success)
                 Payments.Remove(payment);

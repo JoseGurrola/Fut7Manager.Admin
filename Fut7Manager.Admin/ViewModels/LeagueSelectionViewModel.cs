@@ -15,7 +15,7 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly TeamService _teamService;
         private readonly Fut7MatchService _fut7MatchService;
         private readonly MainViewModel _main; // ViewModel principal para navegación
-
+        private bool _openingLeague;
         private bool _isLoading;
         public bool IsLoading
         {
@@ -78,56 +78,113 @@ namespace Fut7Manager.Admin.ViewModels {
         }
 
         // Abre la vista central
-        private void OpenLeague() {
-            if (SelectedLeague == null) return;
+        private async void OpenLeague() {
 
-            _main.SelectLeague(SelectedLeague);
+            if (_openingLeague)
+                return;
 
-            var vm = new CentralPanelViewModel(_main.AppState, _leagueService, SelectedLeague, _teamService, _groupService, _fut7MatchService);
+            try {
+                _openingLeague = true;
+                if (SelectedLeague == null)
+                    return;
 
-            _main.CurrentView = vm;
-            _ = vm.InitializeAsync();
+                _main.SelectLeague(SelectedLeague);
+
+                var vm = new CentralPanelViewModel(_main.AppState,_leagueService,SelectedLeague,
+                    _teamService,_groupService,_fut7MatchService);
+
+                _main.CurrentView = vm;
+
+                await vm.InitializeAsync();
+            }
+            finally {
+
+                _openingLeague = false;
+            }
         }
 
         // Edita el nombre de la liga seleccionada
         private async Task EditLeagueAsync() {
-            if (SelectedLeague == null) return;
+            System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 1");
+            if (SelectedLeague == null)
+                return;
 
-            var window = new CreateLeagueWindow(); // Reusa ventana de crear liga
-            var vm = new CreateOrEditLeagueViewModel(SelectedLeague); // ViewModel unificado para crear/editar
+            var currentGroups =
+                await _groupService.GetGroupsAsync(
+                    SelectedLeague.Id);
+            System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 2");
+            var currentGroupCount =
+                currentGroups.Count;
+           
+            var window = new CreateLeagueWindow();
+
+            var vm = new CreateOrEditLeagueViewModel(SelectedLeague, currentGroupCount);
+
             window.DataContext = vm;
 
-            // Permite que el ViewModel cierre la ventana con DialogResult
-            vm.CloseAction = result => window.DialogResult = result;
+            vm.CloseAction =result => window.DialogResult = result;
+
             window.Title = "Editar liga";
 
-            var result = window.ShowDialog(); // Muestra la ventana como modal
+            var result = window.ShowDialog();
 
-            if (result == true) {
-
-                var success = await _leagueService.EditLeagueAsync(
-                    new LeagueDto { 
-                        Id = SelectedLeague.Id, 
-                        Name = vm.LeagueName, 
-                        RegistrationFee = vm.RegistrationFee,
-                        Status = vm.Status,
-                        LogoUrl = vm.FinalLogoUrl
-                    }
-                );
-
-                if (success) {
-                    var index = Leagues.IndexOf(SelectedLeague);
-
-                    var updatedLeague = new LeagueDto {
+            if (result != true) {
+                System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 3");
+                return;
+            }
+            var success =
+                await _leagueService.EditLeagueAsync(
+                    new LeagueDto {
                         Id = SelectedLeague.Id,
                         Name = vm.LeagueName,
                         RegistrationFee = vm.RegistrationFee,
                         Status = vm.Status,
                         LogoUrl = vm.FinalLogoUrl
-                    };
+                    });
 
-                    Leagues[index] = updatedLeague;
-                    SelectedLeague = updatedLeague;
+            if (!success) {
+                System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 4");
+                return;
+            }
+
+            var index = Leagues.IndexOf(SelectedLeague);
+
+            var updatedLeague =
+                new LeagueDto {
+                    Id = SelectedLeague.Id,
+                    Name = vm.LeagueName,
+                    RegistrationFee = vm.RegistrationFee,
+                    Status = vm.Status,
+                    LogoUrl = vm.FinalLogoUrl
+                };
+
+            Leagues[index] = updatedLeague;
+
+            SelectedLeague = updatedLeague;
+
+            // Siempre mínimo 1 grupo
+            if (vm.NumberOfGroups <= 0)
+                vm.NumberOfGroups = 1;
+
+            // Solo tocar grupos si cambió la cantidad
+            if (vm.NumberOfGroups != currentGroupCount) {
+                System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 5");
+                // Borrar grupos actuales
+                foreach (var g in currentGroups) {
+                    if (g.Id.HasValue) {
+                        await _groupService.DeleteGroupAsync(
+                            g.Id.Value);
+                    }
+                }
+                System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 6");
+                // Crear nuevos grupos
+                for (var i = 0; i < vm.NumberOfGroups; i++) {
+
+                    await _groupService.CreateGroupAsync(
+                        new GroupDto {
+                            Name = $"Grupo {i + 1}", 
+                            LeagueId = SelectedLeague.Id
+                        });
                 }
             }
         }
@@ -135,7 +192,7 @@ namespace Fut7Manager.Admin.ViewModels {
         // Crea una nueva liga
         private async Task CreateLeagueAsync() {
             var window = new CreateLeagueWindow();
-            var vm = new CreateOrEditLeagueViewModel(null); // Null indica creación
+            var vm = new CreateOrEditLeagueViewModel(null, null); // Null indica creación
             window.DataContext = vm;
 
             vm.CloseAction = result => window.DialogResult = result;
@@ -145,14 +202,14 @@ namespace Fut7Manager.Admin.ViewModels {
             if (result == true) {
 
                 var created = await _leagueService.CreateLeagueAsync(new LeagueDto {
-                    Name = vm.LeagueName, 
+                    Name = vm.LeagueName,
                     RegistrationFee = vm.RegistrationFee,
                     LogoUrl = vm.FinalLogoUrl
                 });
                 if (created != null) {
                     if (vm.NumberOfGroups == 0) vm.NumberOfGroups = 1;
-                    for( var i = 0; i < vm.NumberOfGroups; i++) {
-                        await _groupService.CreateGroupAsync(new GroupDto { Name = $"Grupo {i + 1}", LeagueId = created.Id});
+                    for (var i = 0; i < vm.NumberOfGroups; i++) {
+                        await _groupService.CreateGroupAsync(new GroupDto { Name = $"Grupo {i + 1}", LeagueId = created.Id });
                     }
                     Leagues.Add(created); // Añade a la colección observable
                 }

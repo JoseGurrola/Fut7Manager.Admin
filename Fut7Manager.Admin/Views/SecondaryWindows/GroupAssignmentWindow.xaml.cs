@@ -46,23 +46,6 @@ namespace Fut7Manager.Admin.Views.SecondaryWindows {
         // ============================
         // 🔹 DRAG PARTIDOS
         // ============================
-        private void Match_PreviewMouseMove(object sender, MouseEventArgs e) {
-            if (e.LeftButton != MouseButtonState.Pressed) return;
-
-            if (sender is Border border && border.DataContext is Fut7MatchDto match) {
-                DragDrop.DoDragDrop(border, match, DragDropEffects.Move);
-            }
-        }
-
-        private void Match_Drop(object sender, DragEventArgs e) {
-            if (!e.Data.GetDataPresent(typeof(Fut7MatchDto))) return;
-
-            var match = (Fut7MatchDto)e.Data.GetData(typeof(Fut7MatchDto));
-
-            if (DataContext is GroupAssignmentViewModel vm) {
-                vm.MoveMatch(match, (sender as FrameworkElement)?.DataContext as MatchdayDto);
-            }
-        }
 
         private void Close_Click(object sender, RoutedEventArgs e) {
 

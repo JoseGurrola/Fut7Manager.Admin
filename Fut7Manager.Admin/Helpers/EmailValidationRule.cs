@@ -8,7 +8,7 @@ using System.Windows.Controls;
 namespace Fut7Manager.Admin.Helpers {
     public class EmailValidationRule : ValidationRule {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo) {
-            string email = value as string;
+            string? email = value as string;
 
             if (string.IsNullOrWhiteSpace(email))
                 return ValidationResult.ValidResult;

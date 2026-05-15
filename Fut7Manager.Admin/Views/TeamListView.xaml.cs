@@ -22,10 +22,8 @@ namespace Fut7Manager.Admin.Views {
         }
 
         private void TeamsList_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if (DataContext is TeamListViewModel vm &&
-                vm.OpenTeamCommand?.CanExecute(null) == true) {
+            if (DataContext is TeamListViewModel vm)
                 vm.OpenTeamCommand.Execute(null);
-            }
         }
     }
 

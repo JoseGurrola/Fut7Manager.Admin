@@ -42,6 +42,7 @@ namespace Fut7Manager.Admin.ViewModels {
             if (result.Success && result.Token != null) {
                 TokenStorage.Token = result.Token;
                 LoginSucceededCallback.Invoke();
+                SessionManager.IsSessionExpiredHandled = false;
             } else {
                 ErrorMessage = result.Error ?? "Usuario o contraseña incorrectos.";
                 OnPropertyChanged(nameof(ErrorMessage));

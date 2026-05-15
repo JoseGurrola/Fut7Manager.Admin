@@ -174,100 +174,127 @@
     </Style>
 
     <!-- combobox moderno-->
-    <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+    <Style x:Key="ModernComboBoxStyle"
+       TargetType="ComboBox">
+
         <Setter Property="Margin" Value="0,5"/>
-        <Setter Property="Padding" Value="8"/>
+        <Setter Property="Padding" Value="12,8"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="BorderBrush" Value="#CCCCCC"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="White"/>
         <Setter Property="Foreground" Value="Black"/>
-        <Setter Property="Height" Value="60"/>
+        <Setter Property="Height" Value="50"/>
 
         <Setter Property="Template">
             <Setter.Value>
+
                 <ControlTemplate TargetType="ComboBox">
+
                     <Border x:Name="border"
-                        CornerRadius="4"
+                        Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        Background="{TemplateBinding Background}">
+                        CornerRadius="6">
 
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="30"/>
-                            </Grid.ColumnDefinitions>
 
-                            <!-- Texto seleccionado -->
-                            <ContentPresenter x:Name="contentPresenter"
-                  Margin="{TemplateBinding Padding}"
-                  VerticalAlignment="Center"
-                  HorizontalAlignment="Left"
-                  RecognizesAccessKey="True"
-                  Content="{TemplateBinding SelectionBoxItem}"
-                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"/>
+                            <!-- Área clickeable -->
+                            <ToggleButton Background="Transparent"
+                                      BorderThickness="0"
+                                      Focusable="False"
+                                      IsChecked="{Binding IsDropDownOpen,
+                                          RelativeSource={RelativeSource TemplatedParent},
+                                          Mode=TwoWay}"/>
+
+                            <!-- Texto -->
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Left"
+                                          RecognizesAccessKey="True"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                          ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"/>
 
                             <!-- Flecha -->
-                            <ToggleButton Grid.Column="1" 
-                                      Focusable="False"
-                                      Background="{StaticResource SidebarHoverBrush}"
-                                          Foreground="White"
-                                          
-                                      BorderThickness="0"
-                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
-                                <TextBlock Text="▼"
-                                        
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       FontSize="16"/>
-                            </ToggleButton>
+                            <TextBlock Text="▾"
+                                   FontSize="16"
+                                   Foreground="#666666"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Margin="0,0,14,0"
+                                   IsHitTestVisible="False"/>
 
                             <!-- Popup -->
                             <Popup x:Name="PART_Popup"
-                               Placement="Bottom" 
-                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               Placement="Bottom"
                                AllowsTransparency="True"
                                Focusable="False"
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
                                PopupAnimation="Slide">
 
-                                <Border CornerRadius="4"
+                                <Border Background="White"
                                     BorderBrush="#CCCCCC"
-                                    MinWidth="{TemplateBinding ActualWidth}"
                                     BorderThickness="1"
-                                    Background="White">
+                                    CornerRadius="6"
+                                    MinWidth="{TemplateBinding ActualWidth}">
+
                                     <ScrollViewer>
                                         <ItemsPresenter/>
                                     </ScrollViewer>
+
                                 </Border>
+
                             </Popup>
+
                         </Grid>
+
                     </Border>
 
                     <ControlTemplate.Triggers>
 
-                        <!-- Foco -->
-                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                        <!-- Hover -->
+                        <Trigger Property="IsMouseOver"
+                             Value="True">
+
                             <Setter TargetName="border"
                                 Property="BorderBrush"
                                 Value="{StaticResource SidebarHoverBrush}"/>
+
                         </Trigger>
 
-                        <!-- Deshabilitado -->
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="#888888"/>
+                        <!-- Focus -->
+                        <Trigger Property="IsKeyboardFocusWithin"
+                             Value="True">
+
+                            <Setter TargetName="border"
+                                Property="BorderBrush"
+                                Value="{StaticResource SidebarHoverBrush}"/>
+
+                        </Trigger>
+
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled"
+                             Value="False">
+
+                            <Setter Property="Foreground"
+                                Value="#888888"/>
+
                             <Setter TargetName="border"
                                 Property="Background"
                                 Value="#F0F0F0"/>
+
                         </Trigger>
 
                     </ControlTemplate.Triggers>
+
                 </ControlTemplate>
+
             </Setter.Value>
         </Setter>
-    </Style>
 
+    </Style>
+    
     <!--DataPicker (fecha)-->
     <Style x:Key="ModernDatePickerStyle" TargetType="DatePicker">
 

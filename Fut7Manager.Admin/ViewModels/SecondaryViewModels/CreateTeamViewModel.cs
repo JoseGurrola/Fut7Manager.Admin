@@ -15,7 +15,7 @@ namespace Fut7Manager.Admin.ViewModels {
         private string _teamName = string.Empty;
         private readonly int? _teamId;
         private string? _logoUrl = string.Empty;
-        private GroupService _groupService = new GroupService();
+        //private GroupService _groupService = new GroupService();
         private string _teamManager = string.Empty;
         private string _teamManagerPhone = string.Empty;
         private Color _teamPrimaryColor = Colors.White;
@@ -31,16 +31,16 @@ namespace Fut7Manager.Admin.ViewModels {
 
         public bool CanEditTeamInfo => _league.Status == LeagueStatus.Upcoming;
 
-        private int? _selectedGroup;
-        public int? SelectedGroup
-        {
-            get => _selectedGroup;
-            set {
-                _selectedGroup = value;
-                System.Diagnostics.Debug.WriteLine($"SelectedGroup changed to: {_selectedGroup}");
-                OnPropertyChanged();
-            }
-        }
+        //private int? _selectedGroup;
+        //public int? SelectedGroup
+        //{
+        //    get => _selectedGroup;
+        //    set {
+        //        _selectedGroup = value;
+        //        System.Diagnostics.Debug.WriteLine($"SelectedGroup changed to: {_selectedGroup}");
+        //        OnPropertyChanged();
+        //    }
+        //}
 
         private readonly TeamService _teamService = new TeamService();
 
@@ -130,7 +130,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
         public Action<bool> CloseAction { get; set; } = default!;
 
-        private int? _originalGroupId;
+        //private int? _originalGroupId;
         public CreateOrEditTeamViewModel(TeamDto? team = null, LeagueDto league = default!) {
             _league = league;
 
@@ -142,7 +142,7 @@ namespace Fut7Manager.Admin.ViewModels {
                 TeamName = team.Name;
                 LogoUrl = team.LogoUrl;
                 ButtonText = "Guardar";
-                _originalGroupId = team.GroupId;
+                //_originalGroupId = team.GroupId;
                 Remaining = team.Remaining;
                 Paid = team.Paid;
                 TeamManager = team.TeamManagerName;
@@ -154,7 +154,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
 
 
-             _ = LoadGroups(_league.Id);
+             //_ = LoadGroups(_league.Id);
 
 
             // Use RelayCommand that supports async properly with fire-and-forget
@@ -169,17 +169,17 @@ namespace Fut7Manager.Admin.ViewModels {
                 && !string.IsNullOrWhiteSpace(TeamManager)
                 && !string.IsNullOrWhiteSpace(TeamManagerPhone)
                 && TeamManagerPhone.Length == 10
-                && SelectedGroup != null;
+                /*&& SelectedGroup != null*/;
         }
 
-        public async Task LoadGroups(int leagueId) {
-            //IsLoading = true;
-            var groups = await _groupService.GetGroupsAsync(leagueId);
+        //public async Task LoadGroups(int leagueId) {
+        //    //IsLoading = true;
+        //    var groups = await _groupService.GetGroupsAsync(leagueId);
 
-            LoadGroupsFromApi(groups);
+        //    LoadGroupsFromApi(groups);
             
-            // IsLoading = false;
-        }
+        //    // IsLoading = false;
+        //}
 
         public async Task UploadLogo() {
             var dialog = new Microsoft.Win32.OpenFileDialog {
@@ -194,22 +194,22 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
-        void LoadGroupsFromApi(IEnumerable<GroupDto> groups) {
-            AvailableGroupNumbers.Clear();
+        //void LoadGroupsFromApi(IEnumerable<GroupDto> groups) {
+        //    AvailableGroupNumbers.Clear();
 
-            foreach (var g in groups)
-                AvailableGroupNumbers.Add(g);
+        //    foreach (var g in groups)
+        //        AvailableGroupNumbers.Add(g);
 
-            // Seleccionar primer grupo por defecto
-            if (_originalGroupId.HasValue)
-                SelectedGroup = _originalGroupId.Value;
-            else {
-            if (AvailableGroupNumbers.Count > 0) {
+        //    // Seleccionar primer grupo por defecto
+        //    if (_originalGroupId.HasValue)
+        //        SelectedGroup = _originalGroupId.Value;
+        //    else {
+        //    if (AvailableGroupNumbers.Count > 0) {
 
-                SelectedGroup = AvailableGroupNumbers[0].Id;
-            } 
-            }
-        }
+        //        SelectedGroup = AvailableGroupNumbers[0].Id;
+        //    } 
+        //    }
+        //}
 
         private async void SaveTeam() {
             try {
@@ -219,7 +219,7 @@ namespace Fut7Manager.Admin.ViewModels {
                     var url = await uploadService.UploadLogoAsync(LocalImagePath, "team");
 
                     if (string.IsNullOrEmpty(url)) {
-                        MessageBox.Show("Error al subir la imagen");
+                        MessageService.Show("Error al subir la imagen", "Error");
                         return;
                     }
 

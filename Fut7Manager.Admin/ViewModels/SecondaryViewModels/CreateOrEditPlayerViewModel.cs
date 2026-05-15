@@ -13,14 +13,15 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
     public class CreateOrEditPlayerViewModel : BaseViewModel {
         private readonly TeamService _teamService = new TeamService();
         private readonly LeagueDto _league;
-        private string _name;
+        private string _name = "";
+        private string _email = "";
         private string _dateOfBirthString = "";
         private PlayerPosition _position;
         private int _selectedTeamId;
-        private PositionItem _selectedPosition;
+        //private PositionItem _selectedPosition;
         private DateTime? _dateOfBirth;
         private readonly PlayerDto? _editingPlayer;
-        private string _email;
+        
 
         public string Email
         {
@@ -42,7 +43,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
 
         public ObservableCollection<TeamDto> Teams { get; } = new();
 
-        public Action<bool> CloseAction { get; set; }
+        public Action<bool>? CloseAction { get; set; }
 
         
         public string DateOfBirthString
@@ -85,7 +86,8 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
             _editingPlayer = player;
 
             SaveCommand = new RelayCommand(Save, CanSave);
-            CancelCommand = new RelayCommand(() => CloseAction(false));
+ 
+            CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
 
             if (player != null) {
                 Name = player.Name;
@@ -117,7 +119,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
 
         public int JerseyNumber { get; set; }
 
-        public string Phone { get; set; }
+        public string Phone { get; set; } = "";
         public bool Active { get; set; } = true;
 
         
@@ -142,7 +144,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
             if (DateTime.TryParse(DateOfBirthString, out var dob))
                 DateOfBirth = dob;
 
-            CloseAction(true);
+            CloseAction?.Invoke(true);
         }
 
         private bool IsValidEmail(string email) {

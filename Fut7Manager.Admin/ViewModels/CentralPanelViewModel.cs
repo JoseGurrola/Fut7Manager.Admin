@@ -132,7 +132,7 @@ namespace Fut7Manager.Admin.ViewModels {
         private async Task StartLeague() {
             // Validación básica
             if (TotalTeams < 2) {
-                MessageBox.Show("No hay suficientes equipos para iniciar la liga");
+                MessageService.Show("No hay suficientes equipos para iniciar la liga", "Error");
                 return;
             }
 
@@ -155,14 +155,18 @@ namespace Fut7Manager.Admin.ViewModels {
                 var success = await _leagueService.EditLeagueAsync(_league);
 
                 if (success) {
-                    MessageBox.Show("Liga iniciada");
+
+                    MessageService.Show("Liga iniciada");
+
                     // 🔹 1. Recargar liga
                     _league = await _leagueService.GetLeagueByIdAsync(_league.Id);
                     LeagueStatus = _league.Status;
 
                     await LoadDashboardData();
+
                 } else {
-                    MessageBox.Show("No se pudo iniciar la liga correctamente");
+
+                    MessageService.Show("No se pudo iniciar la liga correctamente", "Error");
                 }
             }
             return;

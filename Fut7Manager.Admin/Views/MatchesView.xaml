@@ -35,12 +35,8 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
-                <TextBlock 
-        VerticalAlignment="Top"
-        HorizontalAlignment="Left"
-           Text="Calendario"
-           FontSize="24"
-           FontWeight="Bold"/>
+                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left"    Text="Calendario"
+                           FontSize="26" FontWeight="Bold"/>
             </Grid>
             <!-- CONTENIDO -->
             <Grid Grid.Row="1">
@@ -54,12 +50,11 @@
                   ScrollViewer.VerticalScrollBarVisibility="Hidden"
                   MouseDoubleClick="Match_MouseDoubleClick"
                   VirtualizingPanel.IsVirtualizing="True"
-VirtualizingPanel.IsVirtualizingWhenGrouping="True"
-VirtualizingPanel.VirtualizationMode="Recycling"
-ScrollViewer.CanContentScroll="True"
+                    VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                    VirtualizingPanel.VirtualizationMode="Recycling"
+                    ScrollViewer.CanContentScroll="True"
                       ScrollViewer.IsDeferredScrollingEnabled="True">
 
-                    <!-- Quitar estilo default -->
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
 
@@ -73,20 +68,14 @@ ScrollViewer.CanContentScroll="True"
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListViewItem">
-
                                         <Border x:Name="Bd"
-                            CornerRadius="10"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="#E5E7EB"
-                            BorderThickness="0"
-                            Padding="0">
-
+                                            CornerRadius="10"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="#E5E7EB"
+                                            BorderThickness="0"
+                                            Padding="0">
                                             <ContentPresenter/>
-
                                         </Border>
-
-
-
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -103,7 +92,6 @@ ScrollViewer.CanContentScroll="True"
                                     Padding="6"
                                     Background="#F3F4F6"
                                     CornerRadius="8">
-
                                         <TextBlock Text="{Binding Name, StringFormat=Jornada {0}}"
                                            FontSize="18"
                                            FontWeight="Bold"
@@ -119,25 +107,22 @@ ScrollViewer.CanContentScroll="True"
                         <DataTemplate>
 
                             <Border x:Name="rowCard"
-        CornerRadius="10"
-        Background="{StaticResource BackgroundWindowBrush}"
-        BorderBrush="#E5E7EB"
-        BorderThickness="1"
-        Padding="10"
-        Margin="0,3">
+                                CornerRadius="10"
+                                Background="{StaticResource BackgroundWindowBrush}"
+                                BorderBrush="#E5E7EB"
+                                BorderThickness="1"
+                                Padding="10"
+                                Margin="0,3">
 
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <!-- Icon Home -->
-                                        <ColumnDefinition Width="4*"/>
-                                        <!-- Home -->
-                                        <ColumnDefinition Width="3*"/>
-                                        <!-- Score -->
-                                        <ColumnDefinition Width="4*"/>
-                                        <!-- Away -->
-                                        <ColumnDefinition Width="1*"/>
-                                        <!-- Icon Away -->
+                                        <ColumnDefinition Width="1*"/><!-- Icon Home -->
+                                        <ColumnDefinition Width="4*"/><!-- Date and Home -->
+                                        <ColumnDefinition Width="1*"/><!-- Localshirt -->
+                                        <ColumnDefinition Width="3*"/><!-- Score -->
+                                        <ColumnDefinition Width="1*"/><!-- AwayShirt -->
+                                        <ColumnDefinition Width="4*"/><!-- locate and Away -->
+                                        <ColumnDefinition Width="1*"/><!-- Icon Away -->
                                     </Grid.ColumnDefinitions>
 
                                     <!-- ICONO HOME -->
@@ -147,7 +132,7 @@ ScrollViewer.CanContentScroll="True"
       Margin="0,0,10,0">
 
                                         <!-- Fondo -->
-                                        <Ellipse Fill="Transparent"/>
+                                        <Rectangle Fill="Transparent"/>
 
                                         <!-- Imagen -->
                                         <Ellipse>
@@ -172,17 +157,12 @@ ScrollViewer.CanContentScroll="True"
                                         </Ellipse>
 
                                         <!-- Fallback -->
-                                        <TextBlock Text="{StaticResource IconTeam}"
-               FontFamily="Segoe MDL2 Assets"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center"
-               Foreground="#777"
-               FontSize="18">
-
+                                        <TextBlock Text="🛡️" FontSize="30" HorizontalAlignment="Center" 
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{StaticResource SidebarHoverBrush}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
-
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding HomeTeamLogo}" Value="{x:Null}">
                                                             <Setter Property="Visibility" Value="Visible"/>
@@ -194,10 +174,9 @@ ScrollViewer.CanContentScroll="True"
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-
                                     </Grid>
 
-
+                                    <!-- Date and Home -->
                                     <StackPanel Grid.Column="1" >
                                         <!-- DATE -->
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -217,8 +196,14 @@ ScrollViewer.CanContentScroll="True"
                                            FontSize="20"
                                            FontWeight="SemiBold"/>
                                     </StackPanel>
+                                    <!-- Localshirt -->
+                                    <common:PlayerShirt Grid.Column="2"  ShirtColor="{Binding HomeTeamPrimaryColor}"
+     JerseyNumber="{x:Null}" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+     Width="30"
+     Height="30"/>
+                                    
                                     <!-- SCORE -->
-                                    <TextBlock Grid.Column="2" HorizontalAlignment="Center"
+                                    <TextBlock Grid.Column="3" HorizontalAlignment="Center"
                                        Text="{Binding ScoreDisplay}"
                                        FontSize="26"
                                        FontWeight="Bold"
@@ -226,8 +211,13 @@ ScrollViewer.CanContentScroll="True"
                                        Margin="15,0"
                                        VerticalAlignment="Center"/>
 
-                                    <StackPanel Grid.Column="3">
-                                        <!-- LOCATION -->
+                                    <!-- Awayshirt -->
+                                    <common:PlayerShirt Grid.Column="4"  ShirtColor="{Binding AwayTeamPrimaryColor}"
+JerseyNumber="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+Width="30"
+Height="30"/>
+                                    <!-- LOCATION and AWAY TEAM-->
+                                    <StackPanel Grid.Column="5">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="{StaticResource IconLocation}"
                                        FontFamily="{StaticResource IconFont}"
@@ -244,11 +234,12 @@ ScrollViewer.CanContentScroll="True"
                                            FontWeight="SemiBold"/>
                                     </StackPanel>
 
+                                    
                                     <!-- ICONO AWAY -->
-                                    <Grid Grid.Column="4"
-      Width="40"
-      Height="40"
-      Margin="0,0,10,0">
+                                    <Grid Grid.Column="6"
+                                      Width="40"
+                                      Height="40"
+                                      Margin="0,0,10,0">
 
                                         <!-- Fondo -->
                                         <Ellipse Fill="Transparent"/>
@@ -276,17 +267,12 @@ ScrollViewer.CanContentScroll="True"
                                         </Ellipse>
 
                                         <!-- Fallback -->
-                                        <TextBlock Text="{StaticResource IconTeam}"
-               FontFamily="Segoe MDL2 Assets"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center"
-               Foreground="#777"
-               FontSize="18">
-
+                                        <TextBlock Text="🛡️" FontSize="30" HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Foreground="{StaticResource SidebarHoverBrush}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
-
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding AwayTeamLogo}" Value="{x:Null}">
                                                             <Setter Property="Visibility" Value="Visible"/>

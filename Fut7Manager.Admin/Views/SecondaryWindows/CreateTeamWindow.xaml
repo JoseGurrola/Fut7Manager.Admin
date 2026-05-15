@@ -4,7 +4,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         Title="Crear liga"
         Width="400"
-        Height="420"
+        Height="310"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -22,8 +22,8 @@
                 <RowDefinition Height="Auto"/>
                 <!--<RowDefinition Height="Auto"/>-->
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <!--<RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>-->
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
@@ -82,7 +82,7 @@
             Background="#EEEEEE">
 
                     <Image Source="{Binding LogoUrl}"
-               Stretch="UniformToFill"/>
+               Stretch="Uniform"/>
                 </Border>
 
             </Grid>
@@ -114,7 +114,7 @@
                      Style="{StaticResource TelephoneTextBoxStyle}"
                      VerticalContentAlignment="Center"/>
             </Grid>
-            <TextBlock Grid.Row="4" Text="Grupo"/>
+            <!--<TextBlock Grid.Row="4" Text="Grupo"/>
             <ComboBox Grid.Row="5" Grid.Column="1"
                     Style="{StaticResource ModernComboBoxStyle}"
                     SelectedValue="{Binding SelectedGroup}"
@@ -129,7 +129,7 @@
                         <TextBlock Text="{Binding Name}"/>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
-            </ComboBox>
+            </ComboBox>-->
             <StackPanel Grid.Row="6"
                         Height="40"
                         Orientation="Horizontal"
