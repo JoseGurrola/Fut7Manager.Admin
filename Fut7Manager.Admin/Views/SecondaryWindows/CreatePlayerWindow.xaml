@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Fut7Manager.Admin.Views.SecondaryWindows" xmlns:local1="clr-namespace:Fut7Manager.Admin.Helpers"
+        xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Crear jugador"
         Width="400"
@@ -82,10 +84,16 @@
                 <TextBlock Text="Fecha de nacimiento"/>
             </StackPanel>
 
-            <TextBox Grid.Row="9"
+            <!--<TextBox Grid.Row="9"
          Text="{Binding DateOfBirthString}"
          Style="{StaticResource ModernTextBoxStyle}"
-         ToolTip="Formato: YYYY-MM-DD"/>
+         ToolTip="Formato: YYYY-MM-DD"/>-->
+            <DatePicker Grid.Row="9"
+            Style="{StaticResource ModernDatePickerStyle}"
+            DisplayDateEnd="{x:Static sys:DateTime.Today}"
+            SelectedDate="{Binding DateOfBirth, Mode=TwoWay}"
+            Height="42"/>
+            
             
             <!-- Posición -->
             <TextBlock Grid.Row="10" Text="Posición"/>
@@ -125,25 +133,35 @@
             </ComboBox>
 
             <!-- Activo -->
-            <CheckBox Grid.Row="14"
+           <!-- <CheckBox Grid.Row="14"
                       Content="Jugador activo"
                       IsChecked="{Binding Active}"
-                      Margin="0,10,0,0"/>
+                      Margin="0,10,0,0"/>-->
+            
 
             <!-- Botones -->
-            <StackPanel Grid.Row="15" Height="40"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Margin="0,15,0,0">
-
-                <Button Content="Cancelar" Width="90" Margin="8,0,0,0"
+            <Grid Grid.Row="14" Height="50" Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Activo" FontSize="10" HorizontalAlignment="Center" />
+                    <common:FloatingToggleSwitch  
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom" 
+                        IsChecked="{Binding Active, Mode=TwoWay, 
+                        UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="Cancelar" Width="90" Margin="8,0,0,0" Height="40"
                         Style="{StaticResource SecondaryButtonStyle}"
                         Command="{Binding CancelCommand}"/>
 
-                <Button Content="Guardar" Width="90" Margin="8,0,0,0"
+                <Button Grid.Column="2" Content="Guardar" Width="90" Margin="8,0,0,0" Height="40"
                         Style="{StaticResource PrimaryButtonStyle}"
                         Command="{Binding SaveCommand}"/>
-            </StackPanel>
+            </Grid>
 
         </Grid>
     </Border>

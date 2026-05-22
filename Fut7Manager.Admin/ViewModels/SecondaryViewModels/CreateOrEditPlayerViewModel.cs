@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Input;
 using System.Text.RegularExpressions;
+using Fut7Manager.Admin.Models.SecondaryModels;
 
 namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
 {
@@ -15,7 +16,6 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
         private readonly LeagueDto _league;
         private string _name = "";
         private string _email = "";
-        private string _dateOfBirthString = "";
         private PlayerPosition _position;
         private int _selectedTeamId;
         //private PositionItem _selectedPosition;
@@ -45,15 +45,6 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
 
         public Action<bool>? CloseAction { get; set; }
 
-        
-        public string DateOfBirthString
-        {
-            get => _dateOfBirthString;
-            set {
-                _dateOfBirthString = value;
-                OnPropertyChanged();
-            }
-        }
 
         public PlayerPosition Position
         {
@@ -74,7 +65,13 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
         public DateTime? DateOfBirth
         {
             get => _dateOfBirth;
-            set => SetProperty(ref _dateOfBirth, value);
+            set {
+
+                if (value > DateTime.Today)
+                    value = DateTime.Today;
+
+                SetProperty(ref _dateOfBirth, value);
+            }
         }
 
         public ICommand SaveCommand { get; }
@@ -99,7 +96,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
                 Active = player.Active;
 
                 if (player.DateOfBirth != DateTime.MinValue)
-                    DateOfBirthString = player.DateOfBirth.ToString("yyyy-MM-dd");
+                    DateOfBirth = player.DateOfBirth;
             }
 
             _ = LoadTeams();
@@ -140,10 +137,6 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
         }
 
         private void Save() {
-
-            if (DateTime.TryParse(DateOfBirthString, out var dob))
-                DateOfBirth = dob;
-
             CloseAction?.Invoke(true);
         }
 

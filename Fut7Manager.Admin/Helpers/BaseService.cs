@@ -133,6 +133,42 @@ namespace Fut7Manager.Admin.Services {
             }
         }
 
+        protected async Task<HttpResponseMessage?> SendResponseAsync(
+    HttpRequestMessage request) {
+
+            try {
+
+                if (!string.IsNullOrWhiteSpace(TokenStorage.Token)) {
+
+                    request.Headers.Authorization =
+                        new AuthenticationHeaderValue(
+                            "Bearer",
+                            TokenStorage.Token);
+                }
+
+                var response =
+                    await _httpClient.SendAsync(request);
+
+                if (response.StatusCode ==
+                    HttpStatusCode.Unauthorized) {
+
+                    HandleUnauthorized();
+
+                    return null;
+                }
+
+                return response;
+            }
+            catch (Exception ex) {
+
+                MessageService.Show(
+                    ex.Message,
+                    "Error");
+
+                return null;
+            }
+        }
+
         // =========================================================
         // GET
         // =========================================================
@@ -154,9 +190,7 @@ namespace Fut7Manager.Admin.Services {
         // POST
         // =========================================================
 
-        protected async Task<T?> PostAsync<T>(
-            string url,
-            object body) {
+        protected async Task<T?> PostAsync<T>(string url, object body) {
 
             if (string.IsNullOrWhiteSpace(url))
                 return default;
@@ -172,13 +206,27 @@ namespace Fut7Manager.Admin.Services {
             return await SendAsync<T>(request);
         }
 
+        protected async Task<bool> PostAsync(string url, object body) {
+
+            if (string.IsNullOrWhiteSpace(url))
+                return false;
+
+            var request =
+                new HttpRequestMessage(
+                    HttpMethod.Post,
+                    url);
+
+            request.Content =
+                JsonContent.Create(body);
+
+            return await SendAsync(request);
+        }
+
         // =========================================================
         // PUT
         // =========================================================
 
-        protected async Task<bool> PutAsync(
-            string url,
-            object body) {
+        protected async Task<bool> PutAsync(string url, object body) {
 
             var request =
                 new HttpRequestMessage(
@@ -189,6 +237,15 @@ namespace Fut7Manager.Admin.Services {
                 JsonContent.Create(body);
 
             return await SendAsync(request);
+        }
+
+        protected async Task<HttpResponseMessage?> PutResponseAsync(string url,object body) {
+
+            var request =new HttpRequestMessage(HttpMethod.Put,url);
+
+            request.Content =JsonContent.Create(body);
+
+            return await SendResponseAsync(request);
         }
 
         // =========================================================

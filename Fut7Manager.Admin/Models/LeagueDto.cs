@@ -13,5 +13,9 @@ namespace Fut7Manager.Admin.Models {
         public LeagueStatus Status { get; set; }
 
         public string? LogoUrl { get; set; }
+
+        public bool UsePenaltyShootoutPoints { get; set; }
+
+        public int QualifiedTeamsPerGroup { get; set; }
     }
 }

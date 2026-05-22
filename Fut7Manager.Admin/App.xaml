@@ -7,7 +7,7 @@
 
         <ResourceDictionary>
 
-            <!-- 🔥 PRIMERO: Merged -->
+            <!-- PRIMERO: Merged -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/Colors.xaml"/>
                 <ResourceDictionary Source="Styles/Buttons.xaml"/>

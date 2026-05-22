@@ -1,22 +1,28 @@
-﻿using Fut7Manager.Admin.Helpers;
+﻿using ClosedXML.Excel;
+using Fut7Manager.Admin.Helpers;
 using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Models.SecondaryModels;
 using Fut7Manager.Admin.Services;
 using Fut7Manager.Admin.ViewModels.SecondaryViewModels;
 using Fut7Manager.Admin.Views.SecondaryWindows;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Fut7Manager.Admin.ViewModels {
     public class PlayersViewModel : BaseViewModel {
-
+        private static string filterDefault = "Todos los equipos";
         private readonly AppState _appState;
         private readonly PlayerService _playerService;
         private Color _teamPrimaryColor;
         private string _sortColumn = "Name";
         private bool _sortAscending = true;
+        private List<TeamDto> _teams = new();
+        private readonly TeamService _teamService = new();
         public ObservableCollection<PlayerDto> Players { get; } = new();
 
         private List<PlayerDto> _allPlayers = new();
@@ -29,9 +35,9 @@ namespace Fut7Manager.Admin.ViewModels {
         private PlayerDto? _selectedPlayer;
         private bool _isLoading;
         private string _searchText = string.Empty;
-        private string _selectedTeamFilter = "Todos";
-        private string _selectedStatusFilter = "Todos";
-
+        private string _selectedTeamFilter = filterDefault;
+        private string _selectedStatusFilter = "Activos";
+        public int TotalPlayers => Players.Count;
         public PlayerDto? SelectedPlayer
         {
             get => _selectedPlayer;
@@ -42,6 +48,12 @@ namespace Fut7Manager.Admin.ViewModels {
                 (EditPlayerCommand as RelayCommand)?.RaiseCanExecuteChanged();
                 (DeletePlayerCommand as RelayCommand)?.RaiseCanExecuteChanged();
             }
+        }
+
+        private TeamDto? GetSelectedTeam() {
+
+            return _teams.FirstOrDefault(t =>
+                t.Name == SelectedTeamFilter);
         }
 
         public Color TeamPrimaryColor
@@ -74,7 +86,13 @@ namespace Fut7Manager.Admin.ViewModels {
             get => _selectedTeamFilter;
             set {
                 _selectedTeamFilter = value;
+
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(CanImportPlayers));
+
+                (ImportPlayersCommand as RelayCommand)
+                    ?.RaiseCanExecuteChanged();
+
                 ApplyFilters();
             }
         }
@@ -94,30 +112,137 @@ namespace Fut7Manager.Admin.ViewModels {
         public string TeamSortIcon => _sortColumn == "TeamName" ? (_sortAscending ? " ↑" : " ↓") : "";
         public string NumberSortIcon => _sortColumn == "JerseyNumber" ? (_sortAscending ? " ↑" : " ↓") : "";
         public string StatusSortIcon => _sortColumn == "Active" ? (_sortAscending ? " ↑" : " ↓") : "";
+        public bool CanImportPlayers => SelectedTeamFilter != filterDefault;
 
         public ICommand CreatePlayerCommand { get; }
         public ICommand EditPlayerCommand { get; }
         public ICommand DeletePlayerCommand { get; }
+        public ICommand ImportPlayersCommand { get; }
         public ICommand SortCommand { get; }
-        public PlayersViewModel(
-            AppState appState,
-            PlayerService playerService) {
+        public PlayersViewModel(AppState appState, PlayerService playerService) {
 
             _appState = appState;
             _playerService = playerService;
 
-            CreatePlayerCommand =
-                new RelayCommand(async () => await CreatePlayerAsync());
+            Players.CollectionChanged += (_, __) => {
+                OnPropertyChanged(nameof(TotalPlayers));
+            };
 
-            EditPlayerCommand =
-                new RelayCommand(async () => await EditPlayer());
+            CreatePlayerCommand = new RelayCommand(async () => await CreatePlayerAsync());
 
-            DeletePlayerCommand =
-                new RelayCommand(async () => await DeletePlayer());
+            EditPlayerCommand = new RelayCommand(async () => await EditPlayer());
+
+            DeletePlayerCommand = new RelayCommand(async () => await DeletePlayer());
+
+            ImportPlayersCommand = new RelayCommand(async () => await ImportPlayers(), () => CanImportPlayers);
 
             SortCommand = new RelayCommand<string>(SortBy);
 
             _appState.LeagueChanged += OnLeagueChanged;
+
+            
+        }
+
+        private async Task ImportPlayers() {
+
+            if (SelectedTeamFilter == filterDefault) {
+                MessageService.Show("Selecciona un equipo");
+                return;
+            }
+
+            var selectedTeam = GetSelectedTeam();
+
+            if (selectedTeam == null) {
+                MessageService.Show("Equipo inválido");
+                return;
+            }
+
+            var dialog = new OpenFileDialog {
+                Filter = "Excel Files|*.xlsx"
+            };
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var playersToImport = new List<PlayerDto>();
+
+            XLWorkbook workbook;
+            try {
+                workbook = new XLWorkbook(dialog.FileName);
+            }
+            catch (IOException) {
+                MessageService.Show("El archivo Excel está abierto. Ciérralo antes de importarlo.");
+                return;
+            }
+            using (workbook) {
+
+                var worksheet = workbook.Worksheet(1);
+
+                var rows = worksheet.RowsUsed().Skip(1);
+
+                foreach (var row in rows) {
+
+                    if (string.IsNullOrWhiteSpace(row.Cell(1).GetString()))
+                        continue;
+
+                    int jerseyNumber = 0;
+
+                    int.TryParse(row.Cell(2).GetString(), out jerseyNumber);
+
+                    var player = new PlayerDto {
+                        Name = row.Cell(1).GetString().Trim(),
+                        JerseyNumber = jerseyNumber,
+                        Phone = row.Cell(3).GetString(),
+                        Email = row.Cell(4).GetString(),
+                        Position = ParsePosition(row.Cell(5).GetString()),
+                        Active = ParseActive(row.Cell(6).GetString()),
+                        TeamId = selectedTeam.Id
+                    };
+
+                    if (string.IsNullOrWhiteSpace(player.Name))
+                        continue;
+
+                    var dobCell = row.Cell(7);
+
+                    if (!dobCell.IsEmpty()) {
+
+                        if (DateTime.TryParse(
+                            dobCell.GetString(), out var dob)) {
+
+                            player.DateOfBirth = dob;
+
+                        } else if (
+                            dobCell.DataType == XLDataType.DateTime) {
+
+                            player.DateOfBirth = dobCell.GetDateTime();
+                        }
+                    }
+                    playersToImport.Add(player);
+                }
+
+                if (!playersToImport.Any()) {
+                    MessageService.Show("No se encontraron jugadores válidos");
+                    return;
+                }
+
+                var confirm = MessageService.Confirm(
+                    $"Esto reemplazará todos los jugadores del equipo '{selectedTeam.Name}'. ¿Continuar?",
+                    "Importar jugadores");
+
+                if (!confirm)
+                    return;
+
+                var success = await _playerService.ImportPlayersAsync(selectedTeam.Id, playersToImport);
+
+                if (!success) {
+                    MessageService.Show("Error al importar jugadores");
+                    return;
+                }
+
+                await LoadPlayers();
+
+                MessageService.Show($"{playersToImport.Count} jugadores importados correctamente");
+            }
         }
 
         private async void OnLeagueChanged() {
@@ -154,11 +279,18 @@ namespace Fut7Manager.Admin.ViewModels {
             ApplyFilters();
         }
         private async Task LoadPlayers() {
+
             if (_appState.SelectedLeague == null)
                 return;
 
             try {
+
                 IsLoading = true;
+
+                var currentTeamFilter = SelectedTeamFilter;
+
+                _teams = await _teamService.GetTeamsAsync(
+                    _appState.SelectedLeague.Id);
 
                 var players =
                     await _playerService.GetPlayersAsync(
@@ -170,7 +302,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
                 LoadTeamFilters();
 
-                // aplicar filtro pendiente desde equipos
+                // filtro pendiente desde equipos
                 if (!string.IsNullOrWhiteSpace(_appState.PendingPlayerTeamFilter)
                     && TeamFilters.Contains(_appState.PendingPlayerTeamFilter)) {
 
@@ -178,15 +310,19 @@ namespace Fut7Manager.Admin.ViewModels {
                         _appState.PendingPlayerTeamFilter;
 
                     _appState.PendingPlayerTeamFilter = null;
-                }
+                } else {
 
-                // Validar filtro
-                if (!TeamFilters.Contains(SelectedTeamFilter))
-                    _selectedTeamFilter = "Todos";
+                    // restaurar filtro previo
+                    if (TeamFilters.Contains(currentTeamFilter))
+                        SelectedTeamFilter = currentTeamFilter;
+                    else
+                        SelectedTeamFilter = filterDefault;
+                }
 
                 ApplyFilters();
             }
             finally {
+
                 IsLoading = false;
             }
         }
@@ -195,16 +331,10 @@ namespace Fut7Manager.Admin.ViewModels {
 
             TeamFilters.Clear();
 
-            TeamFilters.Add("Todos");
+            TeamFilters.Add(filterDefault);
 
-            var teams = _allPlayers
-                .Select(x => x.TeamName)
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Distinct()
-                .OrderBy(x => x);
-
-            foreach (var team in teams)
-                TeamFilters.Add(team);
+            foreach (var team in _teams)
+                TeamFilters.Add(team.Name);
 
         }
 
@@ -234,7 +364,7 @@ namespace Fut7Manager.Admin.ViewModels {
             }
 
             // equipo
-            if (SelectedTeamFilter != "Todos") {
+            if (SelectedTeamFilter != filterDefault) {
                 filtered = filtered.Where(p =>
                     !string.IsNullOrWhiteSpace(p.TeamName) &&
                     p.TeamName == SelectedTeamFilter);
@@ -388,7 +518,7 @@ namespace Fut7Manager.Admin.ViewModels {
             if (SelectedPlayer == null)
                 return;
 
-            var result = MessageService.Confirm($"¿Eliminar a {SelectedPlayer.Name}?","Confirmar");
+            var result = MessageService.Confirm($"¿Eliminar a {SelectedPlayer.Name}?", "Confirmar");
 
             if (!result)
                 return;
@@ -399,6 +529,30 @@ namespace Fut7Manager.Admin.ViewModels {
 
             if (success)
                 await LoadPlayers();
+        }
+
+        private PlayerPosition ParsePosition(string value) {
+
+            value = value.Trim().ToLower();
+
+            return value switch {
+
+                "portero" => PlayerPosition.Goalkeeper,
+                "defensa" => PlayerPosition.Defender,
+                "medio" => PlayerPosition.Midfielder,
+                "delantero" => PlayerPosition.Forward,
+
+                _ => PlayerPosition.Goalkeeper
+            };
+        }
+
+        private bool ParseActive(string value) {
+
+            value = value.Trim().ToLower();
+
+            return value == "si"
+                || value == "sí"
+                || value == "true";
         }
     }
 }

@@ -23,11 +23,14 @@ namespace Fut7Manager.Admin.ViewModels {
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
+        public LeagueDto League { get; set; }
+
         //public ObservableCollection<MatchdayGroupDto> Matchdays { get; } = new();
 
-        public MatchesViewModel(AppState appState, Fut7MatchService fut7MatchService) {
+        public MatchesViewModel(AppState appState, Fut7MatchService fut7MatchService, LeagueDto league) {
             _appState = appState;
             Fut7MatchService = fut7MatchService;
+            League = league;
 
             _appState.LeagueChanged += OnLeagueChanged;
         }

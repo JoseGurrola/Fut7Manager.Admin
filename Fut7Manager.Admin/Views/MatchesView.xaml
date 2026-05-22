@@ -119,7 +119,7 @@
                                         <ColumnDefinition Width="1*"/><!-- Icon Home -->
                                         <ColumnDefinition Width="4*"/><!-- Date and Home -->
                                         <ColumnDefinition Width="1*"/><!-- Localshirt -->
-                                        <ColumnDefinition Width="3*"/><!-- Score -->
+                                        <ColumnDefinition Width="100"/><!-- Score -->
                                         <ColumnDefinition Width="1*"/><!-- AwayShirt -->
                                         <ColumnDefinition Width="4*"/><!-- locate and Away -->
                                         <ColumnDefinition Width="1*"/><!-- Icon Away -->
@@ -193,7 +193,7 @@
                                         </StackPanel>
                                         <!-- HOME TEAM-->
                                         <TextBlock Text="{Binding HomeTeamName}" HorizontalAlignment="Center"
-                                           FontSize="20"
+                                           FontSize="20" 
                                            FontWeight="SemiBold"/>
                                     </StackPanel>
                                     <!-- Localshirt -->
@@ -203,14 +203,29 @@
      Height="30"/>
                                     
                                     <!-- SCORE -->
-                                    <TextBlock Grid.Column="3" HorizontalAlignment="Center"
-                                       Text="{Binding ScoreDisplay}"
-                                       FontSize="26"
-                                       FontWeight="Bold"
-                                       Foreground="{StaticResource SidebarBrush}"
-                                       Margin="15,0"
-                                       VerticalAlignment="Center"/>
-
+                                    <Grid Grid.Column="3">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="70*"/>
+                                            <RowDefinition Height="30*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" HorizontalAlignment="Center"
+                                           Text="{Binding ScoreDisplay}"
+                                           FontSize="26"
+                                             
+                                           FontWeight="Bold"
+                                                    Width="100" TextAlignment="Center"
+                                           Foreground="{StaticResource SidebarBrush}"
+                                        
+                                           VerticalAlignment="Top"/>
+                                        <TextBlock Grid.Row="1" HorizontalAlignment="Center"
+                                           Text="{Binding PenaltiesScoreDisplay}"
+                                                   
+                                           FontSize="14"
+                                                   Width="100" TextAlignment="Center"
+                                           FontWeight="Bold"
+                                           Foreground="Gray"
+                                           VerticalAlignment="Center"/>
+                                    </Grid>
                                     <!-- Awayshirt -->
                                     <common:PlayerShirt Grid.Column="4"  ShirtColor="{Binding AwayTeamPrimaryColor}"
 JerseyNumber="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom"

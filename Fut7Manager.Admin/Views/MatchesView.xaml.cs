@@ -32,7 +32,7 @@ namespace Fut7Manager.Admin.Views {
                 var window = new EditMatchWindow();
                 //window.Owner = Window.GetWindow(this);
 
-                var editVm = new EditMatchViewModel(match, vm.Fut7MatchService);
+                var editVm = new EditMatchViewModel(match, vm.Fut7MatchService, vm.League);
 
                 window.DataContext = editVm;
 

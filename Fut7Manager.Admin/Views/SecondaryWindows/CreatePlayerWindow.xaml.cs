@@ -21,5 +21,6 @@ namespace Fut7Manager.Admin.Views.SecondaryWindows
         {
             InitializeComponent();
         }
+
     }
 }

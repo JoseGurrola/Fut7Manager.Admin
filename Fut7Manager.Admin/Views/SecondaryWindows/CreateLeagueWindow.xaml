@@ -2,9 +2,10 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
         Title="Crear liga"
         Width="400"
-        Height="400"
+        Height="420"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -21,6 +22,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="Nombre de la liga"
@@ -34,9 +36,9 @@
             <TextBlock Grid.Row="2" Text="Logo"/>
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="40*"/>
+                    <ColumnDefinition Width="40*"/>
+                    <ColumnDefinition Width="20*"/>
                 </Grid.ColumnDefinitions>
                 <!-- URL (se llena automáticamente) -->
                 <TextBox Grid.Column="0"
@@ -47,7 +49,7 @@
                 <!-- Botón subir -->
                 <Button Grid.Column="1"  Content="Subir logo"
                    Command="{Binding UploadLogoCommand}" Style="{StaticResource ThirdButtonStyle}"
-                   Margin="5,27,5,27" Width="90"
+                     Height="40" Width="10"
                    />
                 <!-- Preview -->
                 <Border Width="70" Grid.Column="2" 
@@ -102,7 +104,37 @@
                     <ComboBoxItem Content="10"/>
                 </ComboBox>
             </Grid>
-            <StackPanel Grid.Row="5"
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock  Grid.Column="0" Grid.Row="0" Margin="0,0,5,0" Text="Desempate con penales" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <common:FloatingToggleSwitch Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"
+                     VerticalAlignment="Center" 
+                     ToolTip="{Binding UUsePenaltyShootoutPointsTooltip}"
+ToolTipService.ShowOnDisabled="True"
+  IsChecked="{Binding UsePenaltyShootoutPoints, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              IsEnabled="{Binding CanEditPenaltySettings}"/>
+                <TextBlock  Grid.Column="1" Grid.Row="0" Margin="0,0,5,0" Text="Equipos calificados" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <ComboBox Grid.Row="1"
+                      Grid.Column="1"
+                          IsEnabled="{Binding CanEditPenaltySettings}"
+                      Style="{StaticResource ModernComboBoxStyle}"
+                      ItemsSource="{Binding QualifiedTeamsOptions}"
+                      SelectedItem="{Binding QualifiedTeamsPerGroup}"
+                      Height="40" Width="60"
+                      ToolTip="{Binding QualifiedTeamsPerGroupTooltip}"
+                      ToolTipService.ShowOnDisabled="True"
+                      IsEditable="False"/>
+
+            </Grid>
+
+            <StackPanel Grid.Row="6"
                         Height="40"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"

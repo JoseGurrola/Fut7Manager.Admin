@@ -21,7 +21,7 @@ namespace Fut7Manager.Admin.ViewModels
 
         public ObservableCollection<GroupStandingDto> GroupedStandings { get; } = new();
         public ObservableCollection<StandingDto> GeneralStandings { get; } = new();
-
+        public bool ShowGeneralTable => GroupedStandings.Count > 1;
         public StandingsViewModel(AppState appState, LeagueService leagueService, LeagueDto league, TeamService teamService, GroupService groupService, Fut7MatchService fut7MatchService) {
             _league = league;
             _leagueService = new LeagueService();
@@ -46,6 +46,8 @@ namespace Fut7Manager.Admin.ViewModels
                 foreach (var team in result.Standings)
                     GeneralStandings.Add(team);
             }
+
+            OnPropertyChanged(nameof(ShowGeneralTable));
 
             IsLoading = false;
         }

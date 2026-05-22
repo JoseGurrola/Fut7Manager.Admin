@@ -226,9 +226,7 @@
                                     Value="{x:Null}"/>
 
                             <Setter Property="Template">
-
                                 <Setter.Value>
-
                                     <ControlTemplate TargetType="ListViewItem">
                                         <ContentPresenter/>
                                     </ControlTemplate>
@@ -240,11 +238,8 @@
                         </Style>
 
                     </ListView.ItemContainerStyle>
-
                     <ListView.ItemTemplate>
-
                         <DataTemplate>
-
                             <Border x:Name="rowCard"
                                     CornerRadius="10"
                                     BorderBrush="#DDDDDD"

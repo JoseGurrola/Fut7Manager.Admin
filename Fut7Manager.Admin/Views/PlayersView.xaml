@@ -10,31 +10,22 @@
     d:DesignWidth="1100"
     d:DesignHeight="700"
     d:Background="White">
-
     <UserControl.Resources>
-
         <conv:SafeImageConverter x:Key="SafeImageConverter"/>
-
     </UserControl.Resources>
-
     <Grid>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
         <controls:LoadingContainer IsLoading="{Binding IsLoading}">
-
             <Grid Margin="20">
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
                 <!-- HEADER -->
                 <Grid Grid.Row="0"
                       Margin="0,0,0,15">
@@ -52,6 +43,7 @@
                             Width="50"
                             Height="50"
                             Command="{Binding CreatePlayerCommand}"/>
+                     
                 </Grid>
 
                 <!-- FILTROS -->
@@ -63,31 +55,45 @@
                         Padding="10"
                         Margin="0,0,0,15">
 
-                    <StackPanel Orientation="Horizontal">
-
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30*"/>
+                            <ColumnDefinition Width="25*"/>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="25*"/>
+                        </Grid.ColumnDefinitions>
                         <TextBox Width="260"
                                  Height="40"
-                                 Margin="0,0,15,0"
+                                 Margin="10,0"
                                  VerticalContentAlignment="Center"
+                                 HorizontalAlignment="Left"
                                  Style="{StaticResource ModernTextBoxStyle}"
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                  ToolTip="Buscar por nombre, teléfono o correo"/>
 
-                        <ComboBox Width="220"
+                        <ComboBox Grid.Column="1" Width="220"
                                   x:Name="cmbTeams"
                                   Height="40"
-                                  Margin="0,0,15,0"
+                                  Margin="0"
+                                  HorizontalAlignment="Left"
                                   ItemsSource="{Binding TeamFilters}"
                                   SelectedItem="{Binding SelectedTeamFilter}"
                                   Style="{StaticResource ModernComboBoxStyle}"/>
 
-                        <ComboBox Width="150"
-                                  Height="40"
+                        <ComboBox Grid.Column="2" Width="150"
+                                  Height="40"   Margin="0"
+                                   HorizontalAlignment="Left"
                                   ItemsSource="{Binding StatusFilters}"
                                   SelectedItem="{Binding SelectedStatusFilter}"
                                   Style="{StaticResource ModernComboBoxStyle}"/>
-
-                    </StackPanel>
+                        <Button Grid.Column="3" 
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                 HorizontalAlignment="Right"
+                                Content="Importar Excel 📥" 
+                                Width="140" Height="40" 
+                                IsEnabled="{Binding CanImportPlayers}"
+                                Command="{Binding ImportPlayersCommand}"/>
+                    </Grid>
                 </Border>
 
                 <!-- COLUMN HEADERS -->
@@ -530,9 +536,10 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock VerticalAlignment="Center"
-                           Foreground="#AAAAAA"
-                           Text="Lista de jugadores"/>
+                <TextBlock VerticalAlignment="Center" Foreground="#AAAAAA">
+                    <Run Text="Cantidad de jugadores: "/>
+                    <Run Text="{Binding TotalPlayers, Mode=OneWay}"/>
+                </TextBlock>
 
                 <StackPanel Grid.Column="1"
                             Height="30"

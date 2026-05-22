@@ -18,6 +18,10 @@ namespace Fut7Manager.Admin.Models {
 
         public int? AwayGoals { get; set; }
 
+        public int? HomePenaltyGoals { get; set; }
+
+        public int? AwayPenaltyGoals { get; set; }
+
         public DateTime? MatchDate { get; set; }
 
         public string? Location { get; set; }
@@ -38,6 +42,11 @@ namespace Fut7Manager.Admin.Models {
     HomeGoals.HasValue && AwayGoals.HasValue
         ? $"{HomeGoals} - {AwayGoals}"
         : "vs";
+        public string PenaltiesScoreDisplay =>
+    HomePenaltyGoals.HasValue && AwayPenaltyGoals.HasValue
+        ? $"({HomePenaltyGoals}-{AwayPenaltyGoals})"
+        : "";
+  
 
         public string DateDisplay =>
             MatchDate.HasValue

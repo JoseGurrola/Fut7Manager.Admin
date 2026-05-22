@@ -1,4 +1,6 @@
 ﻿using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Models.SecondaryModels;
+using System.Net.Http.Json;
 
 namespace Fut7Manager.Admin.Services {
     public class PlayerService : BaseService {
@@ -32,6 +34,25 @@ namespace Fut7Manager.Admin.Services {
 
             return await PostAsync<PlayerDto>(
                 "/api/players",
+                body);
+        }
+
+        public async Task<bool> ImportPlayersAsync(int teamId, List<PlayerDto> players) {
+            var body = new {
+                players = players.Select(player => new {
+                    name = player.Name,
+                    jerseyNumber = player.JerseyNumber,
+                    phone = player.Phone,
+                    email = player.Email,
+                    position = player.Position,
+                    dateOfBirth = player.DateOfBirth,
+                    active = player.Active,
+                    teamId = player.TeamId
+                }).ToList()
+            };
+
+            return await PostAsync(
+                $"/api/players/import/{teamId}",
                 body);
         }
 

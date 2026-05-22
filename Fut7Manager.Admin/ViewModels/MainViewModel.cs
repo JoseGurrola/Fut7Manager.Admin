@@ -97,7 +97,8 @@ namespace Fut7Manager.Admin.ViewModels {
 
             ShowMatchesCommand = new RelayCommand(async () => {
                 if (!CanNavigate) return;
-                var vm = new MatchesViewModel(_appState, _fut7MatchService);
+                if (SelectedLeague == null) return;
+                var vm = new MatchesViewModel(_appState, _fut7MatchService, SelectedLeague);
                 CurrentView = vm;
                 await vm.InitializeAsync();
             });

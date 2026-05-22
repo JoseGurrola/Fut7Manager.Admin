@@ -132,35 +132,6 @@ namespace Fut7Manager.Admin.ViewModels {
                 System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 3");
                 return;
             }
-            var success =
-                await _leagueService.EditLeagueAsync(
-                    new LeagueDto {
-                        Id = SelectedLeague.Id,
-                        Name = vm.LeagueName,
-                        RegistrationFee = vm.RegistrationFee,
-                        Status = vm.Status,
-                        LogoUrl = vm.FinalLogoUrl
-                    });
-
-            if (!success) {
-                System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 4");
-                return;
-            }
-
-            var index = Leagues.IndexOf(SelectedLeague);
-
-            var updatedLeague =
-                new LeagueDto {
-                    Id = SelectedLeague.Id,
-                    Name = vm.LeagueName,
-                    RegistrationFee = vm.RegistrationFee,
-                    Status = vm.Status,
-                    LogoUrl = vm.FinalLogoUrl
-                };
-
-            Leagues[index] = updatedLeague;
-
-            SelectedLeague = updatedLeague;
 
             // Siempre mínimo 1 grupo
             if (vm.NumberOfGroups <= 0)
@@ -182,11 +153,49 @@ namespace Fut7Manager.Admin.ViewModels {
 
                     await _groupService.CreateGroupAsync(
                         new GroupDto {
-                            Name = $"Grupo {i + 1}", 
+                            Name = $"Grupo {i + 1}",
                             LeagueId = SelectedLeague.Id
                         });
                 }
+
             }
+
+
+            var success =
+                await _leagueService.EditLeagueAsync(
+                    new LeagueDto {
+                        Id = SelectedLeague.Id,
+                        Name = vm.LeagueName,
+                        RegistrationFee = vm.RegistrationFee,
+                        UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
+                        QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
+                        Status = vm.Status,
+                        LogoUrl = vm.FinalLogoUrl
+                    });
+
+            if (!success) {
+                System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 4");
+                return;
+            }
+
+            var index = Leagues.IndexOf(SelectedLeague);
+
+            var updatedLeague =
+                new LeagueDto {
+                    Id = SelectedLeague.Id,
+                    Name = vm.LeagueName,
+                    RegistrationFee = vm.RegistrationFee,
+                    UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
+                    QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
+                    Status = vm.Status,
+                    LogoUrl = vm.FinalLogoUrl
+                };
+
+            Leagues[index] = updatedLeague;
+
+            SelectedLeague = updatedLeague;
+
+           
         }
 
         // Crea una nueva liga
@@ -204,6 +213,8 @@ namespace Fut7Manager.Admin.ViewModels {
                 var created = await _leagueService.CreateLeagueAsync(new LeagueDto {
                     Name = vm.LeagueName,
                     RegistrationFee = vm.RegistrationFee,
+                    UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
+                    QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
                     LogoUrl = vm.FinalLogoUrl
                 });
                 if (created != null) {

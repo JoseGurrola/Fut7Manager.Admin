@@ -19,6 +19,7 @@
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="15"/>
         </Style>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <!-- 🔹 TEMPLATE FILA -->
         <DataTemplate x:Key="StandingRowTemplate">
             <Grid Margin="0,4" VerticalAlignment="Center">
@@ -86,7 +87,8 @@ VerticalAlignment="Center">
                     </TextBlock>
                 </Grid>
                 <!-- Nombre -->
-                <TextBlock Grid.Column="2"
+                <TextBlock Grid.Column="2" TextWrapping="NoWrap"
+TextTrimming="CharacterEllipsis"
                            Text="{Binding TeamName}"
                            Style="{StaticResource TeamNameTextStyle}"
                            Margin="6,0,0,0"/>
@@ -229,16 +231,18 @@ VerticalAlignment="Center">
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     <!-- 🔹 GENERAL -->
-                    <TextBlock Text="Tabla General"
-                               FontSize="22"
-                               FontWeight="Bold"
-                               Margin="0,10,0,12"/>
-                    <Border CornerRadius="12"
-                            BorderBrush="#E5E7EB"
-                            BorderThickness="1"
-                            Padding="15"
-                            Background="#FAFAFA">
-                        <StackPanel>
+                    <StackPanel Visibility="{Binding ShowGeneralTable, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="Tabla General"
+               FontSize="22"
+               FontWeight="Bold"
+               Margin="0,10,0,12"/>
+
+                        <Border CornerRadius="12"
+            BorderBrush="#E5E7EB"
+            BorderThickness="1"
+            Padding="15"
+            Background="#FAFAFA">
+                            <StackPanel>
                             <!-- HEADER -->
                             <Grid Margin="0,0,0,8">
                                 <Grid.ColumnDefinitions>
@@ -272,6 +276,7 @@ VerticalAlignment="Center">
                                           ItemTemplate="{StaticResource StandingRowTemplate}"/>
                         </StackPanel>
                     </Border>
+                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
         </controls:LoadingContainer>

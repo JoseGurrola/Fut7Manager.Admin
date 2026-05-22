@@ -12,7 +12,10 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
     public class EditMatchViewModel : BaseViewModel {
         private readonly Fut7MatchService _fut7MatchService;
         private readonly Fut7MatchDto _match;
-
+        private int? _homeGoals;
+        private int? _awayGoals;
+        private int? _homePenaltyGoals;
+        private int? _awayPenaltyGoals;
         public Action<bool>? CloseAction { get; set; }
 
         public string MatchTitle => $"{_match.HomeTeamName} vs {_match.AwayTeamName}";
@@ -55,10 +58,65 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         }
 
         public string? Location { get; set; }
-        public int? HomeGoals { get; set; }
-        public int? AwayGoals { get; set; }
+        public int? HomeGoals
+        {
+            get => _homeGoals;
+            set {
+                _homeGoals = value;
 
+                // si ya no es empate, limpiar penales
+                if (_homeGoals != _awayGoals) {
+                    HomePenaltyGoals = null;
+                    AwayPenaltyGoals = null;
+                }
 
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CanEditPenalties));
+            }
+        }
+
+        public int? AwayGoals
+        {
+            get => _awayGoals;
+            set {
+                _awayGoals = value;
+
+                // si ya no es empate, limpiar penales
+                if (_homeGoals != _awayGoals) {
+                    HomePenaltyGoals = null;
+                    AwayPenaltyGoals = null;
+                }
+
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CanEditPenalties));
+            }
+        }
+        
+        public int? HomePenaltyGoals
+        {
+            get => _homePenaltyGoals;
+            set {
+                _homePenaltyGoals = value;
+                OnPropertyChanged();
+            }
+        }
+
+       
+        public int? AwayPenaltyGoals
+        {
+            get => _awayPenaltyGoals;
+            set {
+                _awayPenaltyGoals = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public LeagueDto League { get;}
+        public bool CanEditPenalties =>
+            League.UsePenaltyShootoutPoints &&
+            HomeGoals.HasValue &&
+            AwayGoals.HasValue &&
+            HomeGoals == AwayGoals;
 
         // =========================
         // LISTAS
@@ -87,14 +145,17 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         // CONSTRUCTOR
         // =========================
 
-        public EditMatchViewModel(Fut7MatchDto match, Fut7MatchService fut7MatchService) {
+        public EditMatchViewModel(Fut7MatchDto match, Fut7MatchService fut7MatchService, LeagueDto league) {
             _match = match;
             _fut7MatchService = fut7MatchService;
 
+            League = league;
             MatchDate = match.MatchDate ?? DateTime.Today;
             Location = match.Location;
             HomeGoals = match.HomeGoals;
             AwayGoals = match.AwayGoals;
+            HomePenaltyGoals = match.HomePenaltyGoals;
+            AwayPenaltyGoals = match.AwayPenaltyGoals;
 
             // 🔥 Inicializar hora/minuto correctamente
             if (match.MatchDate.HasValue) {
@@ -127,10 +188,25 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
                 return;
             }
 
+            if (CanEditPenalties) {
+                if (!HomePenaltyGoals.HasValue ||
+                    !AwayPenaltyGoals.HasValue) {
+                    MessageService.Show("Captura el marcador de penales");
+                    return;
+                }
+
+                if (HomePenaltyGoals == AwayPenaltyGoals) {
+                    MessageService.Show("Los penales no pueden terminar empatados");
+                    return;
+                }
+            }
+
             _match.MatchDate = BuildMatchDateTime();
             _match.Location = Location;
             _match.HomeGoals = HomeGoals;
             _match.AwayGoals = AwayGoals;
+            _match.HomePenaltyGoals = HomePenaltyGoals;
+            _match.AwayPenaltyGoals = AwayPenaltyGoals;
 
             var success = await _fut7MatchService.UpdateFut7MatchAsync(_match);
 

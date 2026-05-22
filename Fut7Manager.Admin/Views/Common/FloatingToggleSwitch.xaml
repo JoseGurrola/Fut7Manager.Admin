@@ -1,0 +1,123 @@
+﻿<UserControl x:Class="Fut7Manager.Admin.Views.Common.FloatingToggleSwitch"
+             x:Name="root"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Fut7Manager.Admin.Views.Common"
+             mc:Ignorable="d" 
+             Width="60" Height="30">
+    <UserControl.Resources>
+    <DropShadowEffect x:Key="DropShadow"
+                      Color="Black" BlurRadius="5"
+                      ShadowDepth="1" Opacity="0.3" />
+    <SolidColorBrush x:Key="wpColor" Color="{StaticResource SidebarPressedColor}" />
+        <SolidColorBrush x:Key="fbColor" Color="{StaticResource PrimaryRedColor}" />
+    </UserControl.Resources>
+
+    <Grid>
+        <TextBlock Text="{Binding StateLabel2Text, RelativeSource={RelativeSource AncestorType=UserControl}}"
+           Foreground="Black"
+           FontWeight="Bold"
+           FontSize="12"
+           HorizontalAlignment="Left"
+           Margin="6,0,0,0"
+           VerticalAlignment="Center" />
+        <ToggleButton x:Name="Switch"
+                  Width="60" Height="30"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Cursor="Hand"
+                       IsEnabled="{Binding IsEnabled, ElementName=root}"
+                  IsChecked="{Binding IsChecked, ElementName=root, Mode=TwoWay}">
+            <ToggleButton.Template>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid x:Name="LayoutRoot">
+                        <!-- Fondo -->
+                        <Border x:Name="BackgroundBorder"
+                            Width="60" Height="30"
+                            CornerRadius="15"
+                            Background="{StaticResource wpColor}"
+                            Effect="{StaticResource DropShadow}" />
+                        <TextBlock x:Name="StateLabel1"
+                       Text="NO"
+                       Foreground="White"
+                       FontWeight="Bold"
+                       FontSize="12"
+                       HorizontalAlignment="Right"
+                               Margin="0,0,6,0"
+                       VerticalAlignment="Center" />
+
+                        <!-- FB Label dinámico -->
+                        <TextBlock Text="{Binding StateLabel2Text, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Foreground="Black"
+                        FontWeight="Bold"
+                        FontSize="12"
+                        HorizontalAlignment="Left"
+                        Margin="6,0,0,0"
+                        VerticalAlignment="Center" />
+
+                        <!-- Círculo deslizante -->
+                        <Ellipse x:Name="Knob"
+                             Width="26" Height="26"
+                             Fill="White"
+                             Margin="2"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Center">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="KnobTransform" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Unchecked">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="BackgroundBorder"
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                To="#283142" Duration="0:0:0.3"/>
+                                        <DoubleAnimation Storyboard.TargetName="KnobTransform"
+                                 Storyboard.TargetProperty="X"
+                                 To="0" Duration="0:0:0.3" />
+
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="BackgroundBorder"
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                To="#CC2C32" Duration="0:0:0.3"/>
+                                        <DoubleAnimation Storyboard.TargetName="KnobTransform"
+                                 Storyboard.TargetProperty="X"
+                                 To="30" Duration="0:0:0.3" />
+
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsEnabled" Value="False">
+
+                            <Setter TargetName="BackgroundBorder"
+                Property="Background"
+                Value="#FF9E9E9E"/>
+
+                            <Setter TargetName="Knob"
+                Property="Fill"
+                Value="#FFE0E0E0"/>
+
+                            <Setter TargetName="StateLabel1"
+                Property="Foreground"
+                Value="#FFCCCCCC"/>
+
+                            <Setter Property="Cursor"
+                Value="Arrow"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </ToggleButton.Template>
+        </ToggleButton>
+    </Grid>
+</UserControl>

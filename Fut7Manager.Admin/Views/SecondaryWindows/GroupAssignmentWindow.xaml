@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Fut7Manager.Admin.Views.SecondaryWindows" 
          xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
+        xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -109,11 +110,19 @@
 
                 <!-- OPCIONES -->
                 <Grid Margin="0,10,0,10" Grid.Row="0">
-                    <CheckBox Content="Permitir partidos entre grupos"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <!--<CheckBox Content="Permitir partidos entre grupos"
                               IsChecked="{Binding InterGroupMatches}"
                               VerticalAlignment="Center"
-                             />
-
+                             />-->
+                    
+                    <common:FloatingToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Left"
+                         IsChecked="{Binding InterGroupMatches, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        />
+                    <TextBlock Margin="10" Grid.Column="1" Text="Permitir partidos entre grupos" FontSize="14" VerticalAlignment="Center"/>
                 </Grid>
 
                 <!-- MATCHDAYS -->

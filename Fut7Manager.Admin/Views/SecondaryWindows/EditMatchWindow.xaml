@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Editar partido"
         Width="400"
-        Height="400"
+        Height="450"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -19,7 +19,9 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/> 
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -114,8 +116,39 @@
                          Width="60"/>
             </Grid>
 
+            <!-- Penales -->
+            <TextBlock Grid.Row="8" Text="Penales" FontSize="14" HorizontalAlignment="Center"/>
+            <Grid Grid.Row="9">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="47*"/>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="47*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0"
+                     Text="{Binding HomePenaltyGoals}"
+                     IsEnabled="{Binding CanEditPenalties}"
+                     Style="{StaticResource ModernTextBoxStyle}"
+                         Visibility="{Binding League.UsePenaltyShootoutPoints,
+             Converter={StaticResource BoolToVisibilityConverter}}"
+                     HorizontalContentAlignment="Center"
+                         HorizontalAlignment="Right"
+                     FontSize="16"
+                     Width="60"/>
+                <TextBox Grid.Column="2"
+                     Text="{Binding AwayPenaltyGoals}"
+                     IsEnabled="{Binding CanEditPenalties}"
+                     Style="{StaticResource ModernTextBoxStyle}"
+                         Visibility="{Binding League.UsePenaltyShootoutPoints,
+             Converter={StaticResource BoolToVisibilityConverter}}"
+                     HorizontalContentAlignment="Center"
+                         HorizontalAlignment="Left"
+                     FontSize="16"
+                     Width="60"/>
+            </Grid>
+
             <!-- Botones -->
-            <StackPanel Grid.Row="8"
+            <StackPanel Grid.Row="10"
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="0,15,0,0">

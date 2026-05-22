@@ -19,6 +19,8 @@ namespace Fut7Manager.Admin.Services {
 
                 homeGoals = fut7match.HomeGoals,
                 awayGoals = fut7match.AwayGoals,
+                homePenaltyGoals = fut7match.HomePenaltyGoals,
+                awayPenaltyGoals = fut7match.AwayPenaltyGoals,
                 matchDate = fut7match.MatchDate,
                 location = fut7match.Location
             };

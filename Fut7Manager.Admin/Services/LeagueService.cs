@@ -1,5 +1,8 @@
-﻿using Fut7Manager.Admin.Models;
+﻿using Fut7Manager.Admin.Helpers;
+using Fut7Manager.Admin.Models;
 using System.Collections.Generic;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Fut7Manager.Admin.Services {
@@ -18,6 +21,8 @@ namespace Fut7Manager.Admin.Services {
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
+                usePenaltyShootoutPoints = league.UsePenaltyShootoutPoints,
+                qualifiedTeamsPerGroup = league.QualifiedTeamsPerGroup,
                 status = league.Status,
                 logoUrl = league.LogoUrl
             };
@@ -29,11 +34,37 @@ namespace Fut7Manager.Admin.Services {
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
+                usePenaltyShootoutPoints = league.UsePenaltyShootoutPoints,
+                qualifiedTeamsPerGroup = league.QualifiedTeamsPerGroup,
                 status = league.Status,
                 logoUrl = league.LogoUrl
             };
 
-            return await PutAsync($"/api/leagues/{league.Id}", body);
+            var response = await PutResponseAsync($"/api/leagues/{league.Id}", body);
+            if (!response.IsSuccessStatusCode) {
+
+                var content = await response.Content.ReadAsStringAsync();
+                
+                if (!string.IsNullOrWhiteSpace(content)) {
+                    var error =JsonSerializer.Deserialize<ApiError>(content,new JsonSerializerOptions {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+
+                    if (error?.Code == 1) {
+
+                        MessageService.Show(
+                            "Los equipos clasificados no pueden ser mayores a los equipos por grupo");
+
+                        return false;
+                    }
+                }
+
+                //MessageService.Show("Error al actualizar liga");
+
+                return false;
+            }
+            return true;
         }
 
         // ============================================
