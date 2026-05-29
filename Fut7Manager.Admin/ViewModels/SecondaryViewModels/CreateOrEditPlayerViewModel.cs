@@ -77,7 +77,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        public CreateOrEditPlayerViewModel(LeagueDto league, PlayerDto? player = null) {
+        public CreateOrEditPlayerViewModel(LeagueDto league, List<TeamDto> teams, PlayerDto? player = null) {
 
             _league = league;
             _editingPlayer = player;
@@ -99,17 +99,16 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels
                     DateOfBirth = player.DateOfBirth;
             }
 
-            _ = LoadTeams();
-        }
-
-        private async Task LoadTeams() {
-            var teams = await _teamService.GetTeamsAsync(_league.Id);
-
+            // Copy items into the ObservableCollection instead of assigning a List to it.
             Teams.Clear();
-
-            foreach (var t in teams)
-                Teams.Add(t);
+            if (teams != null) {
+                foreach (var team in teams)
+                    Teams.Add(team);
+            }
+            //_ = LoadTeams();
         }
+
+        
 
         // PROPERTIES
 

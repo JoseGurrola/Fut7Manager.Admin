@@ -14,7 +14,7 @@ namespace Fut7Manager.Admin.ViewModels {
         private readonly AppState _appState;
         public Fut7MatchService Fut7MatchService { get; }
 
-        public ObservableCollection<Fut7MatchDto> AllMatches { get; } = new();
+        public ObservableCollection<MatchdayDto> Matchdays { get; } = new();
 
         private bool _isLoading;
         public bool IsLoading
@@ -39,7 +39,7 @@ namespace Fut7Manager.Admin.ViewModels {
             if (_appState.SelectedLeague != null) {
                 await LoadMatches();
             } else {
-                AllMatches.Clear();
+                Matchdays.Clear();
             }
         }
 
@@ -50,12 +50,12 @@ namespace Fut7Manager.Admin.ViewModels {
             IsLoading = true;
 
             var leagueId = _appState.SelectedLeague.Id;
-            var matches = await Fut7MatchService.GetFut7MatchsAsync(leagueId);
+            var matchdays = await Fut7MatchService.GetMatchdaysAsync(leagueId);
 
-            AllMatches.Clear();
+            Matchdays.Clear();
 
-            foreach (var match in matches) {
-                AllMatches.Add(match);
+            foreach (var matchday in matchdays) {
+                Matchdays.Add(matchday);
             }
 
             IsLoading = false;

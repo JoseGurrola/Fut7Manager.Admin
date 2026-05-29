@@ -109,16 +109,17 @@ namespace Fut7Manager.Admin.ViewModels {
             if (SelectedLeague == null)
                 return;
 
-            var currentGroups =
-                await _groupService.GetGroupsAsync(
-                    SelectedLeague.Id);
+            var currentGroups =await _groupService.GetGroupsAsync(SelectedLeague.Id);
             System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 2");
-            var currentGroupCount =
-                currentGroups.Count;
-           
+            var currentGroupCount = currentGroups.Count;
+
+            var currentTeams = await _teamService.GetTeamsAsync(SelectedLeague.Id);
+            System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 2.1");
+            var currentTeamsCount = currentTeams.Count;
+
             var window = new CreateLeagueWindow();
 
-            var vm = new CreateOrEditLeagueViewModel(SelectedLeague, currentGroupCount);
+            var vm = new CreateOrEditLeagueViewModel(SelectedLeague);
 
             window.DataContext = vm;
 
@@ -134,31 +135,32 @@ namespace Fut7Manager.Admin.ViewModels {
             }
 
             // Siempre mínimo 1 grupo
-            if (vm.NumberOfGroups <= 0)
-                vm.NumberOfGroups = 1;
+            //if (vm.NumberOfGroups <= 0)
+            //    vm.NumberOfGroups = 1;
 
-            // Solo tocar grupos si cambió la cantidad
-            if (vm.NumberOfGroups != currentGroupCount) {
-                System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 5");
-                // Borrar grupos actuales
-                foreach (var g in currentGroups) {
-                    if (g.Id.HasValue) {
-                        await _groupService.DeleteGroupAsync(
-                            g.Id.Value);
-                    }
-                }
-                System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 6");
-                // Crear nuevos grupos
-                for (var i = 0; i < vm.NumberOfGroups; i++) {
 
-                    await _groupService.CreateGroupAsync(
-                        new GroupDto {
-                            Name = $"Grupo {i + 1}",
-                            LeagueId = SelectedLeague.Id
-                        });
-                }
+            //// Solo tocar grupos si cambió la cantidad
+            //if (vm.NumberOfGroups != currentGroupCount) {
+            //    System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 5");
+            //    // Borrar grupos actuales
+            //    foreach (var g in currentGroups) {
+            //        if (g.Id.HasValue) {
+            //            await _groupService.DeleteGroupAsync(
+            //                g.Id.Value);
+            //        }
+            //    }
+            //    System.Diagnostics.Debug.WriteLine("[EditLeagueAsync] 6");
+            //    // Crear nuevos grupos
+            //    for (var i = 0; i < vm.NumberOfGroups; i++) {
 
-            }
+            //        await _groupService.CreateGroupAsync(
+            //            new GroupDto {
+            //                Name = $"Grupo {i + 1}",
+            //                LeagueId = SelectedLeague.Id
+            //            });
+            //    }
+
+            //}
 
 
             var success =
@@ -167,8 +169,9 @@ namespace Fut7Manager.Admin.ViewModels {
                         Id = SelectedLeague.Id,
                         Name = vm.LeagueName,
                         RegistrationFee = vm.RegistrationFee,
+                        MinPlayers = vm.MinPlayers,
                         UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
-                        QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
+                        //QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
                         Status = vm.Status,
                         LogoUrl = vm.FinalLogoUrl
                     });
@@ -185,8 +188,9 @@ namespace Fut7Manager.Admin.ViewModels {
                     Id = SelectedLeague.Id,
                     Name = vm.LeagueName,
                     RegistrationFee = vm.RegistrationFee,
+                    MinPlayers = vm.MinPlayers,
                     UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
-                    QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
+                    //QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
                     Status = vm.Status,
                     LogoUrl = vm.FinalLogoUrl
                 };
@@ -197,11 +201,11 @@ namespace Fut7Manager.Admin.ViewModels {
 
            
         }
-
+      
         // Crea una nueva liga
         private async Task CreateLeagueAsync() {
             var window = new CreateLeagueWindow();
-            var vm = new CreateOrEditLeagueViewModel(null, null); // Null indica creación
+            var vm = new CreateOrEditLeagueViewModel(null); // Null indica creación
             window.DataContext = vm;
 
             vm.CloseAction = result => window.DialogResult = result;
@@ -213,15 +217,16 @@ namespace Fut7Manager.Admin.ViewModels {
                 var created = await _leagueService.CreateLeagueAsync(new LeagueDto {
                     Name = vm.LeagueName,
                     RegistrationFee = vm.RegistrationFee,
+                    MinPlayers = vm.MinPlayers,
                     UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
-                    QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
+                    //QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
                     LogoUrl = vm.FinalLogoUrl
                 });
                 if (created != null) {
-                    if (vm.NumberOfGroups == 0) vm.NumberOfGroups = 1;
-                    for (var i = 0; i < vm.NumberOfGroups; i++) {
-                        await _groupService.CreateGroupAsync(new GroupDto { Name = $"Grupo {i + 1}", LeagueId = created.Id });
-                    }
+                    //if (vm.NumberOfGroups == 0) vm.NumberOfGroups = 1;
+                    //for (var i = 0; i < vm.NumberOfGroups; i++) {
+                    //    await _groupService.CreateGroupAsync(new GroupDto { Name = $"Grupo {i + 1}", LeagueId = created.Id });
+                    //}
                     Leagues.Add(created); // Añade a la colección observable
                 }
             }

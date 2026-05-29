@@ -17,5 +17,7 @@ namespace Fut7Manager.Admin.Models {
         public bool UsePenaltyShootoutPoints { get; set; }
 
         public int QualifiedTeamsPerGroup { get; set; }
+
+        public int? MinPlayers { get; set; }
     }
 }

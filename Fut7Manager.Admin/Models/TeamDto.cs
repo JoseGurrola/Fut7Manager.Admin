@@ -42,5 +42,9 @@ namespace Fut7Manager.Admin.Models {
 
         public int? GroupId { get; set; }
         public int LeagueId { get; set; }
+
+        public int? NumPlayers { get; set; }
+
+        public bool IsIncomplete { get; set; }
     }
 }

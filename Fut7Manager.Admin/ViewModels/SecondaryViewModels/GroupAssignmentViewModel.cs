@@ -2,11 +2,15 @@
 // GroupAssignmentViewModel.cs
 // ============================================
 
+using DocumentFormat.OpenXml.Drawing;
 using Fut7Manager.Admin.Helpers;
 using Fut7Manager.Admin.Models;
 using Fut7Manager.Admin.Services;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
@@ -14,7 +18,9 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
     public class GroupAssignmentViewModel : BaseViewModel {
 
         private readonly LeagueService _leagueService;
+        private readonly GroupService _groupService;
         private readonly int _leagueId;
+        private readonly List<TeamDto> _teams;
 
         private bool _isLoading;
 
@@ -25,6 +31,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         public Action<bool>? CloseAction { get; set; }
 
         public enum SetupStep {
+            Configuration,
             Groups,
             Schedule
         }
@@ -70,6 +77,65 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
         public bool HasSchedule => Matchdays?.Any() == true;
 
+        private int _numberOfGroups = 2;
+
+        public int NumberOfGroups
+        {
+            get => _numberOfGroups;
+            set {
+                if (SetProperty(ref _numberOfGroups, value)) {
+                    OnPropertyChanged(nameof(QualifiedTeamsOptions));
+
+                    var options = QualifiedTeamsOptions;
+
+                    if (options.Any()) {
+                        QualifiedTeamsPerGroup = options.First();
+                    }
+                }
+            }
+        }
+
+        private int _qualifiedTeamsPerGroup = 2;
+
+        public int QualifiedTeamsPerGroup
+        {
+            get => _qualifiedTeamsPerGroup;
+            set => SetProperty(ref _qualifiedTeamsPerGroup, value);
+        }
+
+        public List<int> NumberOfGroupsOptions =>
+            new() { 1, 2, 4, 8 };
+
+        public List<int> QualifiedTeamsOptions =>
+            Enumerable.Range(1, 8)
+                .Where(IsValidConfiguration)
+                .ToList();
+
+        private bool IsPowerOfTwo(int number) {
+            return number > 1 &&
+                   (number & (number - 1)) == 0;
+        }
+        private bool IsValidConfiguration(int qualified) {
+            if (NumberOfGroups <= 0)
+                return false;
+
+            int totalTeams = _teams.Count;
+
+            int teamsPerGroup =
+                totalTeams / NumberOfGroups;
+
+            if (teamsPerGroup <= 0)
+                return false;
+
+            if (qualified > teamsPerGroup)
+                return false;
+
+            int totalQualified =
+                NumberOfGroups * qualified;
+
+            return IsPowerOfTwo(totalQualified);
+        }
+
         // ============================================
         // COMMANDS
         // ============================================
@@ -86,16 +152,16 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
         public ICommand BackCommand { get; }
 
-        public GroupAssignmentViewModel(
-            List<TeamDto> teams,
-            List<GroupDto> groups,
-            int leagueId) {
+        public ICommand ContinueConfigurationCommand { get; }
+
+        public GroupAssignmentViewModel(IEnumerable<TeamDto> teams, IEnumerable<GroupDto> groups, int leagueId) {
 
             _leagueId = leagueId;
 
             _leagueService = new LeagueService();
-
-            CurrentStep = SetupStep.Groups;
+            _groupService = new GroupService();
+            _teams = teams.ToList();
+            CurrentStep = SetupStep.Configuration;
 
             RandomizeCommand =
                 new RelayCommand(Randomize);
@@ -119,36 +185,14 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             BackCommand =
                 new RelayCommand(GoBack);
 
+            ContinueConfigurationCommand = new RelayCommand(ContinueConfiguration);
             // ============================================
             // CREAR GRUPOS
             // ============================================
 
-            foreach (var group in groups) {
+            GenerateGroups();
 
-                var groupVM = new GroupWithTeams {
 
-                    Id = group.Id ?? 0,
-
-                    Name = group.Name,
-
-                    Teams = new ObservableCollection<TeamDto>()
-                };
-
-                Groups.Add(groupVM);
-            }
-
-            // ============================================
-            // METER EQUIPOS TEMPORALMENTE
-            // ============================================
-
-            if (Groups.Any()) {
-
-                foreach (var team in teams) {
-                    Groups[0].Teams.Add(team);
-                }
-
-                Randomize();
-            }
         }
 
         // ============================================
@@ -204,6 +248,15 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             try {
                 IsLoading = true;
 
+                await PersistGroups();
+
+                var league = await _leagueService.GetLeagueByIdAsync(_leagueId);
+
+                league.QualifiedTeamsPerGroup = QualifiedTeamsPerGroup;
+                league.Status = LeagueStatus.InProgress;
+
+                await _leagueService.EditLeagueAsync(league);
+
                 var assignments = Groups
                     .SelectMany(g => g.Teams.Select(t =>
                         new TeamGroupAssignmentDto {
@@ -218,6 +271,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
                     assignments);
 
                 CompletedSuccessfully = true;
+
                 CloseAction?.Invoke(true);
             }
             catch (Exception) {
@@ -233,6 +287,8 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
         private void GoBack() {
 
+            if (CurrentStep == SetupStep.Groups) CurrentStep = SetupStep.Configuration;
+            else
             CurrentStep = SetupStep.Groups;
         }
 
@@ -242,9 +298,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
         private void Randomize() {
 
-            var allTeams = Groups
-                .SelectMany(g => g.Teams)
-                .ToList();
+            var allTeams = _teams.ToList();
 
             var rnd = new Random();
 
@@ -347,6 +401,77 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             team.GroupId = targetGroup.Id;
 
             targetGroup.Teams.Add(team);
+        }
+
+        private void ContinueConfiguration() {
+            if (!QualifiedTeamsOptions.Any()) {
+                MessageService.Show("Configuración inválida", "Validación");
+
+                return;
+            }
+
+            GenerateGroups();
+
+            Randomize();
+
+            CurrentStep = SetupStep.Groups;
+        }
+
+        private void GenerateGroups() {
+            Groups.Clear();
+
+            for (int i = 0; i < NumberOfGroups; i++) {
+                Groups.Add(new GroupWithTeams {
+                    Id = i + 1,
+                    Name = $"Grupo {i + 1}",
+                    Teams = new ObservableCollection<TeamDto>()
+                });
+            }
+        }
+
+        private async Task PersistGroups() {
+            var existingGroups =
+                await _groupService.GetGroupsAsync(_leagueId);
+
+            foreach (var g in existingGroups) {
+                if (g.Id.HasValue) {
+                    await _groupService.DeleteGroupAsync(g.Id.Value);
+                }
+            }
+
+            var updatedGroups =
+                new List<GroupWithTeams>();
+
+            foreach (var group in Groups) {
+               
+                var created = await _groupService.CreateGroupAsync(
+                        new GroupDto {
+                            Name = group.Name ?? "group",
+                            LeagueId = _leagueId
+                        });
+
+                if (created == null) {
+                    // If creation failed, preserve original name and teams
+                    updatedGroups.Add(new GroupWithTeams {
+                        Id = 0,
+                        Name = group.Name,
+                        Teams = group.Teams
+                    });
+                    continue;
+                }
+
+                updatedGroups.Add(new GroupWithTeams {
+                    Id = created.Id ?? 0,
+                    Name = created.Name ?? group.Name,
+                    Teams = group.Teams
+                });
+            }
+
+            Groups.Clear();
+
+            foreach (var g in updatedGroups) {
+                Groups.Add(g);
+            }
         }
     }
 }

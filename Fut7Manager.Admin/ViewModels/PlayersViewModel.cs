@@ -440,8 +440,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
             var window = new CreatePlayerWindow();
 
-            var vm = new CreateOrEditPlayerViewModel(
-                _appState.SelectedLeague);
+            var vm = new CreateOrEditPlayerViewModel(_appState.SelectedLeague, _teams);
 
             window.DataContext = vm;
 
@@ -481,7 +480,7 @@ namespace Fut7Manager.Admin.ViewModels {
             var window = new CreatePlayerWindow();
 
             var vm = new CreateOrEditPlayerViewModel(
-                _appState.SelectedLeague,
+                _appState.SelectedLeague, _teams,
                 SelectedPlayer);
 
             window.DataContext = vm;

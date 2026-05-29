@@ -67,8 +67,8 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="7*"/>
-                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0"
                            Text="Costo de Inscripción"
@@ -84,25 +84,18 @@
                       Padding="4,0,0,0"
                     VerticalContentAlignment="Center"/>
                 <TextBlock Grid.Row="0" Grid.Column="1"
-                     Text="Número de grupos"
-                        Margin="0,0,0,5"/>
-                <ComboBox Grid.Row="1" Grid.Column="1"
-          Style="{StaticResource ModernComboBoxStyle}"
-          SelectedValue="{Binding NumberOfGroups}"
-          SelectedValuePath="Content"
-          Height="40" IsEditable="False">
-                    
-                    <ComboBoxItem Content="1"/>
-                    <ComboBoxItem Content="2"/>
-                    <ComboBoxItem Content="3"/>
-                    <ComboBoxItem Content="4"/>
-                    <ComboBoxItem Content="5"/>
-                    <ComboBoxItem Content="6"/>
-                    <ComboBoxItem Content="7"/>
-                    <ComboBoxItem Content="8"/>
-                    <ComboBoxItem Content="9"/>
-                    <ComboBoxItem Content="10"/>
-                </ComboBox>
+                    Text="Minimo de jugadores por equipo"
+                     Margin="0,0,0,5"/>
+                <TextBox 
+                      Text="{Binding MinPlayers, Mode=TwoWay}"
+                     Style="{StaticResource NumericTextBoxStyle}"
+                     Grid.Row="1" Grid.Column="1"
+                      Height="40"
+                      HorizontalAlignment="Stretch"
+                      Margin="0,0,10,0"
+                      FontSize="16"
+                       Padding="4,0,0,0"
+                     VerticalContentAlignment="Center"/>
             </Grid>
             <Grid Grid.Row="5">
                 <Grid.ColumnDefinitions>
@@ -120,17 +113,6 @@
 ToolTipService.ShowOnDisabled="True"
   IsChecked="{Binding UsePenaltyShootoutPoints, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               IsEnabled="{Binding CanEditPenaltySettings}"/>
-                <TextBlock  Grid.Column="1" Grid.Row="0" Margin="0,0,5,0" Text="Equipos calificados" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <ComboBox Grid.Row="1"
-                      Grid.Column="1"
-                          IsEnabled="{Binding CanEditPenaltySettings}"
-                      Style="{StaticResource ModernComboBoxStyle}"
-                      ItemsSource="{Binding QualifiedTeamsOptions}"
-                      SelectedItem="{Binding QualifiedTeamsPerGroup}"
-                      Height="40" Width="60"
-                      ToolTip="{Binding QualifiedTeamsPerGroupTooltip}"
-                      ToolTipService.ShowOnDisabled="True"
-                      IsEditable="False"/>
 
             </Grid>
 

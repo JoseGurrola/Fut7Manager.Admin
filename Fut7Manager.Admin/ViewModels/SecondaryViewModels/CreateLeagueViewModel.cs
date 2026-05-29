@@ -11,19 +11,17 @@ namespace Fut7Manager.Admin.ViewModels {
         private string _leagueName = string.Empty;
         private readonly int? _leagueId;
         private decimal _registrationFee;
+        private int? _minPlayers;
         private bool _usePenaltyShootoutPoints = false;
-        private int _numberOfGroups = 1;
         private LeagueStatus _status = LeagueStatus.Upcoming;
         private string? _logoUrl = string.Empty;
         public ICommand UploadLogoCommand { get; }
         private string? _logoFileName;
         private string? _localImagePath;
-        public List<int> QualifiedTeamsOptions { get; } = Enumerable.Range(1, 10).ToList();
-        private int _qualifiedTeamsPerGroup = 1;
+        
         public string? FinalLogoUrl { get; private set; }
 
         //private readonly LeagueService _leagueService = new LeagueService();
-
         public string LeagueName
         {
             get => _leagueName;
@@ -44,26 +42,22 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
+        public int? MinPlayers
+        {
+            get => _minPlayers;
+            set {
+                if (SetProperty(ref _minPlayers, value)) {
+                    (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
         public bool UsePenaltyShootoutPoints
         {
             get => _usePenaltyShootoutPoints;
             set {
                 if (SetProperty(ref _usePenaltyShootoutPoints, value)) {
                     (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                }
-            }
-        }
-
-        public int NumberOfGroups
-        {
-            get => _numberOfGroups;
-            set {
-                if (SetProperty(ref _numberOfGroups, value)) {
-
-                    QualifiedTeamsPerGroup = 1;
-
-                    (SaveCommand as RelayCommand)
-                        ?.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -86,14 +80,6 @@ namespace Fut7Manager.Admin.ViewModels {
                     (SaveCommand as RelayCommand)?.RaiseCanExecuteChanged();
                 }
             }
-        }
-
-        
-
-        public int QualifiedTeamsPerGroup
-        {
-            get => _qualifiedTeamsPerGroup;
-            set => SetProperty(ref _qualifiedTeamsPerGroup, value);
         }
 
         public string? LogoFileName
@@ -120,23 +106,20 @@ namespace Fut7Manager.Admin.ViewModels {
                 ? "Si se activa, el ganador de los penales tendrá 2 puntos y el perdedor 1"
                 : "No se puede editar porque la liga ya inició";
 
-        public string QualifiedTeamsPerGroupTooltip => CanEditPenaltySettings
-                ? "Numero de equipos que clasifican por grupo"
-                : "No se puede editar porque la liga ya inició";
+        //public string QualifiedTeamsPerGroupTooltip => CanEditPenaltySettings
+        //        ? "Numero de equipos que clasifican por grupo"
+        //        : "No se puede editar porque la liga ya inició";
 
-        public CreateOrEditLeagueViewModel(LeagueDto? league = null, int? numberOfGroups = 1) {
+        public CreateOrEditLeagueViewModel(LeagueDto? league = null) {
             if (league != null) {
                 _leagueId = league.Id;
                 LeagueName = league.Name;
                 RegistrationFee = league.RegistrationFee;
+                MinPlayers = league.MinPlayers;
                 UsePenaltyShootoutPoints = league.UsePenaltyShootoutPoints;
                 Status = league.Status;
                 LogoUrl = league.LogoUrl;
-                QualifiedTeamsPerGroup = league.QualifiedTeamsPerGroup;
 
-                if (numberOfGroups.HasValue)
-                    NumberOfGroups = numberOfGroups.Value;
-                
 
                 ButtonText = "Guardar";
             }
@@ -170,6 +153,7 @@ namespace Fut7Manager.Admin.ViewModels {
             if (RegistrationFee < 0)
                 return;
 
+
             FinalLogoUrl = LogoUrl;
 
             try {
@@ -194,8 +178,8 @@ namespace Fut7Manager.Admin.ViewModels {
                     Id = _leagueId ?? 0,
                     Name = LeagueName,
                     RegistrationFee = RegistrationFee,
+                    MinPlayers = MinPlayers,
                     UsePenaltyShootoutPoints = UsePenaltyShootoutPoints,
-                    QualifiedTeamsPerGroup = QualifiedTeamsPerGroup,
                     Status = Status,
                     LogoUrl = FinalLogoUrl
                 };

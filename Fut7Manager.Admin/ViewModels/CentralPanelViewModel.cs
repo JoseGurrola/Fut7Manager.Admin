@@ -4,9 +4,7 @@ using Fut7Manager.Admin.Services;
 using Fut7Manager.Admin.ViewModels.SecondaryViewModels;
 using Fut7Manager.Admin.Views.SecondaryWindows;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows;
+
 using System.Windows.Input;
 
 namespace Fut7Manager.Admin.ViewModels {
@@ -27,7 +25,8 @@ namespace Fut7Manager.Admin.ViewModels {
             set { _fut7MatchService = value; OnPropertyChanged(); }
         }
 
-        public List<TeamDto> Teams { get; } = new();
+        //public List<TeamDto> Teams { get; } = new();
+        public ObservableCollection<TeamDto> Teams { get; } = new();
         public List<GroupDto> Groups { get; } = new();
 
         private LeagueStatus _leagueStatus;
@@ -49,6 +48,13 @@ namespace Fut7Manager.Admin.ViewModels {
         {
             get => _totalGroups;
             set { _totalGroups = value; OnPropertyChanged(); }
+        }
+
+        private int _minPlayers;
+        public int MinPlayers
+        {
+            get => _minPlayers;
+            set { _minPlayers = value; OnPropertyChanged(); }
         }
 
         private string? _currentMatchdayName = "Jornada";
@@ -74,12 +80,18 @@ namespace Fut7Manager.Admin.ViewModels {
 
         public ICommand StartLeagueCommand { get; }
 
-        
+
         public bool IsLoading
         {
             get => _isLoading;
             set { _isLoading = value; OnPropertyChanged(); }
         }
+
+        public bool HasIncompleteTeams => Teams.Any(t => t.NumPlayers < _league.MinPlayers);
+
+        public string LeagueReadyMessage => HasIncompleteTeams
+        ? $"Hay equipos con menos de {_league.MinPlayers} jugadores"
+        : "Todo listo para comenzar";
 
         // 🔹 Constructor
         public CentralPanelViewModel(AppState appState, LeagueService leagueService, LeagueDto league, TeamService teamService, GroupService groupService, Fut7MatchService fut7MatchService) {
@@ -91,8 +103,9 @@ namespace Fut7Manager.Admin.ViewModels {
             _fut7MatchService = fut7MatchService;
 
             LeagueStatus = _league.Status;
+            MinPlayers = _league.MinPlayers ?? 0;
 
-            StartLeagueCommand = new RelayCommand(async () => await StartLeague());
+            StartLeagueCommand = new RelayCommand(async () => await StartLeague(), () => !HasIncompleteTeams);
         }
 
         public async Task InitializeAsync() {
@@ -114,7 +127,9 @@ namespace Fut7Manager.Admin.ViewModels {
 
             Teams.Clear();
             foreach (var team in teams) {
+                team.IsIncomplete = team.NumPlayers < _league.MinPlayers;
                 Teams.Add(team);
+
             }
 
             Groups.Clear();
@@ -125,7 +140,14 @@ namespace Fut7Manager.Admin.ViewModels {
             TotalTeams = teams.Count;
             TotalGroups = groups.Count;
 
+            OnPropertyChanged(nameof(HasIncompleteTeams));
+            OnPropertyChanged(nameof(LeagueReadyMessage));
+
+            (StartLeagueCommand as RelayCommand)?.RaiseCanExecuteChanged();
+
             IsLoading = false;
+
+
         }
 
         //Acción principal
@@ -150,27 +172,24 @@ namespace Fut7Manager.Admin.ViewModels {
             window.ShowDialog();
 
             if (vm.CompletedSuccessfully) {
-                _league.Status = LeagueStatus.InProgress;
 
-                var success = await _leagueService.EditLeagueAsync(_league);
 
-                if (success) {
+                //var success = await _leagueService.EditLeagueAsync(_league);
 
-                    MessageService.Show("Liga iniciada");
+                //  if (success) {
 
-                    // 🔹 1. Recargar liga
-                    _league = await _leagueService.GetLeagueByIdAsync(_league.Id);
-                    LeagueStatus = _league.Status;
+                MessageService.Show("Liga iniciada");
 
-                    await LoadDashboardData();
+                // 🔹 1. Recargar liga
+                _league = await _leagueService.GetLeagueByIdAsync(_league.Id);
+                LeagueStatus = _league.Status;
 
-                } else {
+                await LoadDashboardData();
 
-                    MessageService.Show("No se pudo iniciar la liga correctamente", "Error");
-                }
+                // }
             }
             return;
-            
+
         }
 
         private async Task LoadDashboardData() {

@@ -27,26 +27,40 @@ namespace Fut7Manager.Admin.Views {
         }
 
         private async void Match_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if (DataContext is not MatchesViewModel vm) return;
-            if (sender is ListView list && list.SelectedItem is Fut7MatchDto match) {
-                var window = new EditMatchWindow();
-                //window.Owner = Window.GetWindow(this);
 
-                var editVm = new EditMatchViewModel(match, vm.Fut7MatchService, vm.League);
+            // solo doble click
+            if (e.ClickCount != 2)
+                return;
 
-                window.DataContext = editVm;
+            if (DataContext is not MatchesViewModel vm)
+                return;
 
-                editVm.CloseAction = async (result) => {
-                    window.DialogResult = result;
-                    window.Close();
+            if (sender is not Border border)
+                return;
 
-                    if (result) {
-                        await vm.UpdateMatch(match);
-                    }
-                };
+            if (border.Tag is not Fut7MatchDto match)
+                return;
 
-                window.ShowDialog();
-            }
+            var window = new EditMatchWindow();
+
+            var editVm = new EditMatchViewModel(
+                match,
+                vm.Fut7MatchService,
+                vm.League);
+
+            window.DataContext = editVm;
+
+            editVm.CloseAction = async (result) => {
+
+                window.DialogResult = result;
+                window.Close();
+
+                if (result) {
+                    await vm.UpdateMatch(match);
+                }
+            };
+
+            window.ShowDialog();
         }
     }
 }

@@ -1,39 +1,31 @@
 ﻿<UserControl x:Class="Fut7Manager.Admin.Views.MatchesView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters"
-             xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
-             xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters"
+	xmlns:common="clr-namespace:Fut7Manager.Admin.Views.Common"
+	xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             
             mc:Ignorable="d"
             d:DesignWidth="1000"
             d:DesignHeight="700"
               Background="{StaticResource BackgroundWindowBrush}">
-
     <UserControl.Resources>
-
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <conv:SafeImageConverter x:Key="SafeImageConverter"/>
-        <!-- Agrupación -->
-        <CollectionViewSource x:Key="MatchesViewSource"
-                              Source="{Binding AllMatches}">
-            <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="MatchdayNumber"/>
-            </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
-
+        <conv:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
+        <DropShadowEffect x:Key="CardHoverShadow"
+                  BlurRadius="5"
+                  ShadowDepth="0"
+                  Opacity="0.10"/>
     </UserControl.Resources>
-
-
     <controls:LoadingContainer IsLoading="{Binding IsLoading}">
         <Grid Grid.Row="0" Margin="20">
-
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
             <Grid Grid.Row="0">
                 <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left"    Text="Calendario"
                            FontSize="26" FontWeight="Bold"/>
@@ -41,295 +33,300 @@
             <!-- CONTENIDO -->
             <Grid Grid.Row="1">
                 <!--LISTA ÚNICA -->
-                <ListView 
-                  Margin="10"
-                  ItemsSource="{Binding Source={StaticResource MatchesViewSource}}"
-                  SelectedItem="{Binding SelectedMatch}"
-                  Background="Transparent"
-                  BorderThickness="0"
-                  ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                  MouseDoubleClick="Match_MouseDoubleClick"
-                  VirtualizingPanel.IsVirtualizing="True"
-                    VirtualizingPanel.IsVirtualizingWhenGrouping="True"
-                    VirtualizingPanel.VirtualizationMode="Recycling"
-                    ScrollViewer.CanContentScroll="True"
-                      ScrollViewer.IsDeferredScrollingEnabled="True">
+                <ListView ItemsSource="{Binding Matchdays}"
+          Background="Transparent"
+          BorderThickness="0"
+          ScrollViewer.VerticalScrollBarVisibility="Auto"
+          ScrollViewer.CanContentScroll="True"
+          VirtualizingPanel.IsVirtualizing="True"
+          VirtualizingPanel.VirtualizationMode="Recycling"
+          HorizontalContentAlignment="Stretch">
 
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
-
                             <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="10,4"/>
+                            <Setter Property="Margin" Value="0,0,0,16"/>
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
 
-                            <!-- Template ligero pero con estados -->
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListViewItem">
-                                        <Border x:Name="Bd"
-                                            CornerRadius="10"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="#E5E7EB"
-                                            BorderThickness="0"
-                                            Padding="0">
-                                            <ContentPresenter/>
-                                        </Border>
+                                        <ContentPresenter/>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-
                         </Style>
                     </ListView.ItemContainerStyle>
-
-                    <!-- HEADER DE JORNADA -->
-                    <ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <Border Margin="0,12,0,6"
-                                    Padding="6"
-                                    Background="#F3F4F6"
-                                    CornerRadius="8">
-                                        <TextBlock Text="{Binding Name, StringFormat=Jornada {0}}"
-                                           FontSize="18"
-                                           FontWeight="Bold"
-                                           HorizontalAlignment="Center"/>
-                                    </Border>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ListView.GroupStyle>
-
-                    <!-- TEMPLATE MATCH -->
+                    <!-- MATCHDAY -->
                     <ListView.ItemTemplate>
-                        <DataTemplate>
-
-                            <Border x:Name="rowCard"
-                                CornerRadius="10"
-                                Background="{StaticResource BackgroundWindowBrush}"
-                                BorderBrush="#E5E7EB"
-                                BorderThickness="1"
-                                Padding="10"
-                                Margin="0,3">
-
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <!-- HEADER JORNADA -->
+                            <Border Grid.Row="0"
+        Margin="0,12,0,10"
+        Padding="12"
+        Background="#F3F4F6"
+        CornerRadius="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/><!-- Icon Home -->
-                                        <ColumnDefinition Width="4*"/><!-- Date and Home -->
-                                        <ColumnDefinition Width="1*"/><!-- Localshirt -->
-                                        <ColumnDefinition Width="100"/><!-- Score -->
-                                        <ColumnDefinition Width="1*"/><!-- AwayShirt -->
-                                        <ColumnDefinition Width="4*"/><!-- locate and Away -->
-                                        <ColumnDefinition Width="1*"/><!-- Icon Away -->
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-
-                                    <!-- ICONO HOME -->
-                                    <Grid Grid.Column="0"
-      Width="40"
-      Height="40"
-      Margin="0,0,10,0">
-
-                                        <!-- Fondo -->
-                                        <Rectangle Fill="Transparent"/>
-
-                                        <!-- Imagen -->
-                                        <Ellipse>
-                                            <Ellipse.Fill>
-                                                <ImageBrush ImageSource="{Binding HomeTeamLogo, Converter={StaticResource SafeImageConverter}}"
-                        Stretch="UniformToFill"/>
-                                            </Ellipse.Fill>
-
-                                            <Ellipse.Style>
-                                                <Style TargetType="Ellipse">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding HomeTeamLogo}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding HomeTeamLogo}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Ellipse.Style>
-                                        </Ellipse>
-
-                                        <!-- Fallback -->
-                                        <TextBlock Text="🛡️" FontSize="30" HorizontalAlignment="Center" 
-                                                   VerticalAlignment="Center"
-                                                   Foreground="{StaticResource SidebarHoverBrush}">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding HomeTeamLogo}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding HomeTeamLogo}" Value="">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
+                                    <!-- Jornada -->
+                                    <TextBlock Grid.Column="0"
+                   Text="{Binding Number, StringFormat=Jornada {0}}"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"/>
+                                    <!-- Descanso -->
+                                    <Border Grid.Column="1"
+                Background="Transparent"
+                CornerRadius="20"
+                Padding="10,4"
+                VerticalAlignment="Center"
+                Visibility="{Binding RestingTeamNames.Count,
+                             Converter={StaticResource IntToVisibilityConverter}}">
+                                        <TextBlock FontSize="13"
+                       Foreground="{StaticResource SidebarHoverBrush}"
+                       FontWeight="SemiBold">
+													<Run Text="Descansa: " FontWeight="Bold"/>
+													<Run Text="{Binding RestingTeamNames[0]}"/>
                                         </TextBlock>
-                                    </Grid>
-
-                                    <!-- Date and Home -->
-                                    <StackPanel Grid.Column="1" >
-                                        <!-- DATE -->
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                            <TextBlock Text="{StaticResource IconCalendar}"
-                                           FontFamily="{StaticResource IconFont}"
-                                           FontSize="14"
-                                           Foreground="Gray"
-                                           Margin="0,0,4,0"/>
-
-                                            <TextBlock Text="{Binding DateDisplay}"
-                                           FontSize="12"
-                                           Foreground="Gray"/>
-
-                                        </StackPanel>
-                                        <!-- HOME TEAM-->
-                                        <TextBlock Text="{Binding HomeTeamName}" HorizontalAlignment="Center"
-                                           FontSize="20" 
-                                           FontWeight="SemiBold"/>
-                                    </StackPanel>
-                                    <!-- Localshirt -->
-                                    <common:PlayerShirt Grid.Column="2"  ShirtColor="{Binding HomeTeamPrimaryColor}"
-     JerseyNumber="{x:Null}" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
-     Width="30"
-     Height="30"/>
-                                    
-                                    <!-- SCORE -->
-                                    <Grid Grid.Column="3">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="70*"/>
-                                            <RowDefinition Height="30*"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Grid.Row="0" HorizontalAlignment="Center"
-                                           Text="{Binding ScoreDisplay}"
-                                           FontSize="26"
-                                             
-                                           FontWeight="Bold"
-                                                    Width="100" TextAlignment="Center"
-                                           Foreground="{StaticResource SidebarBrush}"
-                                        
-                                           VerticalAlignment="Top"/>
-                                        <TextBlock Grid.Row="1" HorizontalAlignment="Center"
-                                           Text="{Binding PenaltiesScoreDisplay}"
-                                                   
-                                           FontSize="14"
-                                                   Width="100" TextAlignment="Center"
-                                           FontWeight="Bold"
-                                           Foreground="Gray"
-                                           VerticalAlignment="Center"/>
-                                    </Grid>
-                                    <!-- Awayshirt -->
-                                    <common:PlayerShirt Grid.Column="4"  ShirtColor="{Binding AwayTeamPrimaryColor}"
-JerseyNumber="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom"
-Width="30"
-Height="30"/>
-                                    <!-- LOCATION and AWAY TEAM-->
-                                    <StackPanel Grid.Column="5">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{StaticResource IconLocation}"
-                                       FontFamily="{StaticResource IconFont}"
-                                       FontSize="14"
-                                       Foreground="Gray"
-                                       Margin="0,0,4,0"/>
-                                            <TextBlock Text="{Binding LocationDisplay}"
-                                       FontSize="12"
-                                       Foreground="Gray"/>
-                                        </StackPanel>
-                                        <!-- AWAY TEAM -->
-                                        <TextBlock Text="{Binding AwayTeamName}" HorizontalAlignment="Center"
-                                           FontSize="20"
-                                           FontWeight="SemiBold"/>
-                                    </StackPanel>
-
-                                    
-                                    <!-- ICONO AWAY -->
-                                    <Grid Grid.Column="6"
-                                      Width="40"
-                                      Height="40"
-                                      Margin="0,0,10,0">
-
-                                        <!-- Fondo -->
-                                        <Ellipse Fill="Transparent"/>
-
-                                        <!-- Imagen -->
-                                        <Ellipse>
-                                            <Ellipse.Fill>
-                                                <ImageBrush ImageSource="{Binding AwayTeamLogo, Converter={StaticResource SafeImageConverter}}"
-                        Stretch="UniformToFill"/>
-                                            </Ellipse.Fill>
-
-                                            <Ellipse.Style>
-                                                <Style TargetType="Ellipse">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding AwayTeamLogo}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding AwayTeamLogo}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Ellipse.Style>
-                                        </Ellipse>
-
-                                        <!-- Fallback -->
-                                        <TextBlock Text="🛡️" FontSize="30" HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"
-                                            Foreground="{StaticResource SidebarHoverBrush}">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding AwayTeamLogo}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding AwayTeamLogo}" Value="">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-
-                                    </Grid>
-
+                                    </Border>
                                 </Grid>
                             </Border>
+                            <!-- PARTIDOS -->
+                            <ItemsControl ItemsSource="{Binding Matches}" Grid.Row="2" HorizontalAlignment="Stretch">
+                                <ItemsControl.ItemTemplate>
+                                    <!-- MATCH CARD -->
+                                    <DataTemplate>
+                                        <Border x:Name="rowCard"
+        MouseLeftButtonDown="Match_MouseDoubleClick"
+        Cursor="Hand"
+        Tag="{Binding}"
+        HorizontalAlignment="Stretch"
+        CornerRadius="10"
+        Background="White"
+        BorderBrush="#E5E7EB"
+        BorderThickness="1"
+        Padding="10"
+        Margin="0,3"
+        Effect="{x:Null}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="60"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="60"/>
+                                                </Grid.ColumnDefinitions>
+                                                <!-- ICONO HOME -->
+                                                <Grid Grid.Column="0"
+                                                          Width="50"
+                                                          Height="50"
+                                                         >
+                                                    <!-- Imagen -->
+                                                    <Ellipse>
+                                                        <Ellipse.Fill>
+                                                            <ImageBrush ImageSource="{Binding HomeTeamLogo, Converter={StaticResource SafeImageConverter}}"
+                        Stretch="UniformToFill"/>
+                                                        </Ellipse.Fill>
+                                                        <Ellipse.Style>
+                                                            <Style TargetType="Ellipse">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding HomeTeamLogo}" Value="{x:Null}">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding HomeTeamLogo}" Value="">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Ellipse.Style>
+                                                    </Ellipse>
+                                                    <!-- Fallback -->
+                                                    <TextBlock Text="🛡️"
+               FontSize="30"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Foreground="{StaticResource SidebarHoverBrush}">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding HomeTeamLogo}" Value="{x:Null}">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding HomeTeamLogo}" Value="">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Grid>
+                                                <!-- HOME -->
+                                                <StackPanel Grid.Column="1">
+                                                    <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Right">
+                                                        <TextBlock Text="{StaticResource IconCalendar}"
+                                                       FontFamily="{StaticResource IconFont}"
+                                                       FontSize="14"
+                                                       Foreground="Gray"
+                                                       Margin="0,0,4,0"/>
+                                                        <TextBlock Text="{Binding DateDisplay}"
+                                                       FontSize="12"
+                                                       Foreground="Gray"/>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding HomeTeamName}"
+                                                   HorizontalAlignment="Center"
+                                                   FontSize="20"
+                                                   FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                                <!-- SHIRT HOME -->
+                                                <common:PlayerShirt Grid.Column="2"
+                                                        ShirtColor="{Binding HomeTeamPrimaryColor}"
+                                                        Width="30"
+                                                        Height="30"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Bottom"/>
+                                                <!-- SCORE -->
+                                                <Grid Grid.Column="3">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="70*"/>
+                                                        <RowDefinition Height="30*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Grid.Row="0"
+                                                   HorizontalAlignment="Center"
+                                                   Text="{Binding ScoreDisplay}"
+                                                   FontSize="26"
+                                                   Width="100"
+                                                   TextAlignment="Center"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource SidebarBrush}"/>
+                                                    <TextBlock Grid.Row="1"
+                                                   HorizontalAlignment="Center"
+                                                   Text="{Binding PenaltiesScoreDisplay}"
+                                                   FontSize="14"
+                                                   Width="100"
+                                                   TextAlignment="Center"
+                                                   FontWeight="Bold"
+                                                   Foreground="Gray"/>
+                                                </Grid>
+                                                <!-- SHIRT AWAY -->
+                                                <common:PlayerShirt Grid.Column="4"
+                                                        ShirtColor="{Binding AwayTeamPrimaryColor}"
+                                                        Width="30"
+                                                        Height="30"
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Bottom"/>
+                                                <!-- AWAY -->
+                                                <StackPanel Grid.Column="5">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{StaticResource IconLocation}"
+                                                       FontFamily="{StaticResource IconFont}"
+                                                       FontSize="14"
+                                                       Foreground="Gray"
+                                                       Margin="0,0,4,0"/>
+                                                        <TextBlock Text="{Binding LocationDisplay}"
+                                                       FontSize="12"
+                                                       Foreground="Gray"/>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding AwayTeamName}"
+                                                   HorizontalAlignment="Center"
+                                                   FontSize="20"
+                                                   FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                                <!-- ICON AWAY -->
+                                                <Grid Grid.Column="6"
+                                                             Width="50"
+                                                         Height="50">
+                                                    <!-- Imagen -->
+                                                    <Ellipse>
+                                                        <Ellipse.Fill>
+                                                            <ImageBrush ImageSource="{Binding AwayTeamLogo, Converter={StaticResource SafeImageConverter}}"
+                        Stretch="UniformToFill"/>
+                                                        </Ellipse.Fill>
+                                                        <Ellipse.Style>
+                                                            <Style TargetType="Ellipse">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding AwayTeamLogo}" Value="{x:Null}">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding AwayTeamLogo}" Value="">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Ellipse.Style>
+                                                    </Ellipse>
+                                                    <!-- Fallback -->
+                                                    <TextBlock Text="🛡️"
+               FontSize="30"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Foreground="{StaticResource SidebarHoverBrush}">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding AwayTeamLogo}" Value="{x:Null}">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding AwayTeamLogo}" Value="">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                        <DataTemplate.Triggers>
 
-                            <!-- 🔥 HOVER + SELECT -->
-                            <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=rowCard}"
+                 Value="True">
 
-                                <!-- Hover -->
-                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
-                                    <Setter TargetName="rowCard" Property="BorderBrush" Value="#1ABC9C"/>
-                                    <Setter TargetName="rowCard" Property="Background" Value="#F8FDFC"/>
-                                </DataTrigger>
+                                                <Setter TargetName="rowCard"
+                Property="BorderBrush"
+                Value="#1ABC9C"/>
 
-                                <!-- Selected (más fuerte) -->
-                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
-                                    <Setter TargetName="rowCard" Property="Background" Value="#D1FAE5"/>
-                                    <Setter TargetName="rowCard" Property="BorderBrush" Value="#10B981"/>
-                                </DataTrigger>
+                                                <Setter TargetName="rowCard"
+                Property="Background"
+                Value="#FAFFFD"/>
 
-                            </DataTemplate.Triggers>
+                                                <Setter TargetName="rowCard"
+                Property="Effect"
+                Value="{StaticResource CardHoverShadow}"/>
 
-                        </DataTemplate>
+                                            </DataTrigger>
+
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                          
+                        </Grid>
+                    </DataTemplate>
+                       
+
                     </ListView.ItemTemplate>
 
-                </ListView>
+                    </ListView>
             </Grid>
         </Grid>
-
     </controls:LoadingContainer>
-
-
 </UserControl>

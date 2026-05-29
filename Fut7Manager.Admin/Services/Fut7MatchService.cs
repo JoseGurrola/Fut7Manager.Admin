@@ -1,4 +1,5 @@
 ﻿using Fut7Manager.Admin.Models;
+using static System.Net.WebRequestMethods;
 
 namespace Fut7Manager.Admin.Services {
 
@@ -28,6 +29,12 @@ namespace Fut7Manager.Admin.Services {
             return await PutAsync(
                 $"/api/Fut7Matches/{fut7match.Id}",
                 body);
+        }
+
+        public async Task<List<MatchdayDto>> GetMatchdaysAsync(int leagueId) {
+            return await GetAsync<List<MatchdayDto>>(
+                $"api/Fut7Matches/matchdays?leagueId={leagueId}")
+                ?? new List<MatchdayDto>();
         }
     }
 }

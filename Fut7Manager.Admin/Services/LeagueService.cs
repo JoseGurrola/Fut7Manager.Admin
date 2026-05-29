@@ -21,6 +21,7 @@ namespace Fut7Manager.Admin.Services {
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
+                minPlayers = league.MinPlayers,
                 usePenaltyShootoutPoints = league.UsePenaltyShootoutPoints,
                 qualifiedTeamsPerGroup = league.QualifiedTeamsPerGroup,
                 status = league.Status,
@@ -34,6 +35,7 @@ namespace Fut7Manager.Admin.Services {
             var body = new {
                 name = league.Name,
                 registrationFee = league.RegistrationFee,
+                minPlayers = league.MinPlayers,
                 usePenaltyShootoutPoints = league.UsePenaltyShootoutPoints,
                 qualifiedTeamsPerGroup = league.QualifiedTeamsPerGroup,
                 status = league.Status,
@@ -41,28 +43,30 @@ namespace Fut7Manager.Admin.Services {
             };
 
             var response = await PutResponseAsync($"/api/leagues/{league.Id}", body);
-            if (!response.IsSuccessStatusCode) {
+            if (response != null) {
+                if (!response.IsSuccessStatusCode) {
 
-                var content = await response.Content.ReadAsStringAsync();
-                
-                if (!string.IsNullOrWhiteSpace(content)) {
-                    var error =JsonSerializer.Deserialize<ApiError>(content,new JsonSerializerOptions {
-                        PropertyNameCaseInsensitive = true
-                    });
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrWhiteSpace(content)) {
+                        var error = JsonSerializer.Deserialize<ApiError>(content, new JsonSerializerOptions {
+                            PropertyNameCaseInsensitive = true
+                        });
 
 
-                    if (error?.Code == 1) {
+                        if (error?.Code == 1) {
 
-                        MessageService.Show(
-                            "Los equipos clasificados no pueden ser mayores a los equipos por grupo");
+                            MessageService.Show(
+                                "Los equipos clasificados no pueden ser mayores a los equipos por grupo");
 
-                        return false;
+                            return false;
+                        }
                     }
+
+                    //MessageService.Show("Error al actualizar liga");
+
+                    return false;
                 }
-
-                //MessageService.Show("Error al actualizar liga");
-
-                return false;
             }
             return true;
         }
