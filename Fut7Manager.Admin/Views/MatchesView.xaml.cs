@@ -1,10 +1,14 @@
 ﻿using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Models.SecondaryModels;
+using Fut7Manager.Admin.Services;
 using Fut7Manager.Admin.ViewModels;
 using Fut7Manager.Admin.ViewModels.SecondaryViewModels;
 using Fut7Manager.Admin.Views.SecondaryWindows;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -41,12 +45,13 @@ namespace Fut7Manager.Admin.Views {
             if (border.Tag is not Fut7MatchDto match)
                 return;
 
+
+            var matchDetails = await vm.Fut7MatchService.GetFut7MatchDetailAsync(match.Id);
+            if(matchDetails == null) { return; }
+
             var window = new EditMatchWindow();
 
-            var editVm = new EditMatchViewModel(
-                match,
-                vm.Fut7MatchService,
-                vm.League);
+            var editVm = new EditMatchViewModel(matchDetails, vm.Fut7MatchService,vm.League);
 
             window.DataContext = editVm;
 
@@ -56,7 +61,7 @@ namespace Fut7Manager.Admin.Views {
                 window.Close();
 
                 if (result) {
-                    await vm.UpdateMatch(match);
+                    await vm.UpdateMatch(matchDetails);
                 }
             };
 

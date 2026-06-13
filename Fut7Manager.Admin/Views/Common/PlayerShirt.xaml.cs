@@ -33,7 +33,7 @@ namespace Fut7Manager.Admin.Views.Common {
                 nameof(JerseyNumber),
                 typeof(int?),
                 typeof(PlayerShirt),
-                new PropertyMetadata(0));
+                new PropertyMetadata(null));
 
         public Brush NumberBrush
         {

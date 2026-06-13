@@ -1,6 +1,8 @@
 ﻿using Fut7Manager.Admin.Helpers;
 using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Models.SecondaryModels;
 using Fut7Manager.Admin.Services;
+using Fut7Manager.Admin.Views.SecondaryWindows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,8 @@ using System.Windows.Input;
 namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
     public class EditMatchViewModel : BaseViewModel {
         private readonly Fut7MatchService _fut7MatchService;
-        private readonly Fut7MatchDto _match;
+        //private readonly Fut7MatchDto _match;
+        private Fut7MatchDetailsDto _match = new Fut7MatchDetailsDto();
         private int? _homeGoals;
         private int? _awayGoals;
         private int? _homePenaltyGoals;
@@ -72,6 +75,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(CanEditPenalties));
+                OnPropertyChanged(nameof(CanOpenDetails));
             }
         }
 
@@ -89,6 +93,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(CanEditPenalties));
+                OnPropertyChanged(nameof(CanOpenDetails));
             }
         }
         
@@ -118,6 +123,10 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             AwayGoals.HasValue &&
             HomeGoals == AwayGoals;
 
+        public bool CanOpenDetails =>
+         HomeGoals.HasValue &&
+         AwayGoals.HasValue;
+
         // =========================
         // LISTAS
         // =========================
@@ -141,11 +150,13 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
+        public ICommand OpenDetailsCommand { get; }
+
         // =========================
         // CONSTRUCTOR
         // =========================
 
-        public EditMatchViewModel(Fut7MatchDto match, Fut7MatchService fut7MatchService, LeagueDto league) {
+        public EditMatchViewModel(Fut7MatchDetailsDto match, Fut7MatchService fut7MatchService, LeagueDto league) {
             _match = match;
             _fut7MatchService = fut7MatchService;
 
@@ -157,17 +168,9 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             HomePenaltyGoals = match.HomePenaltyGoals;
             AwayPenaltyGoals = match.AwayPenaltyGoals;
 
-            // 🔥 Inicializar hora/minuto correctamente
-            if (match.MatchDate.HasValue) {
-                SelectedHour = match.MatchDate.Value.Hour;
-                SelectedMinute = (match.MatchDate.Value.Minute / 10) * 10; // normaliza
-            } else {
-                SelectedHour = 19;
-                SelectedMinute = 0;
-            }
-
             SaveCommand = new RelayCommand(async () => await Save());
             CancelCommand = new RelayCommand(() => CloseAction?.Invoke(false));
+            OpenDetailsCommand = new RelayCommand(async () => await OpenDetails());
         }
 
         // =========================
@@ -211,14 +214,9 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
             var success = await _fut7MatchService.UpdateFut7MatchAsync(_match);
 
             if (success) {
-
                 CloseAction?.Invoke(true);
-
             } else {
-
-                MessageService.Show(
-                    "Error al guardar partido",
-                    "Error");
+                MessageService.Show("Error al guardar partido","Error");
             }
         }
 
@@ -234,6 +232,21 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
                 SelectedMinute,
                 0
             );
+        }
+
+        private async Task OpenDetails() {
+            var window = new MatchDetailsWindow();
+            var vm = new MatchDetailsViewModel(_match, new PlayerService());
+
+            window.DataContext = vm;
+            await vm.InitializeAsync(); // 🔥 carga asíncrona
+
+            vm.CloseAction = result => {
+                window.DialogResult = result;
+                window.Close();
+            };
+
+            window.ShowDialog();
         }
     }
 }

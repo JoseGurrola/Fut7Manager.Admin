@@ -23,7 +23,7 @@ namespace Fut7Manager.Admin.Services {
                 registrationFee = league.RegistrationFee,
                 minPlayers = league.MinPlayers,
                 usePenaltyShootoutPoints = league.UsePenaltyShootoutPoints,
-                qualifiedTeamsPerGroup = league.QualifiedTeamsPerGroup,
+                qualifiedTeamsPerGroup = league.TotalQualifiedTeams,
                 status = league.Status,
                 logoUrl = league.LogoUrl
             };
@@ -37,7 +37,7 @@ namespace Fut7Manager.Admin.Services {
                 registrationFee = league.RegistrationFee,
                 minPlayers = league.MinPlayers,
                 usePenaltyShootoutPoints = league.UsePenaltyShootoutPoints,
-                qualifiedTeamsPerGroup = league.QualifiedTeamsPerGroup,
+                qualifiedTeamsPerGroup = league.TotalQualifiedTeams,
                 status = league.Status,
                 logoUrl = league.LogoUrl
             };

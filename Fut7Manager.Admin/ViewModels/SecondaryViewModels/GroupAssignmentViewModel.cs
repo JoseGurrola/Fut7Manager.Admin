@@ -77,65 +77,40 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
         public bool HasSchedule => Matchdays?.Any() == true;
 
-        private int _numberOfGroups = 2;
+        private int _numberOfGroups = 1;
 
         public int NumberOfGroups
         {
             get => _numberOfGroups;
-            set {
-                if (SetProperty(ref _numberOfGroups, value)) {
-                    OnPropertyChanged(nameof(QualifiedTeamsOptions));
-
-                    var options = QualifiedTeamsOptions;
-
-                    if (options.Any()) {
-                        QualifiedTeamsPerGroup = options.First();
-                    }
-                }
-            }
+            set => SetProperty(ref _numberOfGroups, value);
         }
 
-        private int _qualifiedTeamsPerGroup = 2;
+        private int _totalQualifiedTeams = 2;
 
-        public int QualifiedTeamsPerGroup
+        public int TotalQualifiedTeams
         {
-            get => _qualifiedTeamsPerGroup;
-            set => SetProperty(ref _qualifiedTeamsPerGroup, value);
+            get => _totalQualifiedTeams;
+            set => SetProperty(ref _totalQualifiedTeams, value);
         }
 
         public List<int> NumberOfGroupsOptions =>
-            new() { 1, 2, 4, 8 };
+     Enumerable.Range(1, _teams.Count / 2)
+         .ToList();
 
-        public List<int> QualifiedTeamsOptions =>
-            Enumerable.Range(1, 8)
-                .Where(IsValidConfiguration)
+
+        public List<int> QualifiedTeamsOptions
+        {
+            get {
+                int totalTeams = _teams.Count;
+
+                return new[]
+                {
+            2, 4, 8, 16, 32
+        }
+                .Where(x => x <= totalTeams)
                 .ToList();
-
-        private bool IsPowerOfTwo(int number) {
-            return number > 1 &&
-                   (number & (number - 1)) == 0;
+            }
         }
-        private bool IsValidConfiguration(int qualified) {
-            if (NumberOfGroups <= 0)
-                return false;
-
-            int totalTeams = _teams.Count;
-
-            int teamsPerGroup =
-                totalTeams / NumberOfGroups;
-
-            if (teamsPerGroup <= 0)
-                return false;
-
-            if (qualified > teamsPerGroup)
-                return false;
-
-            int totalQualified =
-                NumberOfGroups * qualified;
-
-            return IsPowerOfTwo(totalQualified);
-        }
-
         // ============================================
         // COMMANDS
         // ============================================
@@ -252,7 +227,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
                 var league = await _leagueService.GetLeagueByIdAsync(_leagueId);
 
-                league.QualifiedTeamsPerGroup = QualifiedTeamsPerGroup;
+                league.TotalQualifiedTeams = TotalQualifiedTeams;
                 league.Status = LeagueStatus.InProgress;
 
                 await _leagueService.EditLeagueAsync(league);
@@ -287,9 +262,14 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
 
         private void GoBack() {
 
-            if (CurrentStep == SetupStep.Groups) CurrentStep = SetupStep.Configuration;
-            else
-            CurrentStep = SetupStep.Groups;
+            if (CurrentStep == SetupStep.Groups) {
+                CurrentStep = SetupStep.Configuration;
+            } else {
+                Matchdays.Clear();
+                OnPropertyChanged(nameof(HasSchedule));
+
+                CurrentStep = SetupStep.Groups;
+            }
         }
 
         // ============================================
@@ -404,8 +384,24 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         }
 
         private void ContinueConfiguration() {
+
             if (!QualifiedTeamsOptions.Any()) {
                 MessageService.Show("Configuración inválida", "Validación");
+                return;
+            }
+
+            if (TotalQualifiedTeams > _teams.Count) {
+                MessageService.Show("Los clasificados no pueden ser mayores al número de equipos", "Validación");
+                return;
+            }
+
+            if (NumberOfGroups > _teams.Count) {
+                MessageService.Show("No puede haber más grupos que equipos", "Validación");
+                return;
+            }
+
+            if (_teams.Count < NumberOfGroups * 2) {
+                MessageService.Show("Cada grupo debe tener al menos 2 equipos", "Validación");
 
                 return;
             }

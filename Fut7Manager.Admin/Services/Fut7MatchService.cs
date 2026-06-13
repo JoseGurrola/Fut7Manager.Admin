@@ -1,20 +1,27 @@
 ﻿using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Models.SecondaryModels;
 using static System.Net.WebRequestMethods;
 
 namespace Fut7Manager.Admin.Services {
 
     public class Fut7MatchService : BaseService {
 
-        public async Task<List<Fut7MatchDto>> GetFut7MatchsAsync(
-            int leagueId) {
+        public async Task<List<Fut7MatchDto>> GetFut7MatchsAsync(int leagueId) {
 
             return await GetAsync<List<Fut7MatchDto>>(
                 $"/api/Fut7Matches?LeagueId={leagueId}&pageSize=0")
                 ?? new List<Fut7MatchDto>();
         }
 
+        public async Task<Fut7MatchDetailsDto?> GetFut7MatchDetailAsync(int id) {
+
+            return await GetAsync<Fut7MatchDetailsDto>(
+                $"/api/Fut7Matches/{id}/details")
+                ?? new Fut7MatchDetailsDto();
+        }
+
         public async Task<bool> UpdateFut7MatchAsync(
-            Fut7MatchDto fut7match) {
+            Fut7MatchDetailsDto fut7match) {
 
             var body = new {
 
@@ -23,7 +30,9 @@ namespace Fut7Manager.Admin.Services {
                 homePenaltyGoals = fut7match.HomePenaltyGoals,
                 awayPenaltyGoals = fut7match.AwayPenaltyGoals,
                 matchDate = fut7match.MatchDate,
-                location = fut7match.Location
+                location = fut7match.Location,
+                homePlayerStats = fut7match.HomePlayerStats,
+                awayPlayerStats = fut7match.AwayPlayerStats
             };
 
             return await PutAsync(

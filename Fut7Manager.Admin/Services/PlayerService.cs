@@ -13,6 +13,13 @@ namespace Fut7Manager.Admin.Services {
             return result ?? new List<PlayerDto>();
         }
 
+        public async Task<List<PlayerDto>> GetPlayersByTeamAsync(int teamId) {
+            var result = await GetAsync<List<PlayerDto>>(
+                $"/api/players?teamId={teamId}");
+
+            return result ?? new List<PlayerDto>();
+        }
+
         public async Task<PlayerDto?> GetPlayerAsync(int playerId) {
 
             return await GetAsync<PlayerDto>(

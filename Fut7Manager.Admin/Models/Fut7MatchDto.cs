@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fut7Manager.Admin.Models.SecondaryModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -57,5 +58,9 @@ namespace Fut7Manager.Admin.Models {
             string.IsNullOrEmpty(Location)
                 ? ""
                 : Location;
+
+        public List<MatchPlayerStatDto> HomePlayerStats { get; set; } = new();
+
+        public List<MatchPlayerStatDto> AwayPlayerStats { get; set; } = new();
     }
 }

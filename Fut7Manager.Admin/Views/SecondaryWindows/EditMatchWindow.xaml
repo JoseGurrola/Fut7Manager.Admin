@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Editar partido"
         Width="400"
-        Height="450"
+        Height="490"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -28,6 +28,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -146,9 +147,15 @@
                      FontSize="16"
                      Width="60"/>
             </Grid>
-
+            <Button Grid.Row="10" Style="{StaticResource ThirdButtonStyle}"
+                    Content="Detalles del partido"
+                    Height="40"
+                    Margin="0,15,0,0"
+                    IsEnabled="{Binding CanOpenDetails}"
+                    Command="{Binding OpenDetailsCommand}"/>
+            
             <!-- Botones -->
-            <StackPanel Grid.Row="10"
+            <StackPanel Grid.Row="11"
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="0,15,0,0">

@@ -171,7 +171,7 @@ namespace Fut7Manager.Admin.ViewModels {
                         RegistrationFee = vm.RegistrationFee,
                         MinPlayers = vm.MinPlayers,
                         UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
-                        //QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
+                        //TotalQualifiedTeams = vm.TotalQualifiedTeams,
                         Status = vm.Status,
                         LogoUrl = vm.FinalLogoUrl
                     });
@@ -190,7 +190,7 @@ namespace Fut7Manager.Admin.ViewModels {
                     RegistrationFee = vm.RegistrationFee,
                     MinPlayers = vm.MinPlayers,
                     UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
-                    //QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
+                    //TotalQualifiedTeams = vm.TotalQualifiedTeams,
                     Status = vm.Status,
                     LogoUrl = vm.FinalLogoUrl
                 };
@@ -219,7 +219,7 @@ namespace Fut7Manager.Admin.ViewModels {
                     RegistrationFee = vm.RegistrationFee,
                     MinPlayers = vm.MinPlayers,
                     UsePenaltyShootoutPoints = vm.UsePenaltyShootoutPoints,
-                    //QualifiedTeamsPerGroup = vm.QualifiedTeamsPerGroup,
+                    //TotalQualifiedTeams = vm.TotalQualifiedTeams,
                     LogoUrl = vm.FinalLogoUrl
                 });
                 if (created != null) {

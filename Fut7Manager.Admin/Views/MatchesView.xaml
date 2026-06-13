@@ -37,9 +37,7 @@
           Background="Transparent"
           BorderThickness="0"
           ScrollViewer.VerticalScrollBarVisibility="Auto"
-          ScrollViewer.CanContentScroll="True"
-          VirtualizingPanel.IsVirtualizing="True"
-          VirtualizingPanel.VirtualizationMode="Recycling"
+          ScrollViewer.CanContentScroll="False"
           HorizontalContentAlignment="Stretch">
 
                     <ListView.ItemContainerStyle>
@@ -91,15 +89,12 @@
                 CornerRadius="20"
                 Padding="10,4"
                 VerticalAlignment="Center"
-                Visibility="{Binding RestingTeamNames.Count,
-                             Converter={StaticResource IntToVisibilityConverter}}">
-                                        <TextBlock FontSize="13"
-                       Foreground="{StaticResource SidebarHoverBrush}"
-                       FontWeight="SemiBold">
-													<Run Text="Descansa: " FontWeight="Bold"/>
-													<Run Text="{Binding RestingTeamNames[0]}"/>
-                                        </TextBlock>
-                                    </Border>
+               >
+                         <TextBlock Text="{Binding RestingTeamsDisplay}"
+                           Foreground="{StaticResource SidebarHoverBrush}"
+                           FontWeight="Bold" FontSize="14"
+                          />
+                                        </Border>
                                 </Grid>
                             </Border>
                             <!-- PARTIDOS -->

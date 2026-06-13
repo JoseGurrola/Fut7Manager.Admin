@@ -1,5 +1,6 @@
 ﻿using Fut7Manager.Admin.Helpers;
 using Fut7Manager.Admin.Models;
+using Fut7Manager.Admin.Models.SecondaryModels;
 using Fut7Manager.Admin.Services;
 using System.Collections.ObjectModel;
 
@@ -67,7 +68,7 @@ namespace Fut7Manager.Admin.ViewModels {
             }
         }
 
-        public async Task UpdateMatch(Fut7MatchDto match) {
+        public async Task UpdateMatch(Fut7MatchDetailsDto match) {
             await Fut7MatchService.UpdateFut7MatchAsync(match);
 
             // refrescar

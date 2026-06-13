@@ -22,153 +22,172 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <!-- 🔹 TEMPLATE FILA -->
         <DataTemplate x:Key="StandingRowTemplate">
-            <Grid Margin="0,4" VerticalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="35"/>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="45"/>
-                    <ColumnDefinition Width="45"/>
-                    <ColumnDefinition Width="45"/>
-                    <ColumnDefinition Width="45"/>
-                    <ColumnDefinition Width="55"/>
-                    <ColumnDefinition Width="55"/>
-                    <ColumnDefinition Width="55"/>
-                    <ColumnDefinition Width="55"/>
-                    <ColumnDefinition Width="120"/>
-                </Grid.ColumnDefinitions>
-                <!-- Posición -->
-                <TextBlock Text="{Binding Position}" Style="{StaticResource TableTextStyle}" FontWeight="Bold"/>
-                <!-- Icono -->
-                <Grid Width="32" Grid.Column="1"
-Height="32"
-VerticalAlignment="Center">
-                    <!-- Fondo -->
-                    <Ellipse Fill="Transparent"/>
-                    <!-- Imagen circular -->
-                    <Ellipse>
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="{Binding LogoUrl, Converter={StaticResource SafeImageConverter}}"
-                  Stretch="UniformToFill"/>
-                        </Ellipse.Fill>
-                        <!-- Ocultar si no hay imagen -->
-                        <Ellipse.Style>
-                            <Style TargetType="Ellipse">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding LogoUrl}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding LogoUrl}" Value="">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Ellipse.Style>
-                    </Ellipse>
-                    <!-- Fallback -->
-                    <TextBlock Text="🛡️" FontSize="30"
-         HorizontalAlignment="Center"
-         VerticalAlignment="Center"
-         Foreground="{StaticResource SidebarHoverBrush}">
+            <Border Margin="0,4" Padding="6" CornerRadius="6">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="BorderBrush" Value="#E5E7EB"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Style.Triggers>
+                            <!-- Clasificados -->
+                            <DataTrigger Binding="{Binding IsQualified}" Value="True">
+                                <Setter Property="Background" Value="#F8FDFC"/>
+                                <Setter Property="BorderBrush" Value="#1ABC9C"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="35"/>
+                        <ColumnDefinition Width="40"/>
+                        <!-- Logo -->
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="55"/>
+                        <ColumnDefinition Width="55"/>
+                        <ColumnDefinition Width="55"/>
+                        <ColumnDefinition Width="55"/>
+                        <ColumnDefinition Width="120"/>
+                        <!-- Últimos 5 -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Posición -->
+                    <TextBlock Text="{Binding Position}" 
+                       Style="{StaticResource TableTextStyle}" 
+                       FontWeight="Bold"/>
+
+                    <!-- Logo circular con fallback -->
+                    <Grid Grid.Column="1" Width="32" Height="32" VerticalAlignment="Center">
+                        <!-- Imagen circular -->
+                        <Ellipse>
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding LogoUrl, Converter={StaticResource SafeImageConverter}}"
+                                    Stretch="UniformToFill"/>
+                            </Ellipse.Fill>
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding LogoUrl}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding LogoUrl}" Value="">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                        <!-- Fallback escudo -->
+                        <TextBlock Text="🛡️" FontSize="22"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource SidebarHoverBrush}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding LogoUrl}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding LogoUrl}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+
+                    <!-- Nombre del equipo -->
+                    <TextBlock Grid.Column="2"
+                       Text="{Binding TeamName}">
                         <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TeamNameTextStyle}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding LogoUrl}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding LogoUrl}" Value="">
-                                        <Setter Property="Visibility" Value="Visible"/>
+                                    <DataTrigger Binding="{Binding IsQualified}" Value="True">
+                                        <Setter Property="Foreground" Value="Black"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                </Grid>
-                <!-- Nombre -->
-                <TextBlock Grid.Column="2" TextWrapping="NoWrap"
-TextTrimming="CharacterEllipsis"
-                           Text="{Binding TeamName}"
-                           Style="{StaticResource TeamNameTextStyle}"
-                           Margin="6,0,0,0"/>
-                <!-- Stats -->
-                <TextBlock Grid.Column="3" Text="{Binding Played}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Column="4" Text="{Binding Won}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Column="5" Text="{Binding Draw}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Column="6" Text="{Binding Lost}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Column="7" Text="{Binding GoalsFor}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Column="8" Text="{Binding GoalsAgainst}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Column="9" Text="{Binding GoalDifference}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Column="10"
-                           Text="{Binding Points}"
-                           Style="{StaticResource TableTextStyle}"
-                           HorizontalAlignment="Right"
-                           FontWeight="Bold"/>
-                <!-- 🔥 Últimos 5 -->
-                <ItemsControl Grid.Column="11"
-              ItemsSource="{Binding Last5Results}"
-              HorizontalAlignment="Center">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Width="14"
-                    Height="14"
-                    CornerRadius="7"
-                    Margin="1,0"
-                    VerticalAlignment="Center">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Setter Property="Background" Value="#9CA3AF"/>
-                                        <!-- gris base -->
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding}" Value="W">
-                                                <Setter Property="Background" Value="#22C55E"/>
-                                                <!-- verde -->
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding}" Value="D">
-                                                <Setter Property="Background" Value="#9CA3AF"/>
-                                                <!-- gris empate -->
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding}" Value="L">
-                                                <Setter Property="Background" Value="#EF4444"/>
-                                                <!-- rojo -->
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <TextBlock FontSize="6" Padding="0"
-                           Foreground="White"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           FontWeight="Bold">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Text" Value=""/>
+
+                    <!-- Stats -->
+                    <TextBlock Grid.Column="3" Text="{Binding Played}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="4" Text="{Binding Won}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="5" Text="{Binding Draw}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="6" Text="{Binding Lost}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="7" Text="{Binding GoalsFor}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="8" Text="{Binding GoalsAgainst}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="9" Text="{Binding GoalDifference}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="10" Text="{Binding Points}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Right" FontWeight="Bold"/>
+
+                    <!-- Últimos 5 resultados -->
+                    <ItemsControl Grid.Column="11"
+                          ItemsSource="{Binding Last5Results}"
+                          HorizontalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="14" Height="14" CornerRadius="7" Margin="1,0" VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#9CA3AF"/>
+                                            <!-- gris base -->
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding}" Value="W">
-                                                    <Setter Property="Text" Value="✔"/>
+                                                    <Setter Property="Background" Value="#22C55E"/>
+                                                    <!-- verde -->
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding}" Value="D">
-                                                    <Setter Property="Text" Value="–"/>
+                                                    <Setter Property="Background" Value="#9CA3AF"/>
+                                                    <!-- gris empate -->
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding}" Value="L">
-                                                    <Setter Property="Text" Value="✖"/>
+                                                    <Setter Property="Background" Value="#EF4444"/>
+                                                    <!-- rojo -->
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Grid>
+                                    </Border.Style>
+                                    <TextBlock FontSize="6" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value=""/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding}" Value="W">
+                                                        <Setter Property="Text" Value="✔"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding}" Value="D">
+                                                        <Setter Property="Text" Value="–"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding}" Value="L">
+                                                        <Setter Property="Text" Value="✖"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
         </DataTemplate>
+
+
     </UserControl.Resources>
     <Grid>
         <controls:LoadingContainer IsLoading="{Binding IsLoading}">
@@ -198,7 +217,7 @@ TextTrimming="CharacterEllipsis"
                                         <Grid Margin="0,0,0,8">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="35"/>
-                                                <ColumnDefinition Width="40"/>
+                                                <ColumnDefinition Width="60"/>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="45"/>
                                                 <ColumnDefinition Width="45"/>
@@ -247,7 +266,7 @@ TextTrimming="CharacterEllipsis"
                             <Grid Margin="0,0,0,8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="35"/>
-                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="60"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="45"/>
                                     <ColumnDefinition Width="45"/>
