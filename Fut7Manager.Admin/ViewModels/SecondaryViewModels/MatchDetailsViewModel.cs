@@ -93,14 +93,47 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
                 return;
             }
 
+            // 🔹 Registrar jugadores libres antes de armar las listas
+            var unregisteredHome = HomePlayers
+                .Where(x => !x.PlayerId.HasValue && !string.IsNullOrWhiteSpace(x.PlayerName))
+                .ToList();
+
+            foreach (var player in unregisteredHome) {
+                var newPlayer = await _playerService.CreatePlayerAsync(new PlayerDto {
+                    Name = player.PlayerName,
+                    JerseyNumber = 0,
+                    TeamId = _match.HomeTeamId,
+                    Active = true
+                });
+                if (newPlayer != null) {
+                    player.PlayerId = newPlayer.Id;
+                }
+            }
+
+            var unregisteredAway = AwayPlayers
+                .Where(x => !x.PlayerId.HasValue && !string.IsNullOrWhiteSpace(x.PlayerName))
+                .ToList();
+
+            foreach (var player in unregisteredAway) {
+                var newPlayer = await _playerService.CreatePlayerAsync(new PlayerDto {
+                    Name = player.PlayerName,
+                    JerseyNumber = 0,
+                    TeamId = _match.AwayTeamId,
+                    Active = true
+                });
+                if (newPlayer != null) {
+                    player.PlayerId = newPlayer.Id;
+                }
+            }
+
             // 🔹 HOME TEAM
             _match.HomePlayerStats = HomePlayers
                 .Where(x =>
-                    x.PlayerId.HasValue &&                // debe tener jugador asignado
+                    x.PlayerId.HasValue &&
                     !string.IsNullOrWhiteSpace(x.PlayerName) &&
                     (x.Goals > 0 || x.YellowCards > 0 || x.RedCards > 0))
-                .GroupBy(x => x.PlayerId)                // evita duplicados
-                .Select(g => g.First())                  // toma el primero si hay repetidos
+                .GroupBy(x => x.PlayerId)
+                .Select(g => g.First())
                 .ToList();
 
             // 🔹 AWAY TEAM
@@ -117,58 +150,88 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         }
 
 
+
         private async Task LoadPlayers() {
             try {
                 // 🔹 HOME TEAM
-                var homePlayers = await _playerService.GetPlayersByTeamAsync(_match.HomeTeamId);
                 HomePlayers.Clear();
 
-                foreach (var player in homePlayers) {
-                    // busca si ya hay stats para este jugador
-                    var stat = _match.HomePlayerStats
-                        ?.FirstOrDefault(s => s.PlayerId == player.Id);
-
-                    var item = stat ?? new MatchPlayerStatDto {
-                        PlayerId = player.Id,
-                        PlayerName = player.Name,
-                        JerseyNumber = player.JerseyNumber
-                    };
-
-                    item.PropertyChanged += PlayerStat_PropertyChanged;
-                    HomePlayers.Add(item);
+                // primero agrega los stats que vinieron del backend
+                if (_match.HomePlayerStats != null) {
+                    foreach (var stat in _match.HomePlayerStats) {
+                        var item = new MatchPlayerStatDto {
+                            PlayerId = stat.PlayerId,
+                            PlayerName = stat.PlayerName,
+                            JerseyNumber = stat.JerseyNumber,
+                            Goals = stat.Goals,
+                            YellowCards = stat.YellowCards,
+                            RedCards = stat.RedCards
+                        };
+                        item.PropertyChanged += PlayerStat_PropertyChanged;
+                        HomePlayers.Add(item);
+                    }
                 }
 
-                // agrega filas vacías para capturar jugadores adicionales
-                for (int i = 0; i < 3; i++) {
+                // luego agrega los jugadores registrados del servicio que no tengan stats
+                var homePlayers = await _playerService.GetPlayersBasicByTeamAsync(_match.HomeTeamId);
+                foreach (var player in homePlayers) {
+                    if (!HomePlayers.Any(p => p.PlayerId == player.Id)) {
+                        var item = new MatchPlayerStatDto {
+                            PlayerId = player.Id,
+                            PlayerName = player.Name,
+                            JerseyNumber = player.JerseyNumber
+                        };
+                        item.PropertyChanged += PlayerStat_PropertyChanged;
+                        HomePlayers.Add(item);
+                    }
+                }
+
+                // filas vacías para capturar adicionales
+                while (HomePlayers.Count < 20) {
                     var item = new MatchPlayerStatDto();
                     item.PropertyChanged += PlayerStat_PropertyChanged;
                     HomePlayers.Add(item);
                 }
 
                 // 🔹 AWAY TEAM
-                var awayPlayers = await _playerService.GetPlayersByTeamAsync(_match.AwayTeamId);
                 AwayPlayers.Clear();
 
-                foreach (var player in awayPlayers) {
-                    var stat = _match.AwayPlayerStats
-                        ?.FirstOrDefault(s => s.PlayerId == player.Id);
-
-                    var item = stat ?? new MatchPlayerStatDto {
-                        PlayerId = player.Id,
-                        PlayerName = player.Name,
-                        JerseyNumber = player.JerseyNumber
-                    };
-
-                    item.PropertyChanged += PlayerStat_PropertyChanged;
-                    AwayPlayers.Add(item);
+                if (_match.AwayPlayerStats != null) {
+                    foreach (var stat in _match.AwayPlayerStats) {
+                        var item = new MatchPlayerStatDto {
+                            PlayerId = stat.PlayerId,
+                            PlayerName = stat.PlayerName,
+                            JerseyNumber = stat.JerseyNumber,
+                            Goals = stat.Goals,
+                            YellowCards = stat.YellowCards,
+                            RedCards = stat.RedCards
+                        };
+                        item.PropertyChanged += PlayerStat_PropertyChanged;
+                        AwayPlayers.Add(item);
+                    }
                 }
 
-                for (int i = 0; i < 3; i++) {
+                var awayPlayers = await _playerService.GetPlayersBasicByTeamAsync(_match.AwayTeamId);
+                foreach (var player in awayPlayers) {
+                    if (!AwayPlayers.Any(p => p.PlayerId == player.Id)) {
+                        var item = new MatchPlayerStatDto {
+                            PlayerId = player.Id,
+                            PlayerName = player.Name,
+                            JerseyNumber = player.JerseyNumber
+                        };
+                        item.PropertyChanged += PlayerStat_PropertyChanged;
+                        AwayPlayers.Add(item);
+                    }
+                }
+
+
+                while (AwayPlayers.Count < 20) {
                     var item = new MatchPlayerStatDto();
                     item.PropertyChanged += PlayerStat_PropertyChanged;
                     AwayPlayers.Add(item);
                 }
 
+                // 🔹 recalcular propiedades dependientes
                 OnPropertyChanged(nameof(HomeGoalsCaptured));
                 OnPropertyChanged(nameof(AwayGoalsCaptured));
                 OnPropertyChanged(nameof(HomeGoalsMatch));
@@ -181,6 +244,7 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
                 MessageService.Show(ex.ToString());
             }
         }
+
 
 
         private void PlayerStat_PropertyChanged(object? sender, PropertyChangedEventArgs e) {

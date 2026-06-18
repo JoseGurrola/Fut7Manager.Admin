@@ -13,7 +13,7 @@
             WindowStyle="None"
             AllowsTransparency="True"
            >
-    <Grid Margin="15">
+    <Grid Margin="15,15,15,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -26,8 +26,7 @@
             </Grid.ColumnDefinitions>
             <!-- Local -->
             <StackPanel Grid.Column="0">
-                <!--<Grid>
-                    --><!-- Imagen --><!--
+                <!--<Grid>Imagen 
                     <Ellipse>
                         <Ellipse.Fill>
                             <ImageBrush ImageSource="{Binding HomeTeamLogo, Converter={StaticResource SafeImageConverter}}"
@@ -68,21 +67,20 @@ Foreground="{StaticResource SidebarHoverBrush}">
                         </TextBlock.Style>
                     </TextBlock>
                 </Grid>-->
-                <GroupBox Header="{Binding HomeTeamName}" FontSize="20">
+                <GroupBox Header="{Binding HomeTeamName}" Margin="0" Height="640">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Height="600">
+                        <DataGrid
+                              ItemsSource="{Binding HomePlayers}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              RowHeight="34"
+                              FontSize="16"
+                              ColumnHeaderHeight="44"
+                              Margin="5">
 
-                    <DataGrid
-            ItemsSource="{Binding HomePlayers}"
-            AutoGenerateColumns="False"
-            CanUserAddRows="False"
-            HeadersVisibility="Column"
-            GridLinesVisibility="Horizontal"
-                        ScrollViewer.VerticalScrollBarVisibility="Visible"
-            RowHeight="35"
-                        FontSize="16"
-            ColumnHeaderHeight="40"
-            Margin="5">
-
-                        <DataGrid.ColumnHeaderStyle>
+                            <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader">
                                 <Setter Property="FontWeight" Value="SemiBold"/>
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -162,7 +160,8 @@ Foreground="{StaticResource SidebarHoverBrush}">
                         </DataGrid.Columns>
 
                     </DataGrid>
-
+                   
+                    </ScrollViewer>
                 </GroupBox>
 
                 <TextBlock FontWeight="Bold">
@@ -240,21 +239,22 @@ Foreground="{StaticResource SidebarHoverBrush}">
                         </TextBlock.Style>
                     </TextBlock>
                 </Grid>-->
-       
-        <GroupBox Header="{Binding AwayTeamName}" FontSize="20">
 
-                    <DataGrid
-            ItemsSource="{Binding AwayPlayers}"
-            AutoGenerateColumns="False"
-            CanUserAddRows="False"
-            HeadersVisibility="Column"
-            GridLinesVisibility="Horizontal" ScrollViewer.VerticalScrollBarVisibility="Visible"
-            RowHeight="35"
-                        FontSize="16"
-ColumnHeaderHeight="40"
-            Margin="5">
+                <GroupBox Header="{Binding AwayTeamName}" Margin="0" Height="640">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Height="600">
+                        <DataGrid
+                          ItemsSource="{Binding AwayPlayers}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
 
-                        <DataGrid.ColumnHeaderStyle>
+                          RowHeight="34"
+                          FontSize="16"
+                          ColumnHeaderHeight="44"
+                          Margin="5">
+
+                            <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader">
                                 <Setter Property="FontWeight" Value="SemiBold"/>
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -332,7 +332,8 @@ ColumnHeaderHeight="40"
                         </DataGrid.Columns>
 
                     </DataGrid>
-
+                  
+                </ScrollViewer>
                 </GroupBox>
 
                 <TextBlock FontWeight="Bold">
@@ -369,11 +370,11 @@ ColumnHeaderHeight="40"
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
-                    Margin="0,15,0,0">
+                    Margin="0,0,0,0">
             <Button Content="Cancelar" Style="{StaticResource SecondaryButtonStyle}"
                     Width="100"
                     Height="40"
-                    Margin="0,0,10,0"
+                    Margin="0,0,0,0"
                     Command="{Binding CancelCommand}"/>
             <Button Content="Guardar" Style="{StaticResource PrimaryButtonStyle}"
         Width="100" Height="40"

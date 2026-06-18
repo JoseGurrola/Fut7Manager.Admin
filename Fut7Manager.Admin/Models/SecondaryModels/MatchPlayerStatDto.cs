@@ -9,9 +9,7 @@ namespace Fut7Manager.Admin.Models.SecondaryModels {
         private int _yellowCards;
         private int _redCards;
         private int? _jerseyNumber;
-
-        public bool IsRegisteredPlayer => PlayerId.HasValue;
-        //public bool IsHomeTeam { get; set; }
+    
         public int? PlayerId { get; set; }
 
         public string PlayerName
