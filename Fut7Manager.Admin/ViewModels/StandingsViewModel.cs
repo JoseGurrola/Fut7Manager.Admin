@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 
 namespace Fut7Manager.Admin.ViewModels
 {
@@ -21,6 +22,10 @@ namespace Fut7Manager.Admin.ViewModels
 
         public ObservableCollection<GroupStandingDto> GroupedStandings { get; } = new();
         public ObservableCollection<StandingDto> GeneralStandings { get; } = new();
+        public ObservableCollection<PlayerStatStandingDto> TopScorers { get; } = new();
+        public ObservableCollection<PlayerStatStandingDto> YellowCards { get; } = new();
+        public ObservableCollection<PlayerStatStandingDto> RedCards { get; } = new();
+
         public bool ShowGeneralTable => GroupedStandings.Count > 1;
         public StandingsViewModel(AppState appState, LeagueService leagueService, LeagueDto league, TeamService teamService, GroupService groupService, Fut7MatchService fut7MatchService) {
             _league = league;
@@ -38,6 +43,9 @@ namespace Fut7Manager.Admin.ViewModels
 
             GroupedStandings.Clear();
             GeneralStandings.Clear();
+            TopScorers.Clear();
+            YellowCards.Clear();
+            RedCards.Clear();
 
             if (result != null) {
                 foreach (var group in result.GroupedStandings)
@@ -45,11 +53,21 @@ namespace Fut7Manager.Admin.ViewModels
 
                 foreach (var team in result.Standings)
                     GeneralStandings.Add(team);
+
+                foreach (var player in result.PlayerStandings.TopScorers)
+                    TopScorers.Add(player);
+
+                foreach (var player in result.PlayerStandings.YellowCards)
+                    YellowCards.Add(player);
+
+                foreach (var player in result.PlayerStandings.RedCards)
+                    RedCards.Add(player);
             }
 
             OnPropertyChanged(nameof(ShowGeneralTable));
 
             IsLoading = false;
         }
+
     }
 }

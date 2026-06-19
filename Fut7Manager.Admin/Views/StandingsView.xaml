@@ -6,16 +6,19 @@
              Background="White">
     <UserControl.Resources>
         <conv:SafeImageConverter x:Key="SafeImageConverter"/>
-        <!-- 🔹 ESTILOS -->
+        <!--  ESTILOS -->
         <Style x:Key="TableTextStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#111827"/>
         </Style>
         <Style x:Key="TableHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource TableTextStyle}">
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="#6B7280"/>
         </Style>
-        <Style x:Key="TeamNameTextStyle" TargetType="TextBlock" BasedOn="{StaticResource TableTextStyle}">
+        <Style x:Key="TeamNameTextStyle"
+       TargetType="TextBlock"
+       BasedOn="{StaticResource TableTextStyle}">
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="15"/>
         </Style>
@@ -38,7 +41,6 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="35"/>
@@ -56,12 +58,10 @@
                         <ColumnDefinition Width="120"/>
                         <!-- Últimos 5 -->
                     </Grid.ColumnDefinitions>
-
                     <!-- Posición -->
                     <TextBlock Text="{Binding Position}" 
                        Style="{StaticResource TableTextStyle}" 
                        FontWeight="Bold"/>
-
                     <!-- Logo circular con fallback -->
                     <Grid Grid.Column="1" Width="32" Height="32" VerticalAlignment="Center">
                         <!-- Imagen circular -->
@@ -104,7 +104,6 @@
                             </TextBlock.Style>
                         </TextBlock>
                     </Grid>
-
                     <!-- Nombre del equipo -->
                     <TextBlock Grid.Column="2"
                        Text="{Binding TeamName}">
@@ -118,9 +117,8 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-
                     <!-- Stats -->
-                    <TextBlock Grid.Column="3" Text="{Binding Played}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="3" Text="{Binding Played}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center" />
                     <TextBlock Grid.Column="4" Text="{Binding Won}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="5" Text="{Binding Draw}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="6" Text="{Binding Lost}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
@@ -128,7 +126,6 @@
                     <TextBlock Grid.Column="8" Text="{Binding GoalsAgainst}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="9" Text="{Binding GoalDifference}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="10" Text="{Binding Points}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Right" FontWeight="Bold"/>
-
                     <!-- Últimos 5 resultados -->
                     <ItemsControl Grid.Column="11"
                           ItemsSource="{Binding Last5Results}"
@@ -186,118 +183,503 @@
                 </Grid>
             </Border>
         </DataTemplate>
+        <DataTemplate x:Key="StandingTopScorersTemplate">
+            <Border Margin="0,4" CornerRadius="6" Height="50">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="BorderBrush" Value="#E5E7EB"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </Border.Style>
+                <Grid Height="50">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Posición -->
+                    <TextBlock Text="{Binding Position}"  Style="{StaticResource TableTextStyle}" 
+               FontWeight="Bold"/>
+                    <!-- Nombre del jugador -->
+                    <TextBlock Grid.Column="1" Text="{Binding PlayerName}" Style="{StaticResource TeamNameTextStyle}" />
+                    <Grid Grid.Column="2"
+VerticalAlignment="Center"
+ClipToBounds="True">
 
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
+                        <!-- LOGO GRANDE -->
+                        <Grid Width="90"
+                            Height="90"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            ClipToBounds="True">
+
+                            <Rectangle Fill="Transparent"/>
+                            <!-- Imagen -->
+                            <Rectangle>
+                                <Rectangle.Fill>
+                                    <ImageBrush ImageSource="{Binding TeamLogoUrl, Converter={StaticResource SafeImageConverter}}"
+                                      Stretch="UniformToFill"
+                                      AlignmentX="Center"
+                                      AlignmentY="Center"/>
+                                </Rectangle.Fill>
+                                <Rectangle.Style>
+                                    <Style TargetType="Rectangle">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Rectangle.Style>
+                            </Rectangle>
+                            <!-- FALLBACK -->
+                            <TextBlock Text="🛡️"
+                                     FontSize="42"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Foreground="{StaticResource SidebarHoverBrush}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                        <!-- Nombre -->
+                        <TextBlock Grid.Column="1"
+                             Margin="12,0,0,0"
+                             VerticalAlignment="Center"
+                             FontWeight="SemiBold"
+                             FontSize="16"
+                             Text="{Binding TeamName}"
+                             TextWrapping="NoWrap"
+                             TextTrimming="CharacterEllipsis"/>
+                    </Grid>
+                    <!-- Stats -->
+                    <TextBlock Grid.Column="7" Text="{Binding Goals}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="StandingTopYellowCardsTemplate">
+            <Border Margin="0,4" CornerRadius="6" Height="50">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="BorderBrush" Value="#E5E7EB"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </Border.Style>
+                <Grid Height="50">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Posición -->
+                    <TextBlock Text="{Binding Position}"  Style="{StaticResource TableTextStyle}" 
+               FontWeight="Bold"/>
+                    <!-- Nombre del jugador -->
+                    <TextBlock Grid.Column="1" Text="{Binding PlayerName}" Style="{StaticResource TeamNameTextStyle}" />
+                    <Grid Grid.Column="2"
+VerticalAlignment="Center"
+ClipToBounds="True">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- LOGO GRANDE -->
+                        <Grid Width="90"
+                            Height="90"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            ClipToBounds="True">
+
+                            <Rectangle Fill="Transparent"/>
+                            <!-- Imagen -->
+                            <Rectangle>
+                                <Rectangle.Fill>
+                                    <ImageBrush ImageSource="{Binding TeamLogoUrl, Converter={StaticResource SafeImageConverter}}"
+                                      Stretch="UniformToFill"
+                                      AlignmentX="Center"
+                                      AlignmentY="Center"/>
+                                </Rectangle.Fill>
+                                <Rectangle.Style>
+                                    <Style TargetType="Rectangle">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Rectangle.Style>
+                            </Rectangle>
+                            <!-- FALLBACK -->
+                            <TextBlock Text="🛡️"
+                                     FontSize="42"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Foreground="{StaticResource SidebarHoverBrush}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                        <!-- Nombre -->
+                        <TextBlock Grid.Column="1"
+                             Margin="12,0,0,0"
+                             VerticalAlignment="Center"
+                             FontWeight="SemiBold"
+                             FontSize="16"
+                             Text="{Binding TeamName}"
+                             TextWrapping="NoWrap"
+                             TextTrimming="CharacterEllipsis"/>
+                    </Grid>
+                    <!-- Stats -->
+                    <TextBlock Grid.Column="7" Text="{Binding YellowCards}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="StandingTopRedCardsTemplate">
+            <Border Margin="0,4" CornerRadius="6" Height="50">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="BorderBrush" Value="#E5E7EB"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </Border.Style>
+                <Grid Height="50">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Posición -->
+                    <TextBlock Text="{Binding Position}"  Style="{StaticResource TableTextStyle}" 
+               FontWeight="Bold"/>
+                    <!-- Nombre del jugador -->
+                    <TextBlock Grid.Column="1" Text="{Binding PlayerName}" Style="{StaticResource TeamNameTextStyle}" />
+                    <Grid Grid.Column="2"
+VerticalAlignment="Center"
+ClipToBounds="True">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- LOGO GRANDE -->
+                        <Grid Width="90"
+                            Height="90"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            ClipToBounds="True">
+
+                            <Rectangle Fill="Transparent"/>
+                            <!-- Imagen -->
+                            <Rectangle>
+                                <Rectangle.Fill>
+                                    <ImageBrush ImageSource="{Binding TeamLogoUrl, Converter={StaticResource SafeImageConverter}}"
+                                      Stretch="UniformToFill"
+                                      AlignmentX="Center"
+                                      AlignmentY="Center"/>
+                                </Rectangle.Fill>
+                                <Rectangle.Style>
+                                    <Style TargetType="Rectangle">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Rectangle.Style>
+                            </Rectangle>
+                            <!-- FALLBACK -->
+                            <TextBlock Text="🛡️"
+                                     FontSize="42"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Foreground="{StaticResource SidebarHoverBrush}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding TeamLogoUrl}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                        <!-- Nombre -->
+                        <TextBlock Grid.Column="1"
+                             Margin="12,0,0,0"
+                             VerticalAlignment="Center"
+                             FontWeight="SemiBold"
+                             FontSize="16"
+                             Text="{Binding TeamName}"
+                             TextWrapping="NoWrap"
+                             TextTrimming="CharacterEllipsis"/>
+                    </Grid>
+                    <!-- Stats -->
+                    <TextBlock Grid.Column="7" Text="{Binding RedCards}" Style="{StaticResource TableTextStyle}" HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
-        <controls:LoadingContainer IsLoading="{Binding IsLoading}">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="20">
-                    <!-- Título -->
-                    <TextBlock Text="Clasificación"
-                               FontSize="26"
-                               FontWeight="Bold"
-                               Margin="0,0,0,20"/>
-                    <!-- 🔹 GRUPOS -->
-                    <ItemsControl ItemsSource="{Binding GroupedStandings}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border CornerRadius="12"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Clasificación" Grid.Row="0"
+           FontSize="26"
+           FontWeight="Bold"
+           Margin="0,0,0,20"/>
+        <controls:LoadingContainer IsLoading="{Binding IsLoading}" Grid.Row="1">
+            <TabControl >
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Padding" Value="12,8"/>
+                        <Setter Property="Margin" Value="1,0"/>
+                        <Setter Property="Width" Value="Auto"/>
+                        <Setter Property="Background" Value="#F3F4F6"/>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#1ABC9C"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TabControl.Resources>
+                <!-- Clasificación por grupos -->
+                <TabItem Header="Grupos">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20">
+                            <!-- 🔹 GRUPOS -->
+                            <ItemsControl ItemsSource="{Binding GroupedStandings}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="12"
                                         BorderBrush="#E5E7EB"
                                         BorderThickness="1"
                                         Padding="15"
                                         Margin="0,0,0,20"
                                         Background="#FAFAFA">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding GroupName}"
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding GroupName}"
                                                    FontSize="16"
                                                    FontWeight="Bold"
                                                    Margin="0,0,0,12"/>
-                                        <!-- HEADER -->
-                                        <Grid Margin="0,0,0,8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="35"/>
-                                                <ColumnDefinition Width="60"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="45"/>
-                                                <ColumnDefinition Width="45"/>
-                                                <ColumnDefinition Width="45"/>
-                                                <ColumnDefinition Width="45"/>
-                                                <ColumnDefinition Width="55"/>
-                                                <ColumnDefinition Width="55"/>
-                                                <ColumnDefinition Width="55"/>
-                                                <ColumnDefinition Width="55"/>
-                                                <ColumnDefinition Width="120"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="#" Style="{StaticResource TableHeaderTextStyle}"/>
-                                            <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
-                                            <TextBlock Grid.Column="3" Text="PJ" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="4" Text="PG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="5" Text="PE" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="6" Text="PP" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="7" Text="GF" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="8" Text="GC" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="9" Text="DG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="10" Text="Pts" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Right"/>
-                                            <TextBlock Grid.Column="11" Text="Últimos" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                        </Grid>
-                                        <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
-                                        <ItemsControl ItemsSource="{Binding Standings}"
+                                                <!-- HEADER -->
+                                                <Grid Margin="0,0,0,8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="35"/>
+                                                        <ColumnDefinition Width="60"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="45"/>
+                                                        <ColumnDefinition Width="45"/>
+                                                        <ColumnDefinition Width="45"/>
+                                                        <ColumnDefinition Width="45"/>
+                                                        <ColumnDefinition Width="55"/>
+                                                        <ColumnDefinition Width="55"/>
+                                                        <ColumnDefinition Width="55"/>
+                                                        <ColumnDefinition Width="55"/>
+                                                        <ColumnDefinition Width="120"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="#" Style="{StaticResource TableHeaderTextStyle}"/>
+                                                    <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
+                                                    <TextBlock Grid.Column="3" Text="PJ" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="4" Text="PG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="5" Text="PE" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="6" Text="PP" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="7" Text="GF" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="8" Text="GC" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="9" Text="DG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="10" Text="Pts" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Right"/>
+                                                    <TextBlock Grid.Column="11" Text="Últimos" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                                </Grid>
+                                                <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                                <ItemsControl ItemsSource="{Binding Standings}"
                                                       ItemTemplate="{StaticResource StandingRowTemplate}"/>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <!-- 🔹 GENERAL -->
-                    <StackPanel Visibility="{Binding ShowGeneralTable, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <TextBlock Text="Tabla General"
-               FontSize="22"
-               FontWeight="Bold"
-               Margin="0,10,0,12"/>
-
-                        <Border CornerRadius="12"
-            BorderBrush="#E5E7EB"
-            BorderThickness="1"
-            Padding="15"
-            Background="#FAFAFA">
-                            <StackPanel>
-                            <!-- HEADER -->
-                            <Grid Margin="0,0,0,8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="35"/>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="45"/>
-                                    <ColumnDefinition Width="45"/>
-                                    <ColumnDefinition Width="45"/>
-                                    <ColumnDefinition Width="45"/>
-                                    <ColumnDefinition Width="55"/>
-                                    <ColumnDefinition Width="55"/>
-                                    <ColumnDefinition Width="55"/>
-                                    <ColumnDefinition Width="55"/>
-                                    <ColumnDefinition Width="120"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="#" Style="{StaticResource TableHeaderTextStyle}"/>
-                                <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
-                                <TextBlock Grid.Column="3" Text="PJ" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="4" Text="PG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="5" Text="PE" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="6" Text="PP" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="7" Text="GF" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="8" Text="GC" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="9" Text="DG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="10" Text="Pts" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Right"/>
-                                <TextBlock Grid.Column="11" Text="Últimos" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                            </Grid>
-                            <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
-                            <ItemsControl ItemsSource="{Binding GeneralStandings}"
-                                          ItemTemplate="{StaticResource StandingRowTemplate}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </StackPanel>
-                    </Border>
-                    </StackPanel>
-                </StackPanel>
-            </ScrollViewer>
+                    </ScrollViewer>
+                </TabItem>
+                <!-- Clasificación general -->
+                <TabItem Header="General">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Visibility="{Binding ShowGeneralTable, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1" 
+                                    Padding="15" Background="#FAFAFA">
+                                <StackPanel>
+                                    <!-- HEADER -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="35"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="45"/>
+                                            <ColumnDefinition Width="55"/>
+                                            <ColumnDefinition Width="55"/>
+                                            <ColumnDefinition Width="55"/>
+                                            <ColumnDefinition Width="55"/>
+                                            <ColumnDefinition Width="120"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="#" Style="{StaticResource TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="3" Text="PJ" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="4" Text="PG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="5" Text="PE" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="6" Text="PP" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="7" Text="GF" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="8" Text="GC" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="9" Text="DG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="10" Text="Pts" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Right"/>
+                                        <TextBlock Grid.Column="11" Text="Últimos" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                    <ItemsControl ItemsSource="{Binding GeneralStandings}"
+                                          ItemTemplate="{StaticResource StandingRowTemplate}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <!-- Goleadores -->
+                <TabItem Header="Goleadores">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
+                                Padding="15" Background="#FAFAFA">
+                                <StackPanel>
+                                    <!-- HEADER -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="3" Text="Goles" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                    <ItemsControl ItemsSource="{Binding TopScorers}" ItemTemplate="{StaticResource StandingTopScorersTemplate}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <!-- Amarillas -->
+                <TabItem Header="Tarjetas Amarillas">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
+                Padding="15" Background="#FAFAFA">
+                                <StackPanel>
+                                    <!-- HEADER -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="3" Text="Amarillas" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                    <ItemsControl ItemsSource="{Binding YellowCards}" ItemTemplate="{StaticResource StandingTopYellowCardsTemplate}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <!-- Rojas -->
+                <TabItem Header="Tarjetas Rojas">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
+                Padding="15" Background="#FAFAFA">
+                                <StackPanel>
+                                    <!-- HEADER -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
+                                        <TextBlock Grid.Column="3" Text="Rojas" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                    <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                    <ItemsControl ItemsSource="{Binding RedCards}" ItemTemplate="{StaticResource StandingTopRedCardsTemplate}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
         </controls:LoadingContainer>
     </Grid>
 </UserControl>
