@@ -29,6 +29,7 @@
             <conv:HalfConverter x:Key="HalfConverter"/>
             <conv:LeagueStatusConverter x:Key="LeagueStatusConverter"/>
             <conv:InverseBoolConverter x:Key="InverseBoolConverter"/>
+            <conv:EnumToVisibilityConverter  x:Key="EnumToVisibilityConverter"/>
 
         </ResourceDictionary>
 

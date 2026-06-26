@@ -472,36 +472,178 @@ ClipToBounds="True">
             </Border>
         </DataTemplate>
     </UserControl.Resources>
-    <Grid>
+    <Grid Grid.Row="0" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Clasificación" Grid.Row="0"
-           FontSize="26"
-           FontWeight="Bold"
-           Margin="0,0,0,20"/>
-        <controls:LoadingContainer IsLoading="{Binding IsLoading}" Grid.Row="1">
-            <TabControl >
-                <TabControl.Resources>
-                    <Style TargetType="TabItem">
-                        <Setter Property="Padding" Value="12,8"/>
-                        <Setter Property="Margin" Value="1,0"/>
-                        <Setter Property="Width" Value="Auto"/>
-                        <Setter Property="Background" Value="#F3F4F6"/>
+        <Grid Grid.Row="0">
+            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left"  Text="Clasificación"
+                   FontSize="26" FontWeight="Bold"/>
+        </Grid>
+        <Grid Grid.Row="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"   Grid.Row="0" Margin="0, 10">
+            <Button FontSize="16"
+            Style="{StaticResource TabsButtonStyle}"
+            Command="{Binding ChangeTabCommand}"
+            CommandParameter="Groups">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{StaticResource IconGroups}" VerticalAlignment="Center"
+                   FontFamily="Segoe MDL2 Assets"
+                   Margin="0,0,6,0"/>
+                        <TextBlock Text="Grupos"/>
+                    </StackPanel>
+                    <Button.BorderThickness>
+                    <MultiBinding Converter="{StaticResource TabButtonStyleConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderThickness>
+                <Button.Foreground>
+                    <MultiBinding Converter="{StaticResource TabButtonForegroundConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.Foreground>
+                <Button.BorderBrush>
+                    <MultiBinding Converter="{StaticResource TabButtonBorderConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderBrush>
+            </Button>
 
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="#1ABC9C"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TabControl.Resources>
-                <!-- Clasificación por grupos -->
-                <TabItem Header="Grupos">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="20">
-                            <!-- 🔹 GRUPOS -->
+            <!-- General -->
+            <Button FontSize="16"
+            Style="{StaticResource TabsButtonStyle}"
+            Command="{Binding ChangeTabCommand}"
+            CommandParameter="General">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{StaticResource IconGeneral}" VerticalAlignment="Center"
+                   FontFamily="Segoe MDL2 Assets"
+                   Margin="0,0,6,0"/>
+                        <TextBlock Text="General"/>
+                    </StackPanel>
+                    <Button.BorderThickness>
+                    <MultiBinding Converter="{StaticResource TabButtonStyleConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderThickness>
+                <Button.Foreground>
+                    <MultiBinding Converter="{StaticResource TabButtonForegroundConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.Foreground>
+                <Button.BorderBrush>
+                    <MultiBinding Converter="{StaticResource TabButtonBorderConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderBrush>
+            </Button>
+
+            <!-- Goleadores -->
+            <Button FontSize="16"
+            Style="{StaticResource TabsButtonStyle}"
+            Command="{Binding ChangeTabCommand}"
+            CommandParameter="TopScorers">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{StaticResource IconTopScorers}" Foreground="DarkBlue" VerticalAlignment="Center"
+                   Margin="0,0,6,0"/>
+                        <TextBlock Text="Goleadores"/>
+                    </StackPanel>
+                    <Button.BorderThickness>
+                    <MultiBinding Converter="{StaticResource TabButtonStyleConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderThickness>
+                <Button.Foreground>
+                    <MultiBinding Converter="{StaticResource TabButtonForegroundConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.Foreground>
+                <Button.BorderBrush>
+                    <MultiBinding Converter="{StaticResource TabButtonBorderConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderBrush>
+            </Button>
+
+            <!-- Amarillas -->
+            <Button FontSize="16"
+            Style="{StaticResource TabsButtonStyle}"
+            Command="{Binding ChangeTabCommand}"
+            CommandParameter="YellowCards">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Rectangle Width="14" Height="20" Fill="Yellow" Stroke="DarkGray" Margin="0,0,6,0"/>
+                        <TextBlock Text="Amarillas"/>
+                    </StackPanel>
+                    <Button.BorderThickness>
+                    <MultiBinding Converter="{StaticResource TabButtonStyleConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderThickness>
+                <Button.Foreground>
+                    <MultiBinding Converter="{StaticResource TabButtonForegroundConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.Foreground>
+                <Button.BorderBrush>
+                    <MultiBinding Converter="{StaticResource TabButtonBorderConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderBrush>
+            </Button>
+
+            <!-- Rojas -->
+            <Button FontSize="16"
+            Style="{StaticResource TabsButtonStyle}"
+            Command="{Binding ChangeTabCommand}"
+            CommandParameter="RedCards">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Rectangle Width="14" Height="20" Fill="Red" Stroke="DarkGray" Margin="0,0,6,0"/>
+                        <TextBlock Text="Rojas"/>
+                    </StackPanel>
+                    <Button.BorderThickness>
+                    <MultiBinding Converter="{StaticResource TabButtonStyleConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderThickness>
+                <Button.Foreground>
+                    <MultiBinding Converter="{StaticResource TabButtonForegroundConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.Foreground>
+                <Button.BorderBrush>
+                    <MultiBinding Converter="{StaticResource TabButtonBorderConverter}">
+                        <Binding Path="SelectedTab"/>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="CommandParameter"/>
+                    </MultiBinding>
+                </Button.BorderBrush>
+            </Button>
+        </StackPanel>
+        <controls:LoadingContainer IsLoading="{Binding IsLoading}" Grid.Row="1">
+                <ScrollViewer Grid.Row="1" Padding="0,0,5,0" VerticalScrollBarVisibility="Auto" 
+              HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
+                        <!-- Clasificación por grupos -->
+
+                        <StackPanel Visibility="{Binding SelectedTab, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=Groups}">
+
                             <ItemsControl ItemsSource="{Binding GroupedStandings}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
@@ -552,134 +694,127 @@ ClipToBounds="True">
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+
                         </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-                <!-- Clasificación general -->
-                <TabItem Header="General">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Visibility="{Binding ShowGeneralTable, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1" 
-                                    Padding="15" Background="#FAFAFA">
-                                <StackPanel>
-                                    <!-- HEADER -->
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="35"/>
-                                            <ColumnDefinition Width="60"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="45"/>
-                                            <ColumnDefinition Width="45"/>
-                                            <ColumnDefinition Width="45"/>
-                                            <ColumnDefinition Width="45"/>
-                                            <ColumnDefinition Width="55"/>
-                                            <ColumnDefinition Width="55"/>
-                                            <ColumnDefinition Width="55"/>
-                                            <ColumnDefinition Width="55"/>
-                                            <ColumnDefinition Width="120"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Text="#" Style="{StaticResource TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="3" Text="PJ" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                        <TextBlock Grid.Column="4" Text="PG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                        <TextBlock Grid.Column="5" Text="PE" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                        <TextBlock Grid.Column="6" Text="PP" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                        <TextBlock Grid.Column="7" Text="GF" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                        <TextBlock Grid.Column="8" Text="GC" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                        <TextBlock Grid.Column="9" Text="DG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                        <TextBlock Grid.Column="10" Text="Pts" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Right"/>
-                                        <TextBlock Grid.Column="11" Text="Últimos" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                    </Grid>
-                                    <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
-                                    <ItemsControl ItemsSource="{Binding GeneralStandings}"
-                                          ItemTemplate="{StaticResource StandingRowTemplate}"/>
-                                </StackPanel>
-                            </Border>
+                        <!-- General -->
+                        <StackPanel Visibility="{Binding SelectedTab, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=General}">
+                            <StackPanel Visibility="{Binding ShowGeneralTable, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1" 
+            Padding="15" Background="#FAFAFA">
+                                    <StackPanel>
+                                        <!-- HEADER -->
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="35"/>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="45"/>
+                                                <ColumnDefinition Width="45"/>
+                                                <ColumnDefinition Width="45"/>
+                                                <ColumnDefinition Width="45"/>
+                                                <ColumnDefinition Width="55"/>
+                                                <ColumnDefinition Width="55"/>
+                                                <ColumnDefinition Width="55"/>
+                                                <ColumnDefinition Width="55"/>
+                                                <ColumnDefinition Width="120"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="#" Style="{StaticResource TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="3" Text="PJ" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="4" Text="PG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="5" Text="PE" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="6" Text="PP" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="7" Text="GF" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="8" Text="GC" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="9" Text="DG" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="10" Text="Pts" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Right"/>
+                                            <TextBlock Grid.Column="11" Text="Últimos" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        </Grid>
+                                        <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                        <ItemsControl ItemsSource="{Binding GeneralStandings}"
+                  ItemTemplate="{StaticResource StandingRowTemplate}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-                <!-- Goleadores -->
-                <TabItem Header="Goleadores">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
-                                Padding="15" Background="#FAFAFA">
-                                <StackPanel>
-                                    <!-- HEADER -->
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="60"/>
-                                            <ColumnDefinition Width="200"/>
-                                            <ColumnDefinition Width="200"/>
-                                            <ColumnDefinition Width="60"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="3" Text="Goles" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                    </Grid>
-                                    <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
-                                    <ItemsControl ItemsSource="{Binding TopScorers}" ItemTemplate="{StaticResource StandingTopScorersTemplate}"/>
-                                </StackPanel>
-                            </Border>
+                        <!-- Goleadores -->
+                        <StackPanel Visibility="{Binding SelectedTab, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=TopScorers}">
+                            <StackPanel>
+                                <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
+        Padding="15" Background="#FAFAFA">
+                                    <StackPanel>
+                                        <!-- HEADER -->
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="60"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="Goles" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        </Grid>
+                                        <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                        <ItemsControl ItemsSource="{Binding TopScorers}" ItemTemplate="{StaticResource StandingTopScorersTemplate}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-                <!-- Amarillas -->
-                <TabItem Header="Tarjetas Amarillas">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
-                Padding="15" Background="#FAFAFA">
-                                <StackPanel>
-                                    <!-- HEADER -->
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="60"/>
-                                            <ColumnDefinition Width="200"/>
-                                            <ColumnDefinition Width="200"/>
-                                            <ColumnDefinition Width="60"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="3" Text="Amarillas" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                    </Grid>
-                                    <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
-                                    <ItemsControl ItemsSource="{Binding YellowCards}" ItemTemplate="{StaticResource StandingTopYellowCardsTemplate}"/>
-                                </StackPanel>
-                            </Border>
+                        <!-- Amarillas -->
+                        <StackPanel Visibility="{Binding SelectedTab, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=YellowCards}">
+                            <StackPanel>
+                                <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
+Padding="15" Background="#FAFAFA">
+                                    <StackPanel>
+                                        <!-- HEADER -->
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="60"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="3" Text="Amarillas" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        </Grid>
+                                        <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                        <ItemsControl ItemsSource="{Binding YellowCards}" ItemTemplate="{StaticResource StandingTopYellowCardsTemplate}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-                <!-- Rojas -->
-                <TabItem Header="Tarjetas Rojas">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
-                Padding="15" Background="#FAFAFA">
-                                <StackPanel>
-                                    <!-- HEADER -->
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="60"/>
-                                            <ColumnDefinition Width="200"/>
-                                            <ColumnDefinition Width="200"/>
-                                            <ColumnDefinition Width="60"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
-                                        <TextBlock Grid.Column="3" Text="Rojas" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
-                                    </Grid>
-                                    <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
-                                    <ItemsControl ItemsSource="{Binding RedCards}" ItemTemplate="{StaticResource StandingTopRedCardsTemplate}"/>
-                                </StackPanel>
-                            </Border>
+                        <!-- Rojas -->
+                        <StackPanel Visibility="{Binding SelectedTab, Converter={StaticResource EnumToVisibilityConverter}, ConverterParameter=RedCards}">
+                            <StackPanel>
+                                <Border CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1"
+Padding="15" Background="#FAFAFA">
+                                    <StackPanel>
+                                        <!-- HEADER -->
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="200"/>
+                                                <ColumnDefinition Width="60"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="#" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="1" Text="Jugador" Style="{StaticResource    TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="2" Text="Equipo" Style="{StaticResource TableHeaderTextStyle}"/>
+                                            <TextBlock Grid.Column="3" Text="Rojas" Style="{StaticResource TableHeaderTextStyle}" HorizontalAlignment="Center"/>
+                                        </Grid>
+                                        <Border Height="1" Background="#E5E7EB" Margin="0,0,0,6"/>
+                                        <ItemsControl ItemsSource="{Binding RedCards}" ItemTemplate="{StaticResource StandingTopRedCardsTemplate}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-            </TabControl>
-        </controls:LoadingContainer>
+                    </Grid>
+                </ScrollViewer>
+            </controls:LoadingContainer>
+        </Grid>
     </Grid>
 </UserControl>

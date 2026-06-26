@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Fut7Manager.Admin.ViewModels
 {
@@ -20,19 +21,49 @@ namespace Fut7Manager.Admin.ViewModels
         }
         private bool _isLoading;
 
+        public enum StandingsTab {
+            Groups,
+            General,
+            TopScorers,
+            YellowCards,
+            RedCards
+        }
+
+        private StandingsTab _selectedTab;
+        public StandingsTab SelectedTab
+        {
+            get => _selectedTab;
+            set { _selectedTab = value; OnPropertyChanged(); }
+        }
+
+
+
         public ObservableCollection<GroupStandingDto> GroupedStandings { get; } = new();
         public ObservableCollection<StandingDto> GeneralStandings { get; } = new();
         public ObservableCollection<PlayerStatStandingDto> TopScorers { get; } = new();
         public ObservableCollection<PlayerStatStandingDto> YellowCards { get; } = new();
         public ObservableCollection<PlayerStatStandingDto> RedCards { get; } = new();
 
+        public ICommand ChangeTabCommand { get; }
+
         public bool ShowGeneralTable => GroupedStandings.Count > 1;
         public StandingsViewModel(AppState appState, LeagueService leagueService, LeagueDto league, TeamService teamService, GroupService groupService, Fut7MatchService fut7MatchService) {
             _league = league;
             _leagueService = new LeagueService();
+
+            ChangeTabCommand = new RelayCommand<string>(param =>
+            {
+                if (Enum.TryParse(param, out StandingsTab tab))
+                    SelectedTab = tab;
+            });
+
+
+            SelectedTab = StandingsTab.Groups;
         }
 
         public async Task InitializeAsync() {
+            
+
             await LoadStandings();
         }
 

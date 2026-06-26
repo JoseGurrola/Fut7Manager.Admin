@@ -19,6 +19,18 @@
     <sys:String x:Key="IconDashboard">&#xE9D2;</sys:String>
     <sys:String x:Key="IconStandings">&#xE8FD;</sys:String>
 
+    <!-- Iconos para pestañas de clasificación -->
+    <sys:String x:Key="IconGroups">&#xE902;</sys:String>
+    <!-- 👥 grupos -->
+    <sys:String x:Key="IconGeneral">&#xE9D2;</sys:String>
+    <!-- 📊 tabla general -->
+    <sys:String x:Key="IconTopScorers">⚽</sys:String>
+    <!-- ⚽ goleadores -->
+    <sys:String x:Key="IconYellowCards">&#xE7BA;</sys:String>
+    <!-- ⚠ amarillas -->
+    <sys:String x:Key="IconRedCards">&#xE711;</sys:String>
+    <!-- ⛔ rojas -->
+
     <!-- Window controls -->
     <sys:String x:Key="IconMinimize">&#xE921;</sys:String>
     <sys:String x:Key="IconMaximize">&#xE922;</sys:String>

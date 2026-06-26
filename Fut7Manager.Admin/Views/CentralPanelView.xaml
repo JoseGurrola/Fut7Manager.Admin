@@ -4,11 +4,13 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:controls="clr-namespace:Fut7Manager.Admin.Controls"
+            xmlns:oxy="http://oxyplot.org/wpf" xmlns:conv="clr-namespace:Fut7Manager.Admin.Converters"
              mc:Ignorable="d"
              d:DesignWidth="1000"
              d:DesignHeight="700"
              Background="{StaticResource BackgroundWindowBrush}">
     <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <!-- ===================== -->
         <!-- CARD STYLE -->
         <!-- ===================== -->
@@ -198,9 +200,11 @@
         <DataTemplate x:Key="InProgressTemplate">
             <Grid Margin="0,0,10,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="6*"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="30*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="30*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="30*"/>
                 </Grid.ColumnDefinitions>
                 <!-- ===================== -->
                 <!-- STANDINGS -->
@@ -213,10 +217,9 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Clasificación"
+                        <TextBlock Text="Clasificación"  Margin="10,0"
                             FontSize="22"
-                            FontWeight="Bold"
-                            Margin="0,0,0,10"/>
+                            FontWeight="Bold" />
                         <ScrollViewer Grid.Row="1" Padding="0,0,3,0"
               VerticalScrollBarVisibility="Auto"
               HorizontalScrollBarVisibility="Disabled">
@@ -301,7 +304,7 @@
                         <TextBlock Text="{Binding CurrentMatchdayName}"
                            FontSize="22"
                            FontWeight="Bold"
-                           Margin="10,0,0,10"/>
+                           Margin="10,0"/>
                         <ListView Grid.Row="1" ItemsSource="{Binding NextMatches}" ScrollViewer.CanContentScroll="False"
                           SelectedItem="{Binding SelectedMatch}"
                           Background="Transparent"
@@ -389,7 +392,164 @@
                         </ListView>
                     </Grid>
                 </controls:LoadingContainer>
+                <Grid Grid.Column="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="7*"/>
+                        <RowDefinition Height="3*"/>
+                    </Grid.RowDefinitions>
+                <controls:LoadingContainer  Grid.Row="0" IsLoading="{Binding IsLoading}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                            <TextBlock Text="Top 5" FontSize="22" FontWeight="Bold"  Margin="10,0"/>
+                        <Border CornerRadius="10" Grid.Row="1"
+                                BorderBrush="{StaticResource SidebarHoverBrush}"
+                                BorderThickness="1"
+                                Padding="10"
+                                Background="{StaticResource BackgroundWindowBrush}">
+                              
+                                    <StackPanel>
+                                        <TextBlock Text="Goleadores" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                        <!-- HEADER -->
+                                        <Grid Margin="0,0,0,5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="20"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="30"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="#" FontWeight="Bold" Foreground="Gray"/>
+                                            <TextBlock Grid.Column="1" Text="Nombre" FontWeight="Bold" Foreground="Gray"/>
+                                            <TextBlock Grid.Column="2" Text="Equipo" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="Goles" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                        <Border Height="1" Background="#E5E7EB" Margin="0,0,0,5"/>
+                                        <!-- FILAS -->
+                                        <ItemsControl ItemsSource="{Binding TopScorers}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,2">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="20"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="30"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{Binding Position}" FontWeight="Bold"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding PlayerName}" Margin="5,0"/>
+                                                        <TextBlock Grid.Column="2" Text="{Binding TeamName}" HorizontalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="3" Text="{Binding Goals}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                         
+                            </Border>
+                        <Border CornerRadius="10" Grid.Row="2" 
+                            BorderBrush="{StaticResource SidebarHoverBrush}"
+                            BorderThickness="1"
+                            Padding="10"
+                            Margin="0,4"
+                            Background="{StaticResource BackgroundWindowBrush}">
+                            <StackPanel>
+                                <TextBlock Text="Amarillas" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                <!-- HEADER -->
+                                <Grid Margin="0,0,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="30"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="#" FontWeight="Bold" Foreground="Gray"/>
+                                    <TextBlock Grid.Column="1" Text="Nombre" FontWeight="Bold" Foreground="Gray"/>
+                                    <TextBlock Grid.Column="2" Text="Equipo" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="T. A." FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <Border Height="1" Background="#E5E7EB" Margin="0,0,0,5"/>
+                                <!-- FILAS -->
+                                <ItemsControl ItemsSource="{Binding YellowCards}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="30"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Position}" FontWeight="Bold"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding PlayerName}" Margin="5,0"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding TeamName}" HorizontalAlignment="Center"/>
+                                                <TextBlock Grid.Column="3" Text="{Binding YellowCards}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="10" Grid.Row="3"
+        BorderBrush="{StaticResource SidebarHoverBrush}"
+        BorderThickness="1"
+        Padding="10"
+        Margin="0,4"
+        Background="{StaticResource BackgroundWindowBrush}">
+                            <StackPanel>
+                                <TextBlock Text="Rojas" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                <!-- HEADER -->
+                                <Grid Margin="0,0,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="30"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="#" FontWeight="Bold" Foreground="Gray"/>
+                                    <TextBlock Grid.Column="1" Text="Nombre" FontWeight="Bold" Foreground="Gray"/>
+                                    <TextBlock Grid.Column="2" Text="Equipo" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="T. R." FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <Border Height="1" Background="#E5E7EB" Margin="0,0,0,5"/>
+                                <!-- FILAS -->
+                                <ItemsControl ItemsSource="{Binding RedCards}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="30"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Position}" FontWeight="Bold"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding PlayerName}" Margin="5,0"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding TeamName}" HorizontalAlignment="Center"/>
+                                                <TextBlock Grid.Column="3" Text="{Binding RedCards}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </controls:LoadingContainer>
 
+                    <Grid Grid.Row="1">
+                        <oxy:PlotView Model="{Binding DonutModel}"  Controller="{x:Null}" IsEnabled="False"
+                                      Visibility="{Binding ShowDonut, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <TextBlock Text="{Binding Summary.PercentagePaid, StringFormat='{}{0}%'}"
+               FontSize="17" FontWeight="Bold"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center" Visibility="{Binding ShowDonut, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    </Grid>
+
+
+                </Grid>
             </Grid>
         </DataTemplate>
         <!-- ===================== -->
@@ -436,7 +596,7 @@
         <!-- RESUMEN -->
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal"
-                    Margin="0,15,0,25">
+                    Margin="0,15,0,10">
             <Border Style="{StaticResource CardStyle}" Width="200">
                 <TextBlock Text="{Binding TotalTeams, StringFormat=Equipos: {0}}" FontSize="16"
                            FontWeight="SemiBold"/>

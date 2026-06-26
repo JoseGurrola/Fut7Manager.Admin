@@ -121,7 +121,7 @@ Foreground="{StaticResource SidebarHoverBrush}">
                     Width="*"/>
 
                             <DataGridTextColumn
-                    Header="{StaticResource IconLeague}" 
+                    Header="{StaticResource IconTopScorers}" 
                     Binding="{Binding Goals}"
                     Width="80">
                                 <DataGridTextColumn.ElementStyle>
@@ -139,7 +139,7 @@ Foreground="{StaticResource SidebarHoverBrush}">
                                 </DataGridTextColumn.ElementStyle>
                                 <DataGridTextColumn.HeaderTemplate>
                                     <DataTemplate>
-                                        <Rectangle Width="16" Height="24" Fill="Yellow" Stroke="Black"/>
+                                            <Rectangle Width="16" Height="24" Fill="Yellow" Stroke="DarkGray"/>
                                     </DataTemplate>
                                 </DataGridTextColumn.HeaderTemplate>
                             </DataGridTextColumn>
@@ -152,7 +152,7 @@ Foreground="{StaticResource SidebarHoverBrush}">
                                 </DataGridTextColumn.ElementStyle>
                                 <DataGridTextColumn.HeaderTemplate>
                                     <DataTemplate>
-                                        <Rectangle Width="16" Height="24" Fill="Red" Stroke="Black"/>
+                                            <Rectangle Width="16" Height="24" Fill="Red" Stroke="DarkGray"/>
                                     </DataTemplate>
                                 </DataGridTextColumn.HeaderTemplate>
                             </DataGridTextColumn>

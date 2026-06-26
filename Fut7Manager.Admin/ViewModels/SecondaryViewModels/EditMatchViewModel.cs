@@ -235,6 +235,9 @@ namespace Fut7Manager.Admin.ViewModels.SecondaryViewModels {
         }
 
         private async Task OpenDetails() {
+            _match.HomeGoals = HomeGoals;
+            _match.AwayGoals = AwayGoals;
+
             var window = new MatchDetailsWindow();
             var vm = new MatchDetailsViewModel(_match, new PlayerService());
 
