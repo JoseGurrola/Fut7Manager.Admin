@@ -185,12 +185,13 @@
 
                     </TextBlock>
                     <Button Content="Iniciar Liga"
-                        Style="{StaticResource ThirdButtonStyle}"
+                        Style="{StaticResource FloatingActionButtonStyle}"
                         FontSize="30"
                         FontWeight="Bold"
                         Height="130"
                         Width="400"
                         Command="{Binding StartLeagueCommand}"/>
+
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -198,13 +199,13 @@
         <!-- IN PROGRESS -->
         <!-- ===================== -->
         <DataTemplate x:Key="InProgressTemplate">
-            <Grid Margin="0,0,10,0">
+            <Grid Margin="0,0,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="30*"/>
+                    <ColumnDefinition Width="35*"/>
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="30*"/>
                     <ColumnDefinition Width="5"/>
-                    <ColumnDefinition Width="30*"/>
+                    <ColumnDefinition Width="25*"/>
                 </Grid.ColumnDefinitions>
                 <!-- ===================== -->
                 <!-- STANDINGS -->
@@ -237,16 +238,16 @@
                                                 <!-- Nombre del grupo -->
                                                 <TextBlock Text="{Binding GroupName}"
                     FontWeight="SemiBold"
-                    Margin="0,0,0,8"/>
+                    />
                                                 <!-- 🔹 HEADER -->
                                                 <Grid Margin="0,0,0,5">
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="30"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="20"/>
+                                                        <ColumnDefinition Width="30*"/>
+                                                        <ColumnDefinition Width="10*"/>
+                                                        <ColumnDefinition Width="10*"/>
+                                                        <ColumnDefinition Width="10*"/>
+                                                        <ColumnDefinition Width="10*"/>
                                                         <ColumnDefinition Width="40"/>
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Text="#" FontWeight="Bold" Foreground="Gray"/>
@@ -264,12 +265,12 @@
                                                         <DataTemplate>
                                                             <Grid Margin="0,2">
                                                                 <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="30"/>
-                                                                    <ColumnDefinition Width="*"/>
-                                                                    <ColumnDefinition Width="*"/>
-                                                                    <ColumnDefinition Width="*"/>
-                                                                    <ColumnDefinition Width="*"/>
-                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="20"/>
+                                                                    <ColumnDefinition Width="30*"/>
+                                                                    <ColumnDefinition Width="10*"/>
+                                                                    <ColumnDefinition Width="10*"/>
+                                                                    <ColumnDefinition Width="10*"/>
+                                                                    <ColumnDefinition Width="10*"/>
                                                                     <ColumnDefinition Width="40"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <!-- Posición -->
@@ -309,7 +310,7 @@
                           SelectedItem="{Binding SelectedMatch}"
                           Background="Transparent"
                           BorderThickness="0" 
-                          MouseDoubleClick="MatchesList_MouseDoubleClick" Padding="0,0,3,0"
+                   Padding="0,0,3,0"
                           >
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
@@ -394,8 +395,8 @@
                 </controls:LoadingContainer>
                 <Grid Grid.Column="4">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="7*"/>
-                        <RowDefinition Height="3*"/>
+                        <RowDefinition Height="55*"/>
+                        <RowDefinition Height="35*"/>
                     </Grid.RowDefinitions>
                 <controls:LoadingContainer  Grid.Row="0" IsLoading="{Binding IsLoading}">
                     <Grid>
@@ -405,11 +406,12 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                            <TextBlock Text="Top 5" FontSize="22" FontWeight="Bold"  Margin="10,0"/>
+                            <TextBlock Text="Top 5" FontSize="22" FontWeight="Bold"  Margin="10,0,10,0"/>
                         <Border CornerRadius="10" Grid.Row="1"
                                 BorderBrush="{StaticResource SidebarHoverBrush}"
                                 BorderThickness="1"
                                 Padding="10"
+                                Margin="0,4"
                                 Background="{StaticResource BackgroundWindowBrush}">
                               
                                     <StackPanel>
@@ -538,8 +540,8 @@
                         </Border>
                     </Grid>
                 </controls:LoadingContainer>
-
-                    <Grid Grid.Row="1">
+                    <controls:LoadingContainer  Grid.Row="1" IsLoading="{Binding IsLoading}">
+                        <Grid>
                         <oxy:PlotView Model="{Binding DonutModel}"  Controller="{x:Null}" IsEnabled="False"
                                       Visibility="{Binding ShowDonut, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         <TextBlock Text="{Binding Summary.PercentagePaid, StringFormat='{}{0}%'}"
@@ -547,7 +549,7 @@
                HorizontalAlignment="Center"
                VerticalAlignment="Center" Visibility="{Binding ShowDonut, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     </Grid>
-
+                    </controls:LoadingContainer>
 
                 </Grid>
             </Grid>
@@ -590,9 +592,20 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <!-- TÍTULO -->
+        <Grid>
         <TextBlock Text="Panel Central"
                    FontSize="26"
                    FontWeight="Bold"/>
+            <Button Style="{StaticResource FloatingActionButtonStyle}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Command="{Binding StartPlayoffCommand}"
+                    Content="Iniciar liguilla"
+                    FontSize="20"
+                    Visibility="{Binding CanStartPlayoff, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Width="200"
+                    Height="50"/>
+        </Grid>
         <!-- RESUMEN -->
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal"
@@ -606,12 +619,15 @@
                            FontWeight="SemiBold"/>
             </Border>
             <Border Style="{StaticResource CardStyle}">
-                <TextBlock Text="{Binding MinPlayers, StringFormat=Minimo de jugadores por equipo: {0}}" FontSize="16"
+                <TextBlock Text="{Binding MinPlayers, StringFormat=Min. de jugadores por equipo: {0}}" FontSize="16"
                FontWeight="SemiBold"/>
             </Border>
             <Border Style="{StaticResource CardStyle}">
-                <TextBlock Text="{Binding LeagueStatus, Converter={StaticResource LeagueStatusConverter}}" FontSize="16"
-                           FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding LeagueStatus, Converter={StaticResource LeagueStatusConverter}}" FontSize="16" FontWeight="SemiBold"/>
+            </Border>
+            <Border Style="{StaticResource CardStyle}">
+                <TextBlock Text="{Binding TeamsQualified, StringFormat=Clasifican: {0}}" FontSize="16"
+   FontWeight="SemiBold"/>
             </Border>
         </StackPanel>
         <!-- CONTENIDO DINÁMICO -->

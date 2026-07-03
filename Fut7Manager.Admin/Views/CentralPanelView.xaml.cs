@@ -23,28 +23,6 @@ namespace Fut7Manager.Admin.Views {
             InitializeComponent();
         }
 
-        private async void MatchesList_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            //if (DataContext is not CentralPanelViewModel vm) return;
-            //if (vm.SelectedMatch == null) return;
-
-            //var window = new EditMatchWindow();
-
-            //var editVm = new EditMatchViewModel(vm.SelectedMatch, vm.Fut7MatchService);
-
-            //window.DataContext = editVm;
-
-            //editVm.CloseAction = async (result) =>
-            //{
-            //    window.DialogResult = result;
-            //    window.Close();
-
-            //    if (result) {
-            //        await vm.RefreshDashboard();
-            //    }
-            //};
-
-            //window.ShowDialog();
-        }
     }
 
 }

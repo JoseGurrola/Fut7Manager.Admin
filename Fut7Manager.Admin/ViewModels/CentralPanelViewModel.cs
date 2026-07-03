@@ -3,6 +3,7 @@ using Fut7Manager.Admin.Models;
 using Fut7Manager.Admin.Models.SecondaryModels;
 using Fut7Manager.Admin.Services;
 using Fut7Manager.Admin.ViewModels.SecondaryViewModels;
+using Fut7Manager.Admin.Views;
 using Fut7Manager.Admin.Views.SecondaryWindows;
 
 using OxyPlot;
@@ -22,31 +23,38 @@ namespace Fut7Manager.Admin.ViewModels {
         private TeamService _teamService;
         private GroupService _groupService;
         private Fut7MatchService _fut7MatchService;
+        private LeagueStatus _leagueStatus;
+        private int _totalTeams;
+        private int _totalGroups;
+        private int _minPlayers;
+        private int _teamsQualified;
         private bool _isLoading;
+        private string? _currentMatchdayName = "Jornada";
+        private string? _championName;
 
         public class GroupStandingDto {
             public string GroupName { get; set; } = default!;
             public List<StandingDto> Standings { get; set; } = new();
         }
         public ObservableCollection<GroupStandingDto> GroupedStandings { get; set; } = new();
-
         public ObservableCollection<PlayerStatStandingDto> TopScorers { get; set; } = new();
         public ObservableCollection<PlayerStatStandingDto> YellowCards { get; set; } = new();
         public ObservableCollection<PlayerStatStandingDto> RedCards { get; set; } = new();
-
-
+        public ObservableCollection<TeamDto> Teams { get; } = new();
+        
+        public ObservableCollection<Fut7MatchDto> NextMatches { get; set; } = new();
         public Fut7MatchDto? SelectedMatch { get; set; }
 
+        private PaymentSummaryDto _summary;
         public Fut7MatchService Fut7MatchService
         {
             get => _fut7MatchService;
             set { _fut7MatchService = value; OnPropertyChanged(); }
         }
 
-        //public PaymentSummaryDto Summary { get; private set; }
         public PlotModel DonutModel { get; private set; }
 
-        private PaymentSummaryDto _summary;
+       
         public PaymentSummaryDto Summary
         {
             get => _summary;
@@ -58,40 +66,40 @@ namespace Fut7Manager.Admin.ViewModels {
         }
 
         public bool ShowDonut => Summary != null && Summary.TotalDue > 0;
-
-        //public List<TeamDto> Teams { get; } = new();
-        public ObservableCollection<TeamDto> Teams { get; } = new();
+       
         public List<GroupDto> Groups { get; } = new();
 
-        private LeagueStatus _leagueStatus;
+        
         public LeagueStatus LeagueStatus
         {
             get => _leagueStatus;
             set { _leagueStatus = value; OnPropertyChanged(); }
         }
 
-        private int _totalTeams;
+        
         public int TotalTeams
         {
             get => _totalTeams;
             set { _totalTeams = value; OnPropertyChanged(); }
         }
-
-        private int _totalGroups;
+        
         public int TotalGroups
         {
             get => _totalGroups;
             set { _totalGroups = value; OnPropertyChanged(); }
         }
-
-        private int _minPlayers;
+        
         public int MinPlayers
         {
             get => _minPlayers;
             set { _minPlayers = value; OnPropertyChanged(); }
         }
-
-        private string? _currentMatchdayName = "Jornada";
+        public int TeamsQualified
+        {
+            get => _teamsQualified;
+            set { _teamsQualified = value; OnPropertyChanged(); }
+        }
+       
         public string? CurrentMatchdayName
         {
             get => _currentMatchdayName;
@@ -100,9 +108,8 @@ namespace Fut7Manager.Admin.ViewModels {
 
 
 
-        public ObservableCollection<Fut7MatchDto> NextMatches { get; set; } = new();
-
-        private string? _championName;
+        
+        
         public string? ChampionName
         {
             get => _championName;
@@ -110,7 +117,6 @@ namespace Fut7Manager.Admin.ViewModels {
         }
 
         public ICommand StartLeagueCommand { get; }
-
 
         public bool IsLoading
         {
@@ -124,6 +130,8 @@ namespace Fut7Manager.Admin.ViewModels {
         ? $"Hay equipos con menos de {_league.MinPlayers} jugadores"
         : "Todo listo para comenzar";
 
+        public bool CanStartPlayoff => _league.Status == LeagueStatus.InProgress;
+
         // 🔹 Constructor
         public CentralPanelViewModel(AppState appState, LeagueService leagueService, LeagueDto league, TeamService teamService, GroupService groupService, Fut7MatchService fut7MatchService) {
             _appState = appState;
@@ -135,6 +143,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
             LeagueStatus = _league.Status;
             MinPlayers = _league.MinPlayers ?? 0;
+            TeamsQualified = _league.TotalQualifiedTeams;
 
             _summary = new PaymentSummaryDto {
                 TotalPaid = 0,
@@ -210,23 +219,29 @@ namespace Fut7Manager.Admin.ViewModels {
             };
 
             window.ShowDialog();
-
             if (vm.CompletedSuccessfully) {
-
-
-                //var success = await _leagueService.EditLeagueAsync(_league);
-
-                //  if (success) {
-
                 MessageService.Show("Liga iniciada");
 
-                // 🔹 1. Recargar liga
+                //Recargar liga
                 _league = await _leagueService.GetLeagueByIdAsync(_league.Id);
                 LeagueStatus = _league.Status;
 
-                await LoadDashboardData();
+                //await LoadDashboardData();
 
-                // }
+                // 🔹 Reemplazar el VM en MainViewModel
+                var mainVm = Application.Current.MainWindow.DataContext as MainViewModel;
+                if (mainVm != null) {
+                    var newVm = new CentralPanelViewModel(
+                        mainVm.AppState,
+                        mainVm.LeagueService,
+                        _league,
+                        mainVm.TeamService,
+                        mainVm.GroupService,
+                        mainVm.Fut7MatchService);
+
+                    mainVm.CurrentView = newVm;
+                    await newVm.InitializeAsync();
+                }
             }
             return;
 
@@ -236,7 +251,6 @@ namespace Fut7Manager.Admin.ViewModels {
             IsLoading = true;
 
             var dashboard = await _leagueService.GetDashboardAsync(_league.Id);
-
             if (dashboard == null) {
                 CurrentMatchdayName = "Error al cargar";
                 NextMatches.Clear();
@@ -316,11 +330,12 @@ namespace Fut7Manager.Admin.ViewModels {
             var model = new PlotModel();
 
             var series = new PieSeries {
-                InnerDiameter = 0.5,          // más grueso (menor diámetro interno)
-                StrokeThickness = 0,
+                InnerDiameter = 0.4,          // más grueso (menor diámetro interno)
+                StrokeThickness = 1,
                 AngleSpan = 360,
-                StartAngle = 0,
+                StartAngle = -90,
                 InsideLabelFormat = "{2:0.##}%",     // porcentaje dentro del slice
+                InsideLabelColor = OxyColors.Black,   // etiquetas internas en blanco
                 OutsideLabelFormat = "{1}: {0:$0}"   // nombre + valor real afuera
             };
 
