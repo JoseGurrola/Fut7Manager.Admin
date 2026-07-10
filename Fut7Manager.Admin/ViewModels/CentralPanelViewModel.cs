@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using GroupStandingDto = Fut7Manager.Admin.Models.GroupStandingDto;
 
 
 namespace Fut7Manager.Admin.ViewModels {
@@ -32,16 +33,13 @@ namespace Fut7Manager.Admin.ViewModels {
         private string? _currentMatchdayName = "Jornada";
         private string? _championName;
 
-        public class GroupStandingDto {
-            public string GroupName { get; set; } = default!;
-            public List<StandingDto> Standings { get; set; } = new();
-        }
+       
         public ObservableCollection<GroupStandingDto> GroupedStandings { get; set; } = new();
         public ObservableCollection<PlayerStatStandingDto> TopScorers { get; set; } = new();
         public ObservableCollection<PlayerStatStandingDto> YellowCards { get; set; } = new();
         public ObservableCollection<PlayerStatStandingDto> RedCards { get; set; } = new();
         public ObservableCollection<TeamDto> Teams { get; } = new();
-        
+
         public ObservableCollection<Fut7MatchDto> NextMatches { get; set; } = new();
         public Fut7MatchDto? SelectedMatch { get; set; }
 
@@ -54,7 +52,7 @@ namespace Fut7Manager.Admin.ViewModels {
 
         public PlotModel DonutModel { get; private set; }
 
-       
+
         public PaymentSummaryDto Summary
         {
             get => _summary;
@@ -66,29 +64,29 @@ namespace Fut7Manager.Admin.ViewModels {
         }
 
         public bool ShowDonut => Summary != null && Summary.TotalDue > 0;
-       
+
         public List<GroupDto> Groups { get; } = new();
 
-        
+
         public LeagueStatus LeagueStatus
         {
             get => _leagueStatus;
             set { _leagueStatus = value; OnPropertyChanged(); }
         }
 
-        
+
         public int TotalTeams
         {
             get => _totalTeams;
             set { _totalTeams = value; OnPropertyChanged(); }
         }
-        
+
         public int TotalGroups
         {
             get => _totalGroups;
             set { _totalGroups = value; OnPropertyChanged(); }
         }
-        
+
         public int MinPlayers
         {
             get => _minPlayers;
@@ -99,7 +97,7 @@ namespace Fut7Manager.Admin.ViewModels {
             get => _teamsQualified;
             set { _teamsQualified = value; OnPropertyChanged(); }
         }
-       
+
         public string? CurrentMatchdayName
         {
             get => _currentMatchdayName;
@@ -108,8 +106,8 @@ namespace Fut7Manager.Admin.ViewModels {
 
 
 
-        
-        
+
+
         public string? ChampionName
         {
             get => _championName;
@@ -117,6 +115,7 @@ namespace Fut7Manager.Admin.ViewModels {
         }
 
         public ICommand StartLeagueCommand { get; }
+        public ICommand StartPlayoffCommand { get; }
 
         public bool IsLoading
         {
@@ -150,11 +149,12 @@ namespace Fut7Manager.Admin.ViewModels {
                 TotalDue = 0
             };
 
-           
+
             DonutModel = new PlotModel();
-        
+
 
             StartLeagueCommand = new RelayCommand(async () => await StartLeague(), () => !HasIncompleteTeams);
+            StartPlayoffCommand = new RelayCommand(async () => await StartPlayoff());
         }
 
         public async Task InitializeAsync() {
@@ -246,6 +246,50 @@ namespace Fut7Manager.Admin.ViewModels {
             return;
 
         }
+        private async Task StartPlayoff() {
+            // Validación básica
+
+            var window = new StartPlayoffWindow();
+
+            var vm = new StartPlayoffViewModel(
+                GroupedStandings,
+                _league);
+
+            window.DataContext = vm;
+
+            vm.CloseAction = result =>
+            {
+                window.DialogResult = result;
+                window.Close();
+            };
+
+            window.ShowDialog();
+
+            if (vm.CompletedSuccessfully) {
+                MessageService.Show("Liguilla iniciada");
+
+                //Recargar liga
+                _league = await _leagueService.GetLeagueByIdAsync(_league.Id);
+                LeagueStatus = _league.Status;
+
+                // Reemplazar el VM en MainViewModel
+                var mainVm = Application.Current.MainWindow.DataContext as MainViewModel;
+                if (mainVm != null) {
+                    var newVm = new CentralPanelViewModel(
+                        mainVm.AppState,
+                        mainVm.LeagueService,
+                        _league,
+                        mainVm.TeamService,
+                        mainVm.GroupService,
+                        mainVm.Fut7MatchService);
+
+                    mainVm.CurrentView = newVm;
+                    await newVm.InitializeAsync();
+                }
+            }
+            return;
+
+        }
 
         private async Task LoadDashboardData() {
             IsLoading = true;
@@ -289,7 +333,6 @@ namespace Fut7Manager.Admin.ViewModels {
                     });
                 }
             } else if (dashboard.Standings != null) {
-                //  Fallback (lo que tienes ahorita)
                 GroupedStandings.Add(new GroupStandingDto {
                     GroupName = "General",
                     Standings = dashboard.Standings
@@ -319,13 +362,13 @@ namespace Fut7Manager.Admin.ViewModels {
             }
 
             Summary = dashboard.PaymentSummary;
-           
+
             BuildDonut();
 
             IsLoading = false;
         }
 
-        
+
         private void BuildDonut() {
             var model = new PlotModel();
 
@@ -344,7 +387,7 @@ namespace Fut7Manager.Admin.ViewModels {
             var azulHex = OxyColor.FromArgb(primary.A, primary.R, primary.G, primary.B);
 
             series.Slices.Add(new PieSlice("Pagado", (double)Summary.TotalPaid) { Fill = azulHex });
-            series.Slices.Add(new PieSlice("Por pagar", (double)(Summary.TotalDue - Summary.TotalPaid)) { Fill = OxyColors.LightGray});
+            series.Slices.Add(new PieSlice("Por pagar", (double)(Summary.TotalDue - Summary.TotalPaid)) { Fill = OxyColors.LightGray });
 
             model.Series.Add(series);
             DonutModel = model;
